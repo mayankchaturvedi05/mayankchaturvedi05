@@ -18,7 +18,8 @@ namespace StratixRuanWebIntegration
         }
 
         public CompositeType GetDataUsingDataContract(CompositeType composite)
-        {
+        { 
+            //test
             if (composite == null)
             {
                 throw new ArgumentNullException("composite");
