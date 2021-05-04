@@ -27,6 +27,7 @@ namespace StratixRuanWebIntegration
     [DataContract]
     public class CompositeType
     {
+        //test
         bool boolValue = true;
         string stringValue = "Hello ";
 
