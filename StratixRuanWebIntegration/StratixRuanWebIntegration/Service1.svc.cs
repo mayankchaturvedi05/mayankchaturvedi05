@@ -27,7 +27,7 @@ namespace StratixRuanWebIntegration
             {
                 composite.StringValue += "Suffix";
             }
-            return composite;
+            return composite; 
         }
     }
 }
