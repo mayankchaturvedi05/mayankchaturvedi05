@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StratixRuanWebIntegration", "StratixRuanWebIntegration\StratixRuanWebIntegration.csproj", "{DE58B900-4721-4738-99E6-B732FBD04114}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StratixRuanBusinessLogic", "StratixRuanBusinessLogic\StratixRuanBusinessLogic.csproj", "{7A8D936E-5D1C-4D24-B139-F3660699A7CD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{DE58B900-4721-4738-99E6-B732FBD04114}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DE58B900-4721-4738-99E6-B732FBD04114}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DE58B900-4721-4738-99E6-B732FBD04114}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A8D936E-5D1C-4D24-B139-F3660699A7CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A8D936E-5D1C-4D24-B139-F3660699A7CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A8D936E-5D1C-4D24-B139-F3660699A7CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A8D936E-5D1C-4D24-B139-F3660699A7CD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

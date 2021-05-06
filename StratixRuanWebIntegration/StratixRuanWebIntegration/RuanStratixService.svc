@@ -1,0 +1,1 @@
+﻿<%@ ServiceHost Language="C#" Debug="true" Service="StratixRuanWebIntegration.Service1" CodeBehind="RuanStratixService.svc.cs" %>
