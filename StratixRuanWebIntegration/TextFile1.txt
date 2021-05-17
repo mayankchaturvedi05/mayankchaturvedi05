@@ -1,0 +1,7 @@
+CUST_SHIP_ADDRESS.cva_addr1 AS ShipToAddress1,
+CUST_SHIP_ADDRESS.cva_addr2 AS ShipToAddress2,
+CUST_SHIP_ADDRESS.cva_addr3 AS ShipToAddress3,
+CUST_SHIP_ADDRESS.cva_city AS ShipToCity,
+CUST_SHIP_ADDRESS.cva_st_prov AS ShipToState,
+CUST_SHIP_ADDRESS.cva_pcd AS ShipToZipCode,
+CUST_SHIP_ADDRESS.cva_cty AS ShipToCountry

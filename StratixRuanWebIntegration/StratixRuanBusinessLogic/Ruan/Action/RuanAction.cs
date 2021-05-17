@@ -26,15 +26,16 @@ namespace StratixRuanBusinessLogic.Ruan.Action
         //static constructor sets environment (dev/qa/prod) from AppConfig
         static RuanAction()
         {
-            try
-            {
-               // apiUriBase = ConfigurationManager.AppSettings["RuanApiUri"];
-                if (string.IsNullOrEmpty(apiUriBase)) throw new Exception();
-            }
-            catch (Exception)
-            {
-                throw new Exception("Ruan API is not properly configured for the environment, contact support.");
-            }
+            //TODO: uncomment
+            //try
+            //{
+            //   // apiUriBase = ConfigurationManager.AppSettings["RuanApiUri"];
+            //    if (string.IsNullOrEmpty(apiUriBase)) throw new Exception();
+            //}
+            //catch (Exception)
+            //{
+            //    throw new Exception("Ruan API is not properly configured for the environment, contact support.");
+            //}
         }
         
         //Helper function to Deserialize an xml string to class
@@ -87,6 +88,8 @@ namespace StratixRuanBusinessLogic.Ruan.Action
 
         public static void GenerateOrderReleaseForRuan(long tslacNumber)
         {
+            StratixRuanBusinessLogic.Stratix.RuanOrderIntegrationHelperData helperData = StratixRuanBusinessLogic.Stratix.RuanOrderIntegrationHelperData
+                .GetDataToConstructRuanOrderIntegrationHelperData(tslacNumber);
         }
         #endregion
 

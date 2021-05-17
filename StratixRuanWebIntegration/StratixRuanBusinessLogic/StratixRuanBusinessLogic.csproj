@@ -32,8 +32,10 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -42,6 +44,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Form1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1.Designer.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
     <Compile Include="IRuanStratixClass.cs" />
     <Compile Include="IRuanStratixService.cs" />
     <Compile Include="RuanCredentials.cs" />
@@ -93,7 +101,19 @@
     <Compile Include="Ruan\Serialization\Stop.cs" />
     <Compile Include="Ruan\Serialization\TaShipUnit.cs" />
     <Compile Include="Ruan\Serialization\TaShipUnitContent.cs" />
+    <Compile Include="Stratix\RuanOrderIntegrationHelperData.cs" />
     <Compile Include="Utilities.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\StratixRuanDataLayer\StratixRuanDataLayer.csproj">
+      <Project>{25a8d898-b0eb-4bf2-ac53-81c0ec1b5a97}</Project>
+      <Name>StratixRuanDataLayer</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
