@@ -86,10 +86,37 @@ namespace StratixRuanBusinessLogic.Ruan.Action
            
         }
 
-        public static void GenerateOrderReleaseForRuan(long tslacNumber)
+        public static void GenerateOrderReleaseForRuan(long keyNumber)
         {
+            if (Debugger.IsAttached) Debug.WriteLine($"KeyNumber: {keyNumber}");
+
+            string orderReleaseStatusValue = "A";
+           // if (loadAuthCross.StatusNumber != null)
+            {
+               // if (loadAuthCross.StatusNumber != null && loadAuthCross.StatusNumber.Value == cancelledStatus.StatusNumber)
+                {
+                    orderReleaseStatusValue = "C";
+                }
+              //  else if (loadAuthCross.StatusNumber != null && loadAuthCross.StatusNumber.Value == retenderStatus.StatusNumber)
+                {
+                    orderReleaseStatusValue = "H";
+                }
+                //else
+                {
+                    orderReleaseStatusValue = "A";
+                }
+
+                int
+                    totalOrderCount =
+                        0; //!string.IsNullOrEmpty(loadAuthCross.ConsolidateIdCode) ? LoadAuthorizationCross.FetchTrucklistCountByConsolidatedIDCode(loadAuthCross.ConsolidateIdCode) : 1; Revisit with Brittany
+
+                
+            }
+
+
             StratixRuanBusinessLogic.Stratix.RuanOrderIntegrationHelperData helperData = StratixRuanBusinessLogic.Stratix.RuanOrderIntegrationHelperData
-                .GetDataToConstructRuanOrderIntegrationHelperData(tslacNumber);
+                .GetDataToConstructRuanOrderIntegrationHelperData(keyNumber);
+            string releaseWeight = $"{helperData.ReleaseWeight}";
         }
         #endregion
 

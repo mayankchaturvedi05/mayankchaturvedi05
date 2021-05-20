@@ -39,6 +39,9 @@ namespace StratixRuanDataLayer
         public string ShipToState { get; set; }
         public string ShipToZipCode { get; set; }
         public string ShipToCountry { get; set; }
+        public double ReleaseWeight { get; set; }
+        public DateTime OrderDeliveryDateFrom { get; set; }
+        public DateTime OrderDeliveryDateTo { get; set; }
 
         public static TSRuanOrderIntegrationHelperData GetSalesOrderDataToConstructRuanOrderIntegrationXML(long orderReleaseNumber)
         {
@@ -77,7 +80,10 @@ namespace StratixRuanDataLayer
                       CUST_BILL_ADDRESS.cva_city AS SoldToCity,
                       CUST_BILL_ADDRESS.cva_st_prov AS SoldToState,
                       CUST_BILL_ADDRESS.cva_pcd AS SoldToZipCode,
-                      CUST_BILL_ADDRESS.cva_cty AS SoldToCountry
+                      CUST_BILL_ADDRESS.cva_cty AS SoldToCountry,
+					  ORL.orl_rls_wgt AS ReleaseWeight,
+					  ORL.orl_due_fm_dt AS OrderDeliveryDateFrom,
+					  ORL.orl_due_to_dt AS OrderDeliveryDateTo
                       
                       
                       
@@ -147,6 +153,15 @@ namespace StratixRuanDataLayer
                     result.SoldToState = reader["SoldToState"].ToString();
                     result.SoldToZipCode = reader["SoldToZipCode"].ToString();
                     result.SoldToCountry = reader["SoldToCountry"].ToString();
+
+                    object releaseWeight= reader["ReleaseWeight"];
+                    result.ReleaseWeight = Convert.ToDouble(releaseWeight);
+
+                    object orderDeliveryDateFrom = reader["OrderDeliveryDateFrom"];
+                    result.OrderDeliveryDateFrom = Convert.ToDateTime(orderDeliveryDateFrom);
+
+                    object orderDeliveryDateTo = reader["OrderDeliveryDateTo"];
+                    result.OrderDeliveryDateTo = Convert.ToDateTime(orderDeliveryDateTo);
                 }
 
                 // Close the reader and connection (commands are not closed).

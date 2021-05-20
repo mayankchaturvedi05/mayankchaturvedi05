@@ -1,4 +1,6 @@
 ﻿
+using System;
+
 namespace StratixRuanBusinessLogic.Stratix
 {
     public class RuanOrderIntegrationHelperData
@@ -33,6 +35,9 @@ namespace StratixRuanBusinessLogic.Stratix
         public string ShipToState { get; set; }
         public string ShipToZipCode { get; set; }
         public string ShipToCountry { get; set; }
+        public double ReleaseWeight { get; set; }
+        public DateTime OrderDeliveryDateFrom { get; set; }
+        public DateTime OrderDeliveryDateTo { get; set; }
 
         protected RuanOrderIntegrationHelperData(StratixRuanDataLayer.TSRuanOrderIntegrationHelperData source)
         {
@@ -64,7 +69,10 @@ namespace StratixRuanBusinessLogic.Stratix
             ShipToState = ""; //todo
             ShipToZipCode = source.ShipToZipCode;
             ShipToCountry = source.ShipToCountry;
-           
+            ReleaseWeight = source.ReleaseWeight;
+            OrderDeliveryDateFrom = source.OrderDeliveryDateFrom;
+            OrderDeliveryDateTo = source.OrderDeliveryDateTo;
+
         }
 
         public static RuanOrderIntegrationHelperData GetDataToConstructRuanOrderIntegrationHelperData(long orderReleaseNumber)
