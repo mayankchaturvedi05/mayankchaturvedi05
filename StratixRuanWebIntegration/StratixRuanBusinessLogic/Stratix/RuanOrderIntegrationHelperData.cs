@@ -50,6 +50,7 @@ namespace StratixRuanBusinessLogic.Stratix
         public string PartID { get; set; }
         public double? PartWidth { get; set; }
         public double? PartLength { get; set; }
+        public string PackagingCode { get; set; }
 
         protected RuanOrderIntegrationHelperData(StratixRuanDataLayer.TSRuanOrderIntegrationHelperData source)
         {
@@ -93,6 +94,7 @@ namespace StratixRuanBusinessLogic.Stratix
             PartID = source.PartID;
             PartLength = source.PartLength;
             PartWidth = source.PartWidth;
+            PackagingCode = source.PackagingCode;
 
         }
 

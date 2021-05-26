@@ -53,6 +53,7 @@ namespace StratixRuanDataLayer
         public double? PartLength { get; set; }
 
         public string PartID { get; set; }
+        public string PackagingCode { get; set; }
 
         public static TSRuanOrderIntegrationHelperData GetSalesOrderDataToConstructRuanOrderIntegrationXML(long orderReleaseNumber)
         {
@@ -106,7 +107,8 @@ namespace StratixRuanDataLayer
 	                 CommonOrderInformation.pds_prd_desc50b as OrderProductDescription2,
 					 OrderCrossDetail.xrd_part as PartID,
                      PartDimension.ipd_wdth as PartWidth,
-                     PartDimension.ipd_lgth as PartLength
+                     PartDimension.ipd_lgth as PartLength,
+                     ItemPackaging.ipk_pkg as PackagingCode
                       
                       
                       FROM
@@ -135,6 +137,9 @@ namespace StratixRuanDataLayer
 					  INNER JOIN TCTIPD_rec PartDimension ON PartDimension.ipd_ref_pfx = 'SO' 
 					                  AND PartDimension.ipd_part_cus_id = CUST.cus_cus_id AND PartDimension.ipd_ref_no = OD.ord_ord_no
 									  AND PartDimension.ipd_ref_itm   = OD.ord_ord_itm
+                      INNER JOIN PNTIPK_rec ItemPackaging ON ItemPackaging.ipk_ref_pfx = 'SO'
+					                AND ItemPackaging.ipk_ref_no = OD.ord_ord_no
+									AND ItemPackaging.ipk_ref_itm = OD.ord_ord_itm
                       WHERE 1=1
                       AND OH.orh_ord_no= 661 ";
 
@@ -214,6 +219,7 @@ namespace StratixRuanDataLayer
 
                     object partLength = reader["PartLength"];
                     result.PartLength = Convert.ToDouble(partLength);
+                    result.PackagingCode = reader["PackagingCode"].ToString();
                 }
 
                 // Close the reader and connection (commands are not closed).
