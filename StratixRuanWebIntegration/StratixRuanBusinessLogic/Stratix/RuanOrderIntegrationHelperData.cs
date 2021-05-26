@@ -1,10 +1,14 @@
 ﻿
 using System;
+using System.Diagnostics;
 
 namespace StratixRuanBusinessLogic.Stratix
 {
     public class RuanOrderIntegrationHelperData
     {
+        public long SalesOrderReleaseNumber { get; set; }
+        public string InsideSalesPersonName { get; set; }
+        public string InsideSalesPersonEmail { get; set; }
         public string ShipFromID { get; set; }
         public string ShipFromName { get; set; }
         public string ShipFromAddress1 { get; set; }
@@ -35,12 +39,18 @@ namespace StratixRuanBusinessLogic.Stratix
         public string ShipToState { get; set; }
         public string ShipToZipCode { get; set; }
         public string ShipToCountry { get; set; }
+        public string CustomerPO { get; set; }
+
         public double ReleaseWeight { get; set; }
         public DateTime OrderDeliveryDateFrom { get; set; }
         public DateTime OrderDeliveryDateTo { get; set; }
 
+        public string OrderProductDescription1 { get; set; }
+        public string OrderProductDescription2 { get; set; }
+
         protected RuanOrderIntegrationHelperData(StratixRuanDataLayer.TSRuanOrderIntegrationHelperData source)
         {
+            SalesOrderReleaseNumber = source.SalesOrderReleaseNumber;
             ShipFromID = source.ShipFromID;
             ShipFromName = source.ShipFromName;
             ShipFromAddress1 = source.ShipFromAddress1;
@@ -69,9 +79,14 @@ namespace StratixRuanBusinessLogic.Stratix
             ShipToState = ""; //todo
             ShipToZipCode = source.ShipToZipCode;
             ShipToCountry = source.ShipToCountry;
+            CustomerPO = source.CustomerPO;
             ReleaseWeight = source.ReleaseWeight;
             OrderDeliveryDateFrom = source.OrderDeliveryDateFrom;
             OrderDeliveryDateTo = source.OrderDeliveryDateTo;
+            InsideSalesPersonName = source.InsideSalesPersonName;
+            InsideSalesPersonEmail = source.InsideSalesPersonEmail;
+            OrderProductDescription1 = source.OrderProductDescription1;
+            OrderProductDescription2 = source.OrderProductDescription2;
 
         }
 

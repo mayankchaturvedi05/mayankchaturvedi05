@@ -8,7 +8,9 @@ namespace StratixRuanDataLayer
 {
     public class TSRuanOrderIntegrationHelperData
     {
-
+        public long SalesOrderReleaseNumber { get; set; }
+        public string InsideSalesPersonName { get; set; }
+        public string InsideSalesPersonEmail { get; set; }
         public string ShipFromID { get; set; }
         public string ShipFromName { get; set; }
         public string ShipFromAddress1 { get; set; }
@@ -40,8 +42,12 @@ namespace StratixRuanDataLayer
         public string ShipToZipCode { get; set; }
         public string ShipToCountry { get; set; }
         public double ReleaseWeight { get; set; }
+        public  string CustomerPO { get; set; }
         public DateTime OrderDeliveryDateFrom { get; set; }
         public DateTime OrderDeliveryDateTo { get; set; }
+
+        public string OrderProductDescription1 { get; set; }
+        public string OrderProductDescription2 { get; set; }
 
         public static TSRuanOrderIntegrationHelperData GetSalesOrderDataToConstructRuanOrderIntegrationXML(long orderReleaseNumber)
         {
@@ -81,9 +87,18 @@ namespace StratixRuanDataLayer
                       CUST_BILL_ADDRESS.cva_st_prov AS SoldToState,
                       CUST_BILL_ADDRESS.cva_pcd AS SoldToZipCode,
                       CUST_BILL_ADDRESS.cva_cty AS SoldToCountry,
+
+                      ORL.orl_ord_no AS SalesOrderReleaseNumber,
 					  ORL.orl_rls_wgt AS ReleaseWeight,
 					  ORL.orl_due_fm_dt AS OrderDeliveryDateFrom,
-					  ORL.orl_due_to_dt AS OrderDeliveryDateTo
+					  ORL.orl_due_to_dt AS OrderDeliveryDateTo,
+                      OD.ord_cus_po AS CustomerPO,
+                   
+                     SalesPersonLoginDetail.usr_nm as InsideSalesPersonName,
+                     SalesPersonLoginDetail.usr_email as InsideSalesPersonEmail,
+
+                     CommonOrderInformation.pds_prd_desc50a as OrderProductDescription1,
+	                 CommonOrderInformation.pds_prd_desc50b as OrderProductDescription2
                       
                       
                       
@@ -99,7 +114,11 @@ namespace StratixRuanDataLayer
                       										AND CUST_SHIP_ADDRESS.cva_addr_typ = 'S'
                                                               AND CUST_SHIP_ADDRESS.cva_cus_ven_id = CUST.cus_cus_id 
                       										AND CUST_SHIP_ADDRESS.cva_addr_no = OH.orh_shp_to
+                      INNER JOIN SCRSLP_rec SalesPersonLogin ON SalesPersonLogin.slp_slp = SHIPTO.shp_is_slp
+					  INNER JOIN MXRUSR_REC SalesPersonLoginDetail ON SalesPersonLoginDetail.usr_lgn_id = SalesPersonLogin.slp_lgn_id
                       INNER JOIN SCRWHS_REC PLANT_SHIP_FROM ON PLANT_SHIP_FROM.whs_whs = ORL.orl_shpg_whs
+                      INNER JOIN TCTPDS_rec CommonOrderInformation ON CommonOrderInformation.pds_ref_pfx = 'SO' 
+					                                      AND CommonOrderInformation.pds_ref_no = OD.ord_ord_no  AND CommonOrderInformation.pds_ref_itm = OD.ord_ord_itm
                       WHERE 1=1
                       AND OH.orh_ord_no= 661 ";
 
@@ -153,6 +172,13 @@ namespace StratixRuanDataLayer
                     result.SoldToState = reader["SoldToState"].ToString();
                     result.SoldToZipCode = reader["SoldToZipCode"].ToString();
                     result.SoldToCountry = reader["SoldToCountry"].ToString();
+                    result.CustomerPO = reader["CustomerPO"].ToString();
+
+                    result.InsideSalesPersonName = reader["InsideSalesPersonName"].ToString();
+                    result.InsideSalesPersonEmail = reader["InsideSalesPersonEmail"].ToString();
+
+                    object salesOrderReleaseNumber = reader["SalesOrderReleaseNumber"];
+                    result.SalesOrderReleaseNumber = Convert.ToInt64(salesOrderReleaseNumber);
 
                     object releaseWeight= reader["ReleaseWeight"];
                     result.ReleaseWeight = Convert.ToDouble(releaseWeight);
@@ -162,6 +188,9 @@ namespace StratixRuanDataLayer
 
                     object orderDeliveryDateTo = reader["OrderDeliveryDateTo"];
                     result.OrderDeliveryDateTo = Convert.ToDateTime(orderDeliveryDateTo);
+
+                    result.OrderProductDescription1 = reader["OrderProductDescription1"].ToString();
+                    result.OrderProductDescription2 = reader["OrderProductDescription2"].ToString();
                 }
 
                 // Close the reader and connection (commands are not closed).
