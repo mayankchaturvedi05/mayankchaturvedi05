@@ -49,6 +49,11 @@ namespace StratixRuanDataLayer
         public string OrderProductDescription1 { get; set; }
         public string OrderProductDescription2 { get; set; }
 
+        public double? PartWidth { get; set; }
+        public double? PartLength { get; set; }
+
+        public string PartID { get; set; }
+
         public static TSRuanOrderIntegrationHelperData GetSalesOrderDataToConstructRuanOrderIntegrationXML(long orderReleaseNumber)
         {
             TSRuanOrderIntegrationHelperData result = new TSRuanOrderIntegrationHelperData();
@@ -98,8 +103,10 @@ namespace StratixRuanDataLayer
                      SalesPersonLoginDetail.usr_email as InsideSalesPersonEmail,
 
                      CommonOrderInformation.pds_prd_desc50a as OrderProductDescription1,
-	                 CommonOrderInformation.pds_prd_desc50b as OrderProductDescription2
-                      
+	                 CommonOrderInformation.pds_prd_desc50b as OrderProductDescription2,
+					 OrderCrossDetail.xrd_part as PartID,
+                     PartDimension.ipd_wdth as PartWidth,
+                     PartDimension.ipd_lgth as PartLength
                       
                       
                       FROM
@@ -119,6 +126,15 @@ namespace StratixRuanDataLayer
                       INNER JOIN SCRWHS_REC PLANT_SHIP_FROM ON PLANT_SHIP_FROM.whs_whs = ORL.orl_shpg_whs
                       INNER JOIN TCTPDS_rec CommonOrderInformation ON CommonOrderInformation.pds_ref_pfx = 'SO' 
 					                                      AND CommonOrderInformation.pds_ref_no = OD.ord_ord_no  AND CommonOrderInformation.pds_ref_itm = OD.ord_ord_itm
+                      INNER JOIN ORTXRD_REC OrderCrossDetail ON OrderCrossDetail.xrd_ord_no = OD.ord_ord_no AND OrderCrossDetail.xrd_ord_itm =  OD.ord_ord_itm
+                      INNER JOIN CPRCLG_Rec PartMaster ON PartMaster.clg_Part = OrderCrossDetail.xrd_part 					  
+					                   AND PartMaster.clg_cus_ven_typ = 'C' 
+									   AND PartMaster.clg_cus_ven_id = CUST.cus_cus_id
+									   AND PartMaster.clg_part_sts = 'C'
+									   AND OrderCrossDetail.xrd_part_revno = PartMaster.clg_part_revno
+					  INNER JOIN TCTIPD_rec PartDimension ON PartDimension.ipd_ref_pfx = 'SO' 
+					                  AND PartDimension.ipd_part_cus_id = CUST.cus_cus_id AND PartDimension.ipd_ref_no = OD.ord_ord_no
+									  AND PartDimension.ipd_ref_itm   = OD.ord_ord_itm
                       WHERE 1=1
                       AND OH.orh_ord_no= 661 ";
 
@@ -191,6 +207,13 @@ namespace StratixRuanDataLayer
 
                     result.OrderProductDescription1 = reader["OrderProductDescription1"].ToString();
                     result.OrderProductDescription2 = reader["OrderProductDescription2"].ToString();
+                    result.PartID = reader["PartID"].ToString();
+
+                    object partWidth = reader["PartWidth"];
+                    result.PartWidth = Convert.ToDouble(partWidth);
+
+                    object partLength = reader["PartLength"];
+                    result.PartLength = Convert.ToDouble(partLength);
                 }
 
                 // Close the reader and connection (commands are not closed).

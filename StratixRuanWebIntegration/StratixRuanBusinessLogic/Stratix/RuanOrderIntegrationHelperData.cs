@@ -47,6 +47,9 @@ namespace StratixRuanBusinessLogic.Stratix
 
         public string OrderProductDescription1 { get; set; }
         public string OrderProductDescription2 { get; set; }
+        public string PartID { get; set; }
+        public double? PartWidth { get; set; }
+        public double? PartLength { get; set; }
 
         protected RuanOrderIntegrationHelperData(StratixRuanDataLayer.TSRuanOrderIntegrationHelperData source)
         {
@@ -87,6 +90,9 @@ namespace StratixRuanBusinessLogic.Stratix
             InsideSalesPersonEmail = source.InsideSalesPersonEmail;
             OrderProductDescription1 = source.OrderProductDescription1;
             OrderProductDescription2 = source.OrderProductDescription2;
+            PartID = source.PartID;
+            PartLength = source.PartLength;
+            PartWidth = source.PartWidth;
 
         }
 
