@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -92,31 +93,311 @@ namespace StratixRuanBusinessLogic.Ruan.Action
 
             string orderReleaseStatusValue = "A";
            // if (loadAuthCross.StatusNumber != null)
-            {
-               // if (loadAuthCross.StatusNumber != null && loadAuthCross.StatusNumber.Value == cancelledStatus.StatusNumber)
-                {
-                    orderReleaseStatusValue = "C";
-                }
-              //  else if (loadAuthCross.StatusNumber != null && loadAuthCross.StatusNumber.Value == retenderStatus.StatusNumber)
-                {
-                    orderReleaseStatusValue = "H";
-                }
-                //else
-                {
-                    orderReleaseStatusValue = "A";
-                }
+            //{
+            //   // if (loadAuthCross.StatusNumber != null && loadAuthCross.StatusNumber.Value == cancelledStatus.StatusNumber)
+            //    {
+            //        orderReleaseStatusValue = "C";
+            //    }
+            //  //  else if (loadAuthCross.StatusNumber != null && loadAuthCross.StatusNumber.Value == retenderStatus.StatusNumber)
+            //    {
+            //        orderReleaseStatusValue = "H";
+            //    }
+            //    //else
+            //    {
+            //        orderReleaseStatusValue = "A";
+            //    }
 
-                int
-                    totalOrderCount =
-                        0; //!string.IsNullOrEmpty(loadAuthCross.ConsolidateIdCode) ? LoadAuthorizationCross.FetchTrucklistCountByConsolidatedIDCode(loadAuthCross.ConsolidateIdCode) : 1; Revisit with Brittany
+            //    int
+            //        totalOrderCount =
+            //            0; //!string.IsNullOrEmpty(loadAuthCross.ConsolidateIdCode) ? LoadAuthorizationCross.FetchTrucklistCountByConsolidatedIDCode(loadAuthCross.ConsolidateIdCode) : 1; Revisit with Brittany
 
                 
-            }
+            //}
 
+
+            //StratixRuanBusinessLogic.Stratix.RuanOrderIntegrationHelperData helperData = StratixRuanBusinessLogic.Stratix.RuanOrderIntegrationHelperData
+            //    .GetDataToConstructRuanOrderIntegrationHelperData(keyNumber);
+            //string releaseWeight = $"{helperData.ReleaseWeight}";
+
+
+
+
+
+            int totalOrderCount = 0;
+
+           
 
             StratixRuanBusinessLogic.Stratix.RuanOrderIntegrationHelperData helperData = StratixRuanBusinessLogic.Stratix.RuanOrderIntegrationHelperData
                 .GetDataToConstructRuanOrderIntegrationHelperData(keyNumber);
             string releaseWeight = $"{helperData.ReleaseWeight}";
+
+
+
+            string packageType = helperData.PackagingCode;
+
+
+            List<Serialization.Comment> orderReleaseComments = new List<Serialization.Comment>();
+           // if (!string.IsNullOrEmpty(helperData.LoadComments))
+            {
+                orderReleaseComments.Add(new Serialization.Comment()
+                {
+                    CommentType = "PICKUP_INSTR",
+                    CommentValue = "TBD"
+                });
+            }
+
+            //if (!string.IsNullOrEmpty(loadAuthCross.Comment))
+            {
+                orderReleaseComments.Add(new Serialization.Comment()
+                {
+                    CommentType = "COMMENTS",
+                    CommentValue = "TBD"
+                });
+            }
+
+            //if (!string.IsNullOrEmpty(loadAuthCross.OpPickUp))
+            {
+                orderReleaseComments.Add(new Serialization.Comment()
+                {
+                    CommentType = "CARRIER_INSTR",
+                    CommentValue = "TBD"
+                });
+            }
+
+            StringBuilder routingInstructionsComment = new StringBuilder();
+           // if (!string.IsNullOrEmpty(helperData.AMALTRComment))
+            {
+                routingInstructionsComment.AppendLine($"Appointment Comment: TBD");
+            }
+
+            //if (!string.IsNullOrEmpty(routingInstructionsComment.ToString()))
+            {
+                orderReleaseComments.Add(new Serialization.Comment()
+                {
+                    CommentType = "ROUTING_INSTR",
+                    CommentValue = "TBD"
+                });
+            }
+
+            List<Serialization.ReferenceNumber> orderReleaseReferenceNumbers = new List<Serialization.ReferenceNumber>();
+            orderReleaseReferenceNumbers.Add(new Serialization.ReferenceNumber()
+            {
+                ReferenceNumberType = "SO_NUM",
+                ReferenceNumberValue = $"{helperData.SalesOrderReleaseNumber}"
+            }
+                );
+
+            orderReleaseReferenceNumbers.Add(new Serialization.ReferenceNumber()
+            {
+                ReferenceNumberType = "SOLD_TO_CUST_NUM",
+                ReferenceNumberValue = $"{helperData.SoldToName} {helperData.SoldToAddress1} {helperData.SoldToAddress2} {helperData.SoldToAddress3} {helperData.SoldToCity} {helperData.SoldToState} {helperData.SoldToZipCode} {helperData.SoldToCountry}"
+            }
+                );
+            orderReleaseReferenceNumbers.Add(new Serialization.ReferenceNumber()
+            {
+                ReferenceNumberType = "CUSNM",
+                ReferenceNumberValue = totalOrderCount.ToString()
+            }
+            );
+
+            if (!string.IsNullOrEmpty(helperData.CustomerPO))
+            {
+                orderReleaseReferenceNumbers.Add(new Serialization.ReferenceNumber()
+                {
+                    ReferenceNumberType = "CUST_PO",
+                    ReferenceNumberValue = helperData.CustomerPO
+                }
+                );
+            }
+
+            if (!string.IsNullOrEmpty(helperData.PartID))
+            {
+                orderReleaseReferenceNumbers.Add(new Serialization.ReferenceNumber()
+                {
+                    ReferenceNumberType = "PARENT_NUMBER",
+                    ReferenceNumberValue = helperData.PartID
+                }
+                );
+            }
+
+
+            APIReleaseOrder ruanReleaseOrder = new APIReleaseOrder
+            {
+                TransmissionType = "FRESH",
+                SenderTransmissionNo = $"HS-{helperData.SalesOrderReleaseNumber}",
+                ReleaseOrders = new List<ReleaseOrder>()
+                {
+                        new ReleaseOrder()
+                        {
+                            OrderHeader = new OrderHeader()
+                            {
+                                DomainName =  "RUAN/HS",
+                                OrderNumber = helperData.SalesOrderReleaseNumber.ToString(),
+                                TransactionCode = "RC",
+                                IntegrationCommand = "RemoveShipmentRefForRC",
+                                PaymentMethod = "TPB",
+                                TimeWindowEmphasis = "DELV",
+                                Priority = "3",
+                                StatusValue = orderReleaseStatusValue,
+                                StatusType = "CANCELLED",
+                                OrderShippingConfiguration =  "SHIP_UNIT_LINES",
+                                //OrderType = loadAuthCross.SalesOrderReleaseNumber.HasValue ? "SALES_ORDER" : "TRANSFERS",
+                                OrderType = "SALES_ORDER",
+                                CustomerServiceRepInfo = new CustomerServiceRepInfo()
+                                {
+                                    CustomerServiceRepName = helperData.InsideSalesPersonName,
+                                    CustomerServiceRepEmail = helperData.InsideSalesPersonEmail
+
+                                },
+                                ReferenceNumbers = orderReleaseReferenceNumbers,
+                                Comments = orderReleaseComments
+                            },//OrderHeader
+                            ShipFrom = new ShipFrom()
+                            {
+                                DomainName = "RUAN/HS",
+                                Id = helperData.ShipFromID,
+                                Name = helperData.ShipFromName,
+                                AddressLine1 = $"{helperData.ShipFromAddress1} {helperData.ShipFromAddress2} {helperData.ShipFromAddress3}",
+                                City = helperData.ShipFromCity,
+                                State = helperData.ShipFromState,
+                                Zip = helperData.ShipFromZipCode,
+                                Country = helperData.ShipFromCountry,
+                                Role = "SHIPFROM/SHIPTO",
+                                PostLocationToOTM = "true"
+                            },
+                            ShipTo = new ShipTo()
+                            {
+                                DomainName = "RUAN/HS",
+                                Id = helperData.ShipToID,
+                                Name = helperData.ShipToName,
+                                AddressLine1 = $"{helperData.ShipToAddress1} {helperData.ShipToAddress2} {helperData.ShipToAddress3}",
+                                City = helperData.ShipToCity,
+                                State = helperData.ShipToState,
+                                Zip = helperData.ShipToZipCode,
+                                Country = helperData.ShipToCountry,
+                                Role = "SHIPFROM/SHIPTO",
+                                PostLocationToOTM = "true"
+                            },
+                            ShippingAndDeliveryDates = !String.IsNullOrEmpty(helperData.OrderDeliveryDateFrom.ToString())? new ShippingAndDeliveryDates()
+                            {
+                                ShipDateTimeEarly = helperData.OrderDeliveryDateFrom,
+                                DeliveryDateTimeEarly = helperData.OrderDeliveryDateFrom, //$"{earliestDeliveryDateTimeWithTimeStamp:yyyy-MM-ddTHH:mm:ss.fffffffzzz}",
+                                DeliveryDateTimeLate  = helperData.OrderDeliveryDateTo //$"{latestDeliveryDateTimeWithTimeStamp:yyyy-MM-ddTHH:mm:ss.fffffffzzz}",
+                            }:new ShippingAndDeliveryDates()
+                            {
+                                DeliveryDateTimeEarly = helperData.OrderDeliveryDateFrom, //$"{earliestDeliveryDateTimeWithTimeStamp:yyyy-MM-ddTHH:mm:ss.fffffffzzz}",
+                                DeliveryDateTimeLate  = helperData.OrderDeliveryDateTo //$"{latestDeliveryDateTimeWithTimeStamp:yyyy-MM-ddTHH:mm:ss.fffffffzzz}",
+                            },
+                            OrderRouting = new OrderRouting()
+                            {
+                                ShipWithGroupId = "TBD",
+                                PreferredTransportationMode = "TL",
+                                EquipmentGroup = "FLAT"
+                            },
+                            LineItems = new List<Serialization.LineItem>()
+                            {
+                                new Serialization.LineItem()
+                                {
+                                    AutoCreateItem = "Y",
+                                    AutoCreateItemMaster= "Y",
+                                    LineItemNumber = $"{helperData.SalesOrderReleaseNumber}-1",//alway append by -1
+                                    TransportUnitKey = $"{helperData.SalesOrderReleaseNumber}-001",//alway append by -001
+                                    ItemNumber = helperData.SalesOrderReleaseNumber.ToString(),
+                                    ItemName = helperData.SalesOrderReleaseNumber.ToString(),
+                                    ItemDescription = helperData.OrderProductDescription1,
+                                    ItemCommodityGroup="FAK",//Hard Coded Per Runi's REvision
+                                    Quantity = "5",
+                                    QuantityUnitOfMeasure = "EA",
+                                    WeightGross = helperData.ReleaseWeight.ToString(CultureInfo.InvariantCulture),
+                                    WeightGrossUnitOfMeasure= "LB",
+                                    VolumeGross = "0",
+                                    VolumeGrossUnitOfMeasure = "CUFT",
+                                    LineItemDimensions = new Serialization.LineItemDimensions()
+                                    {
+                                        Length = helperData.PartLength.HasValue ? helperData.PartLength.ToString() : "0",
+                                        Width = helperData.PartWidth.HasValue ? helperData.PartWidth.ToString() : "0",
+                                        Height = "0",
+                                        UnitOfMeasure = "IN",
+                                        Weight = helperData.ReleaseWeight.ToString(),
+                                        WeightUnitOfMeasure = "LB",
+                                        Volume = "0",
+                                        VolumeUnitOfMeasure = "CUFT",
+                                        UserDefinedCommodity = null
+                                    },
+                                    ItemMaster = new ItemMaster()
+                                    {
+                                       ReferenceNumbers = new List<Serialization.ReferenceNumber>()
+                                    }//ItemMaster
+                                }//LineItem
+                            },//LineItems
+                            ShipUnits = new Serialization.ShipUnits
+                            {
+                                ShipUnitList = new List<ShipUnit>()
+                                {
+                                    new Serialization.ShipUnit()
+                                    {
+                                    ShipFromLocationDomainName = "RUAN/HS",
+                                    ShipFromLocation = helperData.ShipFromID,
+                                    ShipToLocationDomainName = "RUAN/HS",
+                                    ShipToLocation = helperData.ShipToID,
+                                    DomainName = "RUAN/HS",
+                                    TransactionCode = "IU",
+                                    ShipUnitKey = $"{helperData.SalesOrderReleaseNumber}-001",//alway append by -001
+                                    ShipUnitType = $"{packageType}",                               //helperData.InventoryType.ToUpper(),
+                                    ShipUnitCount = "5",
+                                    WeightUnitOfMeasure = "LB",
+                                    VolumeUnitOfMeasure = "CUFT",
+                                    WeightGross = helperData.ReleaseWeight.ToString(),
+                                    WeightGrossUnitOfMeasure = "LB",
+                                    VolumeGross = "0",
+                                    VolumeGrossUnitOfMeasure = "CUFT",
+                                    IsSplitAllowed = "N",
+                                    IsCountSplittable = "N",
+                                    IsRepackAllowed = "N",
+                                    ShipUnitContents = new List<ShipUnitContent>()
+                                    {
+                                        new ShipUnitContent()
+                                        {
+                                            DomainName = "RUAN/CUST",
+                                            ReleaseLineSequenceNumber = "1",
+                                            OrderNumber = helperData.SalesOrderReleaseNumber.ToString(),
+                                            LineItemNumber = $"{helperData.SalesOrderReleaseNumber}-1",//alway append by -1,
+                                            ItemNumber = helperData.SalesOrderReleaseNumber.ToString(),
+                                            ItemName = helperData.SalesOrderReleaseNumber.ToString(),
+                                            ItemDescription = helperData.OrderProductDescription1,
+                                            ItemCommodityGroup="FAK",//Hard Coded Per Runi's Revision
+                                            Quantity = "5",
+                                            Weight = helperData.ReleaseWeight.ToString(),
+                                            WeightUnitOfMeasure = "LB",
+                                            Volume = "0",
+                                            VolumeUnitOfMeasure = "CUFT",
+                                            WeightGross = helperData.ReleaseWeight.ToString(),
+                                            WeightGrossUnitOfMeasure = "LB",
+                                            VolumeGross = "0",
+                                            VolumeGrossUnitOfMeasure = "CUFT",
+                                            PackagedItem = helperData.SalesOrderReleaseNumber.ToString()
+                                        }
+                                    },
+                                    ShipUnitDimensions = new ShipUnitDimensions()
+                                    {
+                                        Length = helperData.PartLength.HasValue ? helperData.PartLength.ToString() : "0",
+                                        LengthUnitOfMeasure = "IN",
+                                        Width = helperData.PartWidth.HasValue ? helperData.PartWidth.ToString() : "0",
+                                        WidthUnitOfMeasure = "IN",
+                                        Height = "0",
+                                        HeightUnitOfMeasure = "FT"
+                                    }
+                                }//ShipUnit
+                            }//ShipUnitList
+                        }//ShipUnits
+
+                    }//ReleaseOrder
+                }
+            };
+
+            var test = ruanReleaseOrder;
+
+            SubmitToRuan(ruanReleaseOrder);
         }
         #endregion
 

@@ -11,6 +11,8 @@ namespace UnitTestProject1
         public void TestMethod1()
         {
             RuanAction.GenerateOrderReleaseForRuan(661);
+
+           
         }
     }
 }

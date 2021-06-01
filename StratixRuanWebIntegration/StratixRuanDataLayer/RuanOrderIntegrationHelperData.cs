@@ -164,39 +164,39 @@ namespace StratixRuanDataLayer
                 // through each row and through each field of the row.
                 while (reader.Read() == true)
                 {
-                    result.ShipFromID = reader["ShipFromName"].ToString();
-                    result.ShipFromName = reader["ShipFromID"].ToString();
-                    result.ShipFromAddress1 = reader["ShipFromAddress1"].ToString();
-                    result.ShipFromAddress2 = reader["ShipFromAddress2"].ToString();
-                    result.ShipFromAddress3 = reader["ShipFromAddress3"].ToString();
-                    result.ShipFromCity = reader["ShipFromCity"].ToString();
-                    result.ShipFromState = reader["ShipFromState"].ToString();
-                    result.ShipFromZipCode = reader["ShipFromZipCode"].ToString();
-                    result.ShipFromCountry = reader["ShipFromCountry"].ToString();
+                    result.ShipFromID = reader["ShipFromName"].ToString().Trim();
+                    result.ShipFromName = reader["ShipFromID"].ToString().Trim();
+                    result.ShipFromAddress1 = reader["ShipFromAddress1"].ToString().Trim();
+                    result.ShipFromAddress2 = reader["ShipFromAddress2"].ToString().Trim();
+                    result.ShipFromAddress3 = reader["ShipFromAddress3"].ToString().Trim();
+                    result.ShipFromCity = reader["ShipFromCity"].ToString().Trim();
+                    result.ShipFromState = reader["ShipFromState"].ToString().Trim();
+                    result.ShipFromZipCode = reader["ShipFromZipCode"].ToString().Trim();
+                    result.ShipFromCountry = reader["ShipFromCountry"].ToString().Trim();
 
-                    result.ShipToID = reader["ShipToName"].ToString();
-                    result.ShipToName = reader["ShipToID"].ToString();
-                    result.ShipToAddress1 = reader["ShipToAddress1"].ToString();
-                    result.ShipToAddress2 = reader["ShipToAddress2"].ToString();
-                    result.ShipToAddress3 = reader["ShipToAddress3"].ToString();
-                    result.ShipToCity = reader["ShipToCity"].ToString();
-                    result.ShipToState = reader["ShipToState"].ToString();
-                    result.ShipToZipCode = reader["ShipToZipCode"].ToString();
-                    result.ShipToCountry = reader["ShipToCountry"].ToString();
+                    result.ShipToID = reader["ShipToName"].ToString().Trim();
+                    result.ShipToName = reader["ShipToID"].ToString().Trim();
+                    result.ShipToAddress1 = reader["ShipToAddress1"].ToString().Trim();
+                    result.ShipToAddress2 = reader["ShipToAddress2"].ToString().Trim();
+                    result.ShipToAddress3 = reader["ShipToAddress3"].ToString().Trim();
+                    result.ShipToCity = reader["ShipToCity"].ToString().Trim();
+                    result.ShipToState = reader["ShipToState"].ToString().Trim();
+                    result.ShipToZipCode = reader["ShipToZipCode"].ToString().Trim();
+                    result.ShipToCountry = reader["ShipToCountry"].ToString().Trim();
 
-                    result.SoldToID = reader["SoldToName"].ToString();
-                    result.SoldToName = reader["SoldToID"].ToString();
-                    result.SoldToAddress1 = reader["SoldToAddress1"].ToString();
-                    result.SoldToAddress2 = reader["SoldToAddress2"].ToString();
-                    result.SoldToAddress3 = reader["SoldToAddress3"].ToString();
-                    result.SoldToCity = reader["SoldToCity"].ToString();
-                    result.SoldToState = reader["SoldToState"].ToString();
-                    result.SoldToZipCode = reader["SoldToZipCode"].ToString();
-                    result.SoldToCountry = reader["SoldToCountry"].ToString();
-                    result.CustomerPO = reader["CustomerPO"].ToString();
+                    result.SoldToID = reader["SoldToName"].ToString().Trim();
+                    result.SoldToName = reader["SoldToID"].ToString().Trim();
+                    result.SoldToAddress1 = reader["SoldToAddress1"].ToString().Trim();
+                    result.SoldToAddress2 = reader["SoldToAddress2"].ToString().Trim();
+                    result.SoldToAddress3 = reader["SoldToAddress3"].ToString().Trim();
+                    result.SoldToCity = reader["SoldToCity"].ToString().Trim();
+                    result.SoldToState = reader["SoldToState"].ToString().Trim();
+                    result.SoldToZipCode = reader["SoldToZipCode"].ToString().Trim();
+                    result.SoldToCountry = reader["SoldToCountry"].ToString().Trim();
+                    result.CustomerPO = reader["CustomerPO"].ToString().Trim();
 
-                    result.InsideSalesPersonName = reader["InsideSalesPersonName"].ToString();
-                    result.InsideSalesPersonEmail = reader["InsideSalesPersonEmail"].ToString();
+                    result.InsideSalesPersonName = reader["InsideSalesPersonName"].ToString().Trim();
+                    result.InsideSalesPersonEmail = reader["InsideSalesPersonEmail"].ToString().Trim();
 
                     object salesOrderReleaseNumber = reader["SalesOrderReleaseNumber"];
                     result.SalesOrderReleaseNumber = Convert.ToInt64(salesOrderReleaseNumber);
@@ -210,16 +210,16 @@ namespace StratixRuanDataLayer
                     object orderDeliveryDateTo = reader["OrderDeliveryDateTo"];
                     result.OrderDeliveryDateTo = Convert.ToDateTime(orderDeliveryDateTo);
 
-                    result.OrderProductDescription1 = reader["OrderProductDescription1"].ToString();
-                    result.OrderProductDescription2 = reader["OrderProductDescription2"].ToString();
-                    result.PartID = reader["PartID"].ToString();
+                    result.OrderProductDescription1 = reader["OrderProductDescription1"].ToString().Trim();
+                    result.OrderProductDescription2 = reader["OrderProductDescription2"].ToString().Trim();
+                    result.PartID = reader["PartID"].ToString().Trim();
 
                     object partWidth = reader["PartWidth"];
                     result.PartWidth = Convert.ToDouble(partWidth);
 
                     object partLength = reader["PartLength"];
                     result.PartLength = Convert.ToDouble(partLength);
-                    result.PackagingCode = reader["PackagingCode"].ToString();
+                    result.PackagingCode = reader["PackagingCode"].ToString().Trim();
                 }
 
                 // Close the reader and connection (commands are not closed).
