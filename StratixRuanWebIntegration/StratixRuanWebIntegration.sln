@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StratixRuanDataLayer", "Str
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestProject1", "UnitTestProject1\UnitTestProject1.csproj", "{CA38F070-AC3A-4DF8-9416-28C51364A6C6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StratixRuanDataLayer.Linq2SQL", "StratixRuanDataLayer.Linq2SQL\StratixRuanDataLayer.Linq2SQL.csproj", "{C14C8E8C-983B-4ECC-896A-EDBDAA172E8D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StratixRuanInterfaces", "ClassLibrary1\StratixRuanInterfaces.csproj", "{047BC290-E9AF-4CA4-8C20-0AF12AC3C2E6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,14 @@ Global
 		{CA38F070-AC3A-4DF8-9416-28C51364A6C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA38F070-AC3A-4DF8-9416-28C51364A6C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CA38F070-AC3A-4DF8-9416-28C51364A6C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C14C8E8C-983B-4ECC-896A-EDBDAA172E8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C14C8E8C-983B-4ECC-896A-EDBDAA172E8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C14C8E8C-983B-4ECC-896A-EDBDAA172E8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C14C8E8C-983B-4ECC-896A-EDBDAA172E8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{047BC290-E9AF-4CA4-8C20-0AF12AC3C2E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{047BC290-E9AF-4CA4-8C20-0AF12AC3C2E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{047BC290-E9AF-4CA4-8C20-0AF12AC3C2E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{047BC290-E9AF-4CA4-8C20-0AF12AC3C2E6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -422,14 +422,14 @@ namespace StratixRuanBusinessLogic.Ruan.Action
                 throw new Exception("Invalid Type of Ruan API cannot send!");
             }
 
-            if (Synchronize)
+            //if (Synchronize)
             {
                 SubmitToRuanAsync(apiType, apiObject, key).Wait();
             }
-            else
-            {
-                Task.Run(() => SubmitToRuanAsync(apiType, apiObject, key));
-            }
+            //else
+            //{
+            //    Task.Run(() => SubmitToRuanAsync(apiType, apiObject, key));
+            //}
         }
 
         public static async Task SubmitToRuanAsync(RuanApiType apiType, object apiObject, string mscKey)
@@ -437,25 +437,28 @@ namespace StratixRuanBusinessLogic.Ruan.Action
             string xml = Serialize(apiObject);
             string dbXml = SerializeForDb(apiObject);
             string uri = $"{apiUriBase}{GetActionUri(apiType)}";
+
+            RuanXml ruanXml = new RuanXml(apiObject);
+            ruanXml.Save();
             try
             {
-                using (HttpClient client = new HttpClient())
-                {
-                    client.Timeout = TimeSpan.FromSeconds(120d); //default is 100
-                    using (StringContent httpContent = new StringContent(xml, Encoding.UTF8, "application/xml"))
-                    {
-                        using (HttpResponseMessage response = await client.PostAsync(uri, httpContent))
-                        {
-                            Debug.WriteLine(response.ToString());
-                            LastResponse = response.ToString();
-                            response.EnsureSuccessStatusCode(); //throw exception if not successful 
+                //using (HttpClient client = new HttpClient())
+                //{
+                //    client.Timeout = TimeSpan.FromSeconds(120d); //default is 100
+                //    using (StringContent httpContent = new StringContent(xml, Encoding.UTF8, "application/xml"))
+                //    {
+                //        using (HttpResponseMessage response = await client.PostAsync(uri, httpContent))
+                //        {
+                //            Debug.WriteLine(response.ToString());
+                //            LastResponse = response.ToString();
+                //            response.EnsureSuccessStatusCode(); //throw exception if not successful 
 
-                            ////save to database after it gets sent to Ruan(If its fails, then it is saved in the job engine to reprocess it)
-                            //RuanXml ruanXml = new RuanXml(apiObject);
-                            //ruanXml.Save();
-                        }
-                    }
-                }
+                //            ////save to database after it gets sent to Ruan(If its fails, then it is saved in the job engine to reprocess it)
+                //            //RuanXml ruanXml = new RuanXml(apiObject);
+                //            //ruanXml.Save();
+                //        }
+                //    }
+                //}
             }
             catch (Exception e)
             {
