@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Data.Common;
 using System.Diagnostics;
 
 namespace StratixRuanBusinessLogic.Stratix
@@ -61,7 +62,7 @@ namespace StratixRuanBusinessLogic.Stratix
             ShipFromAddress2 = source.ShipFromAddress2;
             ShipFromAddress3 = source.ShipFromAddress3;
             ShipFromCity = source.ShipFromCity;
-            ShipFromState = ""; //todo
+            ShipFromState = source.ShipFromState;
             ShipFromZipCode = source.ShipFromZipCode;
             ShipFromCountry = source.ShipFromCountry;
             SoldToID = source.SoldToID;
@@ -70,7 +71,7 @@ namespace StratixRuanBusinessLogic.Stratix
             SoldToAddress2 = source.SoldToAddress2;
             SoldToAddress3 = source.SoldToAddress3;
             SoldToCity = source.SoldToCity;
-            SoldToState = ""; //todo
+            SoldToState = source.SoldToState;
             SoldToZipCode = source.SoldToZipCode;
             SoldToCountry = source.SoldToCountry;
             ShipToID = source.ShipToID;
@@ -80,7 +81,7 @@ namespace StratixRuanBusinessLogic.Stratix
             ShipToAddress2 = source.ShipToAddress2;
             ShipToAddress3 = source.ShipToAddress3;
             ShipToCity = source.ShipToCity;
-            ShipToState = ""; //todo
+            ShipToState = source.ShipToState;
             ShipToZipCode = source.ShipToZipCode;
             ShipToCountry = source.ShipToCountry;
             CustomerPO = source.CustomerPO;

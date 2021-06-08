@@ -6,6 +6,7 @@ using System.Diagnostics.Eventing.Reader;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Text;
@@ -27,16 +28,15 @@ namespace StratixRuanBusinessLogic.Ruan.Action
         //static constructor sets environment (dev/qa/prod) from AppConfig
         static RuanAction()
         {
-            //TODO: uncomment
-            //try
-            //{
-            //   // apiUriBase = ConfigurationManager.AppSettings["RuanApiUri"];
-            //    if (string.IsNullOrEmpty(apiUriBase)) throw new Exception();
-            //}
-            //catch (Exception)
-            //{
-            //    throw new Exception("Ruan API is not properly configured for the environment, contact support.");
-            //}
+            try
+            {
+                apiUriBase = ConfigurationManager.AppSettings["RuanApiUri"];
+                if (string.IsNullOrEmpty(apiUriBase)) throw new Exception();
+            }
+            catch (Exception)
+            {
+                throw new Exception("Ruan API is not properly configured for the environment, contact support.");
+            }
         }
         
         //Helper function to Deserialize an xml string to class
@@ -71,7 +71,7 @@ namespace StratixRuanBusinessLogic.Ruan.Action
                 case RuanApiType.TransportationArrangedShipments:
                     return "/TransportationArrangedShipments";
                 case RuanApiType.ActualShipment:
-                    return "/ActualShipments";
+                    return "/ReleaseOrderShipments";
                 default:
                     return "";
             }
@@ -438,31 +438,77 @@ namespace StratixRuanBusinessLogic.Ruan.Action
             string dbXml = SerializeForDb(apiObject);
             string uri = $"{apiUriBase}{GetActionUri(apiType)}";
 
-            RuanXml ruanXml = new RuanXml(apiObject);
-            ruanXml.Save();
+            PostToRuan(xml);
+
+            //try
+            //{
+            //    using (HttpClient client = new HttpClient())
+            //    {
+            //        client.Timeout = TimeSpan.FromSeconds(120d); //default is 100
+            //        using (StringContent httpContent = new StringContent(xml, Encoding.UTF8, "application/xml"))
+            //        {
+
+                       
+            //            //using (HttpResponseMessage response = await client.PostAsync(uri, httpContent))
+            //            // //using (HttpResponseMessage response =  client.PostAsync(uri, httpContent))
+            //            // {
+            //            //     Debug.WriteLine(response.ToString());
+            //            //     LastResponse = response.ToString();
+            //            //     response.EnsureSuccessStatusCode(); //throw exception if not successful 
+
+            //            //     ////save to database after it gets sent to Ruan(If its fails, then it is saved in the job engine to reprocess it)
+            //            //     //RuanXml ruanXml = new RuanXml(apiObject);
+            //            //     //ruanXml.Save();
+            //            // }
+            //        }
+            //    }
+            //}
+            //catch (Exception e)
+            //{
+    
+            //}
+        }
+
+        public static void PostToRuan(string fileContentString)
+        {
+
+
+            //Establish request to upload the xmlcontents to MG WebServer.
+            // HttpWebRequest request = (HttpWebRequest)WebRequest.Create(MercuryGateFileEndPointPath);
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://apiqagateway.ruan.com/ReleaseOrders");
+           // HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://69.87.209.117:443/ReleaseOrders");
+            request.ContentType = "application/xml"; //set the content type to XML
+            request.Method = "POST"; //make an HTTP POST
+
+            PostFilesToWebServiceEndPoint(request, fileContentString);
+        }
+        public static void PostFilesToWebServiceEndPoint(HttpWebRequest request, string fileContentString)
+        {
             try
             {
-                //using (HttpClient client = new HttpClient())
-                //{
-                //    client.Timeout = TimeSpan.FromSeconds(120d); //default is 100
-                //    using (StringContent httpContent = new StringContent(xml, Encoding.UTF8, "application/xml"))
-                //    {
-                //        using (HttpResponseMessage response = await client.PostAsync(uri, httpContent))
-                //        {
-                //            Debug.WriteLine(response.ToString());
-                //            LastResponse = response.ToString();
-                //            response.EnsureSuccessStatusCode(); //throw exception if not successful 
+                byte[] byteArray = Encoding.UTF8.GetBytes(fileContentString);
+                request.ContentLength = byteArray.Length;
 
-                //            ////save to database after it gets sent to Ruan(If its fails, then it is saved in the job engine to reprocess it)
-                //            //RuanXml ruanXml = new RuanXml(apiObject);
-                //            //ruanXml.Save();
-                //        }
-                //    }
-                //}
+                using (Stream dataStream = request.GetRequestStream())
+                {
+                    dataStream.Write(byteArray, 0, byteArray.Length);
+                    dataStream.Close();
+                }
+
+                using (HttpWebResponse httpResponse = request.GetResponse() as HttpWebResponse)
+                {
+                    Stream ResponseStream = null;
+                    ResponseStream = httpResponse.GetResponseStream();
+                    int responseCode = (int)httpResponse.StatusCode;
+                    string responseBody = ((new StreamReader(ResponseStream)).ReadToEnd());
+                }
+
+                request.Abort();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-    
+                var test = ex;
+                throw;
             }
         }
         #endregion
