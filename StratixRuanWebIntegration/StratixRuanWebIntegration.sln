@@ -7,6 +7,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StratixRuanWebIntegration",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StratixRuanBusinessLogic", "StratixRuanBusinessLogic\StratixRuanBusinessLogic.csproj", "{7A8D936E-5D1C-4D24-B139-F3660699A7CD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StratixRuanDataLayer", "StratixRuanDataLayer\StratixRuanDataLayer.csproj", "{25A8D898-B0EB-4BF2-AC53-81C0EC1B5A97}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestProject1", "UnitTestProject1\UnitTestProject1.csproj", "{CA38F070-AC3A-4DF8-9416-28C51364A6C6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StratixRuanDataLayer.Linq2SQL", "StratixRuanDataLayer.Linq2SQL\StratixRuanDataLayer.Linq2SQL.csproj", "{C14C8E8C-983B-4ECC-896A-EDBDAA172E8D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StratixRuanInterfaces", "ClassLibrary1\StratixRuanInterfaces.csproj", "{047BC290-E9AF-4CA4-8C20-0AF12AC3C2E6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +29,22 @@ Global
 		{7A8D936E-5D1C-4D24-B139-F3660699A7CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A8D936E-5D1C-4D24-B139-F3660699A7CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A8D936E-5D1C-4D24-B139-F3660699A7CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25A8D898-B0EB-4BF2-AC53-81C0EC1B5A97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25A8D898-B0EB-4BF2-AC53-81C0EC1B5A97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25A8D898-B0EB-4BF2-AC53-81C0EC1B5A97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25A8D898-B0EB-4BF2-AC53-81C0EC1B5A97}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA38F070-AC3A-4DF8-9416-28C51364A6C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA38F070-AC3A-4DF8-9416-28C51364A6C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA38F070-AC3A-4DF8-9416-28C51364A6C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA38F070-AC3A-4DF8-9416-28C51364A6C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C14C8E8C-983B-4ECC-896A-EDBDAA172E8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C14C8E8C-983B-4ECC-896A-EDBDAA172E8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C14C8E8C-983B-4ECC-896A-EDBDAA172E8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C14C8E8C-983B-4ECC-896A-EDBDAA172E8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{047BC290-E9AF-4CA4-8C20-0AF12AC3C2E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{047BC290-E9AF-4CA4-8C20-0AF12AC3C2E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{047BC290-E9AF-4CA4-8C20-0AF12AC3C2E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{047BC290-E9AF-4CA4-8C20-0AF12AC3C2E6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
