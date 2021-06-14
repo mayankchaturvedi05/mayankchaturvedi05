@@ -4,15 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{25A8D898-B0EB-4BF2-AC53-81C0EC1B5A97}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>StratixRuanDataLayer</RootNamespace>
-    <AssemblyName>StratixRuanDataLayer</AssemblyName>
+    <ProjectGuid>{0361F371-92A8-42FB-8516-98D0D6F18BC3}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>StratixToRuanDataTransfer</RootNamespace>
+    <AssemblyName>StratixToRuanDataTransfer</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>x64</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -31,7 +33,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
+    <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -40,9 +45,35 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="RuanOrderIntegrationHelperData.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StratixOrderNotification.cs" />
+    <Compile Include="SelfInstaller.cs" />
+    <Compile Include="StratixToRuanInstaller.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="StratixToRuanOrderDataTransfer.cs" />
+    <Compile Include="StratixToRuanService.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="StratixToRuanService.Designer.cs">
+      <DependentUpon>StratixToRuanService.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="connections.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\StratixRuanBusinessLogic\StratixRuanBusinessLogic.csproj">
+      <Project>{7a8d936e-5d1c-4d24-b139-f3660699a7cd}</Project>
+      <Name>StratixRuanBusinessLogic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\StratixRuanDataLayer\StratixRuanDataLayer.csproj">
+      <Project>{25a8d898-b0eb-4bf2-ac53-81c0ec1b5a97}</Project>
+      <Name>StratixRuanDataLayer</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
