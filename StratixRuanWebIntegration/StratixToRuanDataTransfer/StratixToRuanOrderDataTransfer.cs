@@ -15,80 +15,88 @@ namespace StratixToRuanDataTransfer
 
         public void Execute()
         {
+            StringBuilder logText = new StringBuilder();
             try
             {
-                Console.WriteLine("///////////////////////////////////////////////////////////////////////////////////");
-
-
                 List<StratixOrderNotification> allPendingOrderNtNotifications = StratixOrderNotification.GetStratixOrderNotification();
                 List<StratixOrderNotification> processedNotifications = new List<StratixOrderNotification>();
 
-                StringBuilder successfulMessages = new StringBuilder();
-
-                string messagetest = "";
                 List<long> interChangeNumbers = allPendingOrderNtNotifications.Select(x => x.InterchangeNumber).ToList();
 
                 if (interChangeNumbers.Count > 0)
                 {
 
-                    StratixOrderNotification.SetOrderNotificationInProcess(interChangeNumbers);
-
-                    foreach (StratixOrderNotification pendingOrderNotification in allPendingOrderNtNotifications)
+                    StratixOrderNotification.SetOrderNotificationToInProcess(interChangeNumbers); //Mark them all In process
+                    List<string> stratixInterchangeActivitiesForActiveRuanStatusValue = new List<string>(){"A", "C", "S"}; // Status value for Ruan mapping will be "A"
+                    List<string> stratixInterchangeActivitiesForCancelledRuanStatusValue = new List<string>() { "D" }; // Status value for Ruan mapping will be "C"
+                    foreach (StratixOrderNotification currentPendingOrderNtNotification in allPendingOrderNtNotifications)
                     {
+                        string ruanStatusValue = "A";
 
-                        string pendingInterchangeActivity = string.Empty;
-                        if (pendingInterchangeActivity == "S")
+                        StratixOrderNotification isOrderXmlAlreadySentToRuan = null;
+
+                        try
                         {
-                            pendingInterchangeActivity = "C";
+                            if (stratixInterchangeActivitiesForActiveRuanStatusValue.Contains(currentPendingOrderNtNotification.InterchangeActivity))
+                            {
+                                isOrderXmlAlreadySentToRuan = processedNotifications.FirstOrDefault(x =>
+                                    x.ReferenceNumber == currentPendingOrderNtNotification.ReferenceNumber &&
+                                    stratixInterchangeActivitiesForActiveRuanStatusValue.Contains(x.InterchangeActivity));
+                                ruanStatusValue = "A"; //Active for Ruan
+                            }
+                            else if (stratixInterchangeActivitiesForCancelledRuanStatusValue.Contains(currentPendingOrderNtNotification.InterchangeActivity))
+                            {
+                                isOrderXmlAlreadySentToRuan = processedNotifications.FirstOrDefault(x =>
+                                    x.ReferenceNumber == currentPendingOrderNtNotification.ReferenceNumber &&
+                                    stratixInterchangeActivitiesForCancelledRuanStatusValue.Contains(x.InterchangeActivity));
+                                ruanStatusValue = "C"; //Cancelled for Ruan
+                            }
+
+
+                            if (isOrderXmlAlreadySentToRuan == null) //Nothing sent to Ruan for this Order and Interchange Activity combination.
+                            {
+
+                                logText.AppendLine($"{DateTime.Now.ToShortTimeString()}:  Preparing to send to Ruan - InterchangeNumber# {currentPendingOrderNtNotification.InterchangeNumber}");
+
+                                //send the XML to Ruan
+                                RuanAction.GenerateOrderReleaseForRuan(currentPendingOrderNtNotification.ReferenceNumber, ruanStatusValue);
+
+                                //After the Sent Process, add the order and interchange activity to the processed Notification list, so that any subsequent Order/Interchange activity notification NEED NOT BE SENT
+                                processedNotifications.Add(new StratixOrderNotification() { ReferenceNumber = currentPendingOrderNtNotification.ReferenceNumber, InterchangeActivity = currentPendingOrderNtNotification.InterchangeActivity });
+
+
+                            }
+                            else // if it was already in the Processed notification list, DON'T sent to RUAN
+                            {
+                                //Dont send to Ruan
+                                logText.AppendLine($"{DateTime.Now.ToShortTimeString()}: Not sent to Ruan - as InterchangeNumber# {currentPendingOrderNtNotification.InterchangeNumber}/ Interchange Activity {currentPendingOrderNtNotification.InterchangeActivity} is already processed for the Order {currentPendingOrderNtNotification.ReferenceNumber} and sent to Ruan as part of this current transaction list. ");
+
+                            }
                         }
-                        else
+                        catch (Exception e)
                         {
-                            pendingInterchangeActivity = pendingOrderNotification.InterchangeActivity;
+                            logText.AppendLine($"{DateTime.Now.ToShortTimeString()}: Error processing - InterchangeNumber# {currentPendingOrderNtNotification.InterchangeNumber}/ Interchange Activity {currentPendingOrderNtNotification.InterchangeActivity}");
                         }
-
-
-
-                        StratixOrderNotification alreadySent = processedNotifications.FirstOrDefault(x =>
-                            x.ReferenceNumber == pendingOrderNotification.ReferenceNumber && x.InterchangeActivity == pendingInterchangeActivity);
-
-                        if (alreadySent != null)
-                        {
-                            //Dont send to Ruan
-                            successfulMessages.AppendLine($"{DateTime.Now.ToShortTimeString()}: Not sent to Ruan - InterchangeNumber# {pendingOrderNotification.InterchangeNumber} as another order notification for the Order {pendingOrderNotification.ReferenceNumber} is already being sent to Ruan as part of this transfer. ");
-
-                        }
-                        else
-                        {
-                            successfulMessages.AppendLine($"{DateTime.Now.ToShortTimeString()}:  Preparing to send to Ruan - InterchangeNumber# {pendingOrderNotification.InterchangeNumber}");
-                            //send to Ruan
-                            RuanAction.GenerateOrderReleaseForRuan(pendingOrderNotification.ReferenceNumber);
-                            successfulMessages.AppendLine($"{DateTime.Now.ToShortTimeString()}:  Sent to Ruan - InterchangeNumber# {pendingOrderNotification.InterchangeNumber}");
-                            //and update Stratix
-                            processedNotifications.Add(new StratixOrderNotification() { ReferenceNumber = pendingOrderNotification.ReferenceNumber, InterchangeActivity = pendingOrderNotification.InterchangeActivity });
-                           
-                        }
-
-
-
-
-                        //////////////////
-                       
+                        
 
                     }
                     
                     StratixOrderNotification.SetOrderNotificationToComplete(interChangeNumbers);
-                    successfulMessages.AppendLine($"{DateTime.Now.ToShortTimeString()}:  Stratix Notification records marked as updated # {string.Join(",", interChangeNumbers.Select(n => n.ToString()).ToArray())}");
-                    Console.WriteLine(successfulMessages.ToString());
+                    logText.AppendLine($"{DateTime.Now.ToShortTimeString()}:  Stratix Notification records marked as updated # {string.Join(",", interChangeNumbers.Select(n => n.ToString()).ToArray())}");
+                    Console.WriteLine(logText.ToString());
 
                 }
                 
 
-
-                LogMessage(successfulMessages.ToString());
+                LogMessage(logText.ToString());
             }
             catch (Exception e)
             {
-                Console.WriteLine("Exception: " + e.Message);
+                string exceptionText =
+                    $"{DateTime.Now.ToShortTimeString()}: Error processing. The exception message is {e.Message}";
+                logText.Clear();
+                logText.AppendLine(exceptionText);
+                Console.WriteLine(exceptionText);
             }
         }
 

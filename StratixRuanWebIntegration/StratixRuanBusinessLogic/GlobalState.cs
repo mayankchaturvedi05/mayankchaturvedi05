@@ -23,6 +23,7 @@ namespace StratixRuanBusinessLogic
             }
         }
 
+
         private static long _userNumber;
 
         public static long UserNumber

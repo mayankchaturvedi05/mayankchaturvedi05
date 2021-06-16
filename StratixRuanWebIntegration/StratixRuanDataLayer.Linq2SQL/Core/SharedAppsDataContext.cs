@@ -16,7 +16,7 @@ namespace StratixRuanDataLayer.Linq2SQL
 {
     public class SharedAppsDataContext : DataContext
     {
-        public static string localConnectionString = string.Empty; //"Integrated Security=true;User ID=msc_user;Password=Msc*911;Initial Catalog=centaurdev-test;Data Source=.;Connection Timeout=150; Min Pool Size=20;";
+        public static string StratixConnectionString { get; set; } 
 
         private static List<ADTABLE> _tableCache;
         public static List<ADTABLE> TableCache

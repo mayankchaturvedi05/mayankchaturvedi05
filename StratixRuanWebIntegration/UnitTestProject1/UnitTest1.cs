@@ -23,7 +23,7 @@ namespace UnitTestProject1
                 GlobalState.ConnectionString = connectionSettings.ConnectionString;
                
             }
-            RuanAction.GenerateOrderReleaseForRuan(661);
+            //RuanAction.GenerateOrderReleaseForRuan(661);
             
 
            

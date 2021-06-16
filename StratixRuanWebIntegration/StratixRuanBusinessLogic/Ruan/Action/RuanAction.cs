@@ -91,47 +91,12 @@ namespace StratixRuanBusinessLogic.Ruan.Action
         {
             if (Debugger.IsAttached) Debug.WriteLine($"KeyNumber: {keyNumber}");
 
-            //orderReleaseStatusValue = "A";
-           // if (loadAuthCross.StatusNumber != null)
-            //{
-            //   // if (loadAuthCross.StatusNumber != null && loadAuthCross.StatusNumber.Value == cancelledStatus.StatusNumber)
-            //    {
-            //        orderReleaseStatusValue = "C";
-            //    }
-            //  //  else if (loadAuthCross.StatusNumber != null && loadAuthCross.StatusNumber.Value == retenderStatus.StatusNumber)
-            //    {
-            //        orderReleaseStatusValue = "H";
-            //    }
-            //    //else
-            //    {
-            //        orderReleaseStatusValue = "A";
-            //    }
-
-            //    int
-            //        totalOrderCount =
-            //            0; //!string.IsNullOrEmpty(loadAuthCross.ConsolidateIdCode) ? LoadAuthorizationCross.FetchTrucklistCountByConsolidatedIDCode(loadAuthCross.ConsolidateIdCode) : 1; Revisit with Brittany
-
-                
-            //}
-
-
-            //StratixRuanBusinessLogic.Stratix.RuanOrderIntegrationHelperData helperData = StratixRuanBusinessLogic.Stratix.RuanOrderIntegrationHelperData
-            //    .GetDataToConstructRuanOrderIntegrationHelperData(keyNumber);
-            //string releaseWeight = $"{helperData.ReleaseWeight}";
-
-
-
-
-
-            int totalOrderCount = 0;
-
            
+            int totalOrderCount = 0;
 
             StratixRuanBusinessLogic.Stratix.RuanOrderIntegrationHelperData helperData = StratixRuanBusinessLogic.Stratix.RuanOrderIntegrationHelperData
                 .GetDataToConstructRuanOrderIntegrationHelperData(keyNumber);
             string releaseWeight = $"{helperData.ReleaseWeight}";
-
-
 
             string packageType = helperData.PackagingCode;
 
@@ -241,7 +206,7 @@ namespace StratixRuanBusinessLogic.Ruan.Action
                                 StatusValue = orderReleaseStatusValue,
                                 StatusType = "CANCELLED",
                                 OrderShippingConfiguration =  "SHIP_UNIT_LINES",
-                                //OrderType = loadAuthCross.SalesOrderReleaseNumber.HasValue ? "SALES_ORDER" : "TRANSFERS",
+                                //OrderType = loadAuthCross.SalesOrderReleaseNumber.HasValue ? "SALES_ORDER" : "TRANSFERS",//TODO: Once transfer process is finalized change the logic here
                                 OrderType = "SALES_ORDER",
                                 CustomerServiceRepInfo = new CustomerServiceRepInfo()
                                 {
@@ -395,8 +360,7 @@ namespace StratixRuanBusinessLogic.Ruan.Action
                 }
             };
 
-            var test = ruanReleaseOrder;
-
+         
             SubmitToRuan(ruanReleaseOrder);
         }
         #endregion

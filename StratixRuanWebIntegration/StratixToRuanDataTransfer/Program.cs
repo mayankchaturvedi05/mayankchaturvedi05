@@ -11,12 +11,32 @@ namespace StratixToRuanDataTransfer
         private static Timer aTimer;
         static void Main(string[] args)
         {
-            var connectionSettings = ConfigurationManager.ConnectionStrings["qa"];
-            if (connectionSettings != null)
+           
+            try
             {
-                GlobalState.ConnectionString = connectionSettings.ConnectionString;
+                var connectionSettings = ConfigurationManager.ConnectionStrings["qa"];
+                if (connectionSettings != null)
+                {
+                    GlobalState.ConnectionString = connectionSettings.ConnectionString;
 
+                }
             }
+            catch (Exception)
+            {
+                throw new Exception("Heidtman connection is NOT  configured for the environment, contact support.");
+            }
+
+            try
+            {
+               StratixRuanDataLayer.GlobalState.StratixConnectionString = ConfigurationManager.AppSettings["StratixDsn"];
+                if (string.IsNullOrEmpty(StratixRuanDataLayer.GlobalState.StratixConnectionString)) throw new Exception();
+            }
+            catch (Exception)
+            {
+                throw new Exception("Stratix connection is NOT  configured for the environment, contact support.");
+            }
+
+
 
             if ((!Environment.UserInteractive))
             {
