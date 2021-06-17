@@ -18,7 +18,7 @@ namespace StratixRuanDataLayer
         public short AcknowledgedFlag { get; set; }
         public DateTime AcknowledgedDateTime { get; set; }
 
-        private const string whereClause = "WHERE T.not_ref_pfx = 'SO' AND H.noh_cmpy_id = 'HSP' AND noh_intchg_pfx = 'XE' AND noh_ackd_dtts IS NULL AND noh_ackd = 0";
+        private const string whereClause = "WHERE T.not_ref_pfx = 'SO' AND H.noh_cmpy_id = 'HSP' AND noh_intchg_pfx = 'XE' AND noh_ackd_dtts IS NULL AND noh_ackd = 0 AND T.not_ref_no = 930";
 
         public static List<StratixOrderNotification> GetStratixOrderNotification()
         {
@@ -38,7 +38,7 @@ namespace StratixRuanDataLayer
                                 
  ;
 
-                OdbcConnection connection = new OdbcConnection("DSN=PostgreSQL30");//64 bit
+                OdbcConnection connection = new OdbcConnection(GlobalState.StratixConnectionString);//64 bit
 
                 connection.Open();
 

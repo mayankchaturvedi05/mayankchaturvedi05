@@ -59,6 +59,7 @@ namespace StratixToRuanDataTransfer
                                 logText.AppendLine($"{DateTime.Now.ToShortTimeString()}:  Preparing to send to Ruan - InterchangeNumber# {currentPendingOrderNtNotification.InterchangeNumber}");
 
                                 //send the XML to Ruan
+                                RuanAction.Synchronize = true;
                                 RuanAction.GenerateOrderReleaseForRuan(currentPendingOrderNtNotification.ReferenceNumber, ruanStatusValue);
 
                                 //After the Sent Process, add the order and interchange activity to the processed Notification list, so that any subsequent Order/Interchange activity notification NEED NOT BE SENT

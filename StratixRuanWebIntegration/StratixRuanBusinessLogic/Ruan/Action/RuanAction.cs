@@ -102,47 +102,67 @@ namespace StratixRuanBusinessLogic.Ruan.Action
 
 
             List<Serialization.Comment> orderReleaseComments = new List<Serialization.Comment>();
-           // if (!string.IsNullOrEmpty(helperData.LoadComments))
+
+            StringBuilder concatenatedComments = new StringBuilder();
+            StringBuilder concatenatedCarrierInstructionComments = new StringBuilder();
+            if (!string.IsNullOrEmpty(helperData.LoadComments))
             {
+                concatenatedComments.Append($"Load Comments: {helperData.LoadComments}");
                 orderReleaseComments.Add(new Serialization.Comment()
                 {
                     CommentType = "PICKUP_INSTR",
-                    CommentValue = "TBD"
+                    CommentValue = helperData.LoadComments
                 });
             }
 
-            //if (!string.IsNullOrEmpty(loadAuthCross.Comment))
+            
+
+            if (!string.IsNullOrEmpty(helperData.ShippingComments))
+            {
+                concatenatedComments.AppendLine($"Shipping Comments: {helperData.ShippingComments}");
+                concatenatedCarrierInstructionComments.AppendLine($"Shipping Comments: {helperData.ShippingComments}");
+            }
+
+            if (!string.IsNullOrEmpty(helperData.DeliveryComments))
+            {
+                concatenatedComments.AppendLine($"Delivery Comments: {helperData.DeliveryComments}");
+                concatenatedCarrierInstructionComments.AppendLine($"Delivery Comments: {helperData.DeliveryComments}");
+            }
+
+            if (!string.IsNullOrEmpty(concatenatedComments.ToString()))
             {
                 orderReleaseComments.Add(new Serialization.Comment()
                 {
                     CommentType = "COMMENTS",
-                    CommentValue = "TBD"
+                    CommentValue = concatenatedComments.ToString()
                 });
             }
 
-            //if (!string.IsNullOrEmpty(loadAuthCross.OpPickUp))
+            if (!string.IsNullOrEmpty(concatenatedCarrierInstructionComments.ToString()))
             {
                 orderReleaseComments.Add(new Serialization.Comment()
                 {
                     CommentType = "CARRIER_INSTR",
-                    CommentValue = "TBD"
+                    CommentValue = concatenatedCarrierInstructionComments.ToString()
                 });
             }
 
-            StringBuilder routingInstructionsComment = new StringBuilder();
-           // if (!string.IsNullOrEmpty(helperData.AMALTRComment))
-            {
-                routingInstructionsComment.AppendLine($"Appointment Comment: TBD");
-            }
+        
 
-            //if (!string.IsNullOrEmpty(routingInstructionsComment.ToString()))
-            {
-                orderReleaseComments.Add(new Serialization.Comment()
-                {
-                    CommentType = "ROUTING_INSTR",
-                    CommentValue = "TBD"
-                });
-            }
+           // StringBuilder routingInstructionsComment = new StringBuilder();
+           //// if (!string.IsNullOrEmpty(helperData.AMALTRComment))
+           // {
+           //     routingInstructionsComment.AppendLine($"Appointment Comment: TBD");
+           // }
+
+           // //if (!string.IsNullOrEmpty(routingInstructionsComment.ToString()))
+           // {
+           //     orderReleaseComments.Add(new Serialization.Comment()
+           //     {
+           //         CommentType = "ROUTING_INSTR",
+           //         CommentValue = "TBD"
+           //     });
+           // }
 
             List<Serialization.ReferenceNumber> orderReleaseReferenceNumbers = new List<Serialization.ReferenceNumber>();
             orderReleaseReferenceNumbers.Add(new Serialization.ReferenceNumber()
@@ -386,14 +406,14 @@ namespace StratixRuanBusinessLogic.Ruan.Action
                 throw new Exception("Invalid Type of Ruan API cannot send!");
             }
 
-            //if (Synchronize)
+            if (Synchronize)
             {
                 SubmitToRuanAsync(apiType, apiObject, key).Wait();
             }
-            //else
-            //{
-            //    Task.Run(() => SubmitToRuanAsync(apiType, apiObject, key));
-            //}
+            else
+            {
+                Task.Run(() => SubmitToRuanAsync(apiType, apiObject, key));
+            }
         }
 
         public static async Task SubmitToRuanAsync(RuanApiType apiType, object apiObject, string mscKey)
