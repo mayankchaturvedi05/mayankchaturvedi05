@@ -243,9 +243,12 @@ namespace StratixRuanDataLayer
                 //TODO: change hard code number to based on code.
                 string sql = $@"
 
-                       SELECT tsi_txt
-                            FROM TCTTSI_REC
-                                WHERE tsi_ref_pfx = 'SO' AND tsi_cmpy_id = 'HSP' AND tsi_rmk_typ = '20' AND tsi_ref_itm = 0
+                       SELECT T.tsi_txt
+                            FROM TCTTSI_REC T
+							INNER JOIN RPRCDS_REC R ON T.tsi_rmk_typ = R.cds_cd
+                                WHERE T.tsi_ref_pfx = 'SO' AND T.tsi_cmpy_id = 'HSP' AND T.tsi_ref_itm = 0
+								AND cds_data_el_nm = 'RMK-TYP' 
+								AND cds_lng = 'en' and cds_desc = 'Loading'
                                 AND tsi_ref_no =  {orderReleaseNumber} ";
                 
 
@@ -281,16 +284,19 @@ namespace StratixRuanDataLayer
             //TODO: change hard code number to based on code.
             string sql = $@"
 
-                       SELECT tsi_txt
-                            FROM TCTTSI_REC
-                                WHERE tsi_ref_pfx = 'SO' AND tsi_cmpy_id = 'HSP' AND tsi_rmk_typ = '22' AND tsi_ref_itm = 0
+                       SELECT T.tsi_txt
+                            FROM TCTTSI_REC T
+							INNER JOIN RPRCDS_REC R ON T.tsi_rmk_typ = R.cds_cd
+                                WHERE T.tsi_ref_pfx = 'SO' AND T.tsi_cmpy_id = 'HSP' AND T.tsi_ref_itm = 0
+								AND cds_data_el_nm = 'RMK-TYP' 
+								AND cds_lng = 'en' and cds_desc = 'Shp/Receiving'
                                 AND tsi_ref_no =  {orderReleaseNumber} ";
 
 
                 OdbcConnection connection = new OdbcConnection(GlobalState.StratixConnectionString);//64 bit
 
                 connection.Open();
-
+             
 
                 OdbcCommand command = new OdbcCommand(sql, connection);
 
@@ -318,10 +324,13 @@ namespace StratixRuanDataLayer
             //TODO: change hard code number to based on code.
             string sql = $@"
 
-                       SELECT tsi_txt
-                            FROM TCTTSI_REC
-                                WHERE tsi_ref_pfx = 'SO' AND tsi_cmpy_id = 'HSP' AND tsi_rmk_typ = '65' AND tsi_ref_itm = 0
-                                AND tsi_ref_no =  {orderReleaseNumber} ";
+                        SELECT T.tsi_txt
+                            FROM TCTTSI_REC T
+							INNER JOIN RPRCDS_REC R ON T.tsi_rmk_typ = R.cds_cd
+                                WHERE T.tsi_ref_pfx = 'SO' AND T.tsi_cmpy_id = 'HSP' AND T.tsi_ref_itm = 0
+								AND cds_data_el_nm = 'RMK-TYP' 
+								AND cds_lng = 'en' and cds_desc = 'Delivery'
+                                AND tsi_ref_no = {orderReleaseNumber} ";
 
 
             OdbcConnection connection = new OdbcConnection(GlobalState.StratixConnectionString);//64 bit
