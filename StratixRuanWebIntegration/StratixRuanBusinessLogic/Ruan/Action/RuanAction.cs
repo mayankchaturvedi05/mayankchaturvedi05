@@ -14,6 +14,8 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 using StratixRuanBusinessLogic;
 using StratixRuanBusinessLogic.Ruan.Serialization;
+using StratixRuanBusinessLogic.Stratix;
+using StratixOrderNotification = StratixRuanDataLayer.StratixOrderNotification;
 
 namespace StratixRuanBusinessLogic.Ruan.Action
 {
@@ -87,15 +89,15 @@ namespace StratixRuanBusinessLogic.Ruan.Action
            
         }
 
-        public static void GenerateOrderReleaseForRuan(long keyNumber, string orderReleaseStatusValue)
+        public static void GenerateOrderReleaseForRuan(long stratixInterchangeNumber, long orderNumber, string orderReleaseStatusValue)
         {
-            if (Debugger.IsAttached) Debug.WriteLine($"KeyNumber: {keyNumber}");
+            if (Debugger.IsAttached) Debug.WriteLine($"KeyNumber: {orderNumber}");
 
            
             int totalOrderCount = 0;
 
             StratixRuanBusinessLogic.Stratix.RuanOrderIntegrationHelperData helperData = StratixRuanBusinessLogic.Stratix.RuanOrderIntegrationHelperData
-                .GetDataToConstructRuanOrderIntegrationHelperData(keyNumber);
+                .GetDataToConstructRuanOrderIntegrationHelperData(orderNumber);
             string releaseWeight = $"{helperData.ReleaseWeight}";
 
             string packageType = helperData.PackagingCode;
@@ -381,25 +383,23 @@ namespace StratixRuanBusinessLogic.Ruan.Action
             };
 
          
-            SubmitToRuan(ruanReleaseOrder);
+            SubmitToRuan(stratixInterchangeNumber, ruanReleaseOrder);
         }
         #endregion
 
         #region "Submit methods"
-        public static void SubmitToRuan(object apiObject)
+        public static void SubmitToRuan(long stratixInterchangeNumber, object apiObject)
         {
             RuanApiType apiType;
             string key = string.Empty;
             if (apiObject is APIReleaseOrder apiReleaseOrder)
             {
                 apiType = RuanApiType.ReleaseOrders;
-                key = apiReleaseOrder.SenderTransmissionNo.Replace("HS-", null);
 
             }
             else if (apiObject is APIActualShipment apiActualShipment)
             {
                 apiType = RuanApiType.ActualShipment;
-                key = apiActualShipment.SenderTransmissionNo.Replace("HS-", null);
             }
             else
             {
@@ -408,15 +408,15 @@ namespace StratixRuanBusinessLogic.Ruan.Action
 
             if (Synchronize)
             {
-                SubmitToRuanAsync(apiType, apiObject, key).Wait();
+                SubmitToRuanAsync(apiType, apiObject, stratixInterchangeNumber).Wait();
             }
             else
             {
-                Task.Run(() => SubmitToRuanAsync(apiType, apiObject, key));
+                Task.Run(() => SubmitToRuanAsync(apiType, apiObject, stratixInterchangeNumber));
             }
         }
 
-        public static async Task SubmitToRuanAsync(RuanApiType apiType, object apiObject, string mscKey)
+        public static async Task SubmitToRuanAsync(RuanApiType apiType, object apiObject, long key)
         {
             string xml = Serialize(apiObject);
             string dbXml = SerializeForDb(apiObject);
@@ -434,25 +434,41 @@ namespace StratixRuanBusinessLogic.Ruan.Action
 
 
                         using (HttpResponseMessage response = await client.PostAsync(uri, httpContent))
-                        //using (HttpResponseMessage response =  client.PostAsync(uri, httpContent))
+                        //using (HttpResponseMessage response =  client.PostAsync(uri, httpContent)) // without the await during testing.
                         {
-                            Debug.WriteLine(response.ToString());
-                            LastResponse = response.ToString();
-                            response.EnsureSuccessStatusCode(); //throw exception if not successful 
+                            try
+                            {
+                                Debug.WriteLine(response.ToString());
+                                LastResponse = response.ToString();
+                                response.EnsureSuccessStatusCode(); //throw exception if not successful 
+
+                            }
+                            catch (Exception e)
+                            {
+                                //set it back to be processed.
+                                StratixOrderNotification.SetOrderNotificationToOpen(key);
+                            }
+
 
                             ////save to database after it gets sent to Ruan(If its fails, then it is saved in the job engine to reprocess it)
                             RuanXml ruanXml = new RuanXml(apiObject);
                             ruanXml.Save();
+
                         }
                     }
                 }
             }
             catch (Exception e)
             {
-
+                //let it continue to run as we don't want this queuing service to be stopped.
             }
         }
 
+
+        /// <summary>
+        /// Both PostToRuan and PostFilesToWebServiceEndPoint were created to triage during the asynchronous testing issue and it should not be used as part of the Ruan send.
+        /// </summary>
+        /// <param name="fileContentString"></param>
         public static void PostToRuan(string fileContentString)
         {
 
@@ -466,6 +482,8 @@ namespace StratixRuanBusinessLogic.Ruan.Action
 
             PostFilesToWebServiceEndPoint(request, fileContentString);
         }
+
+
         public static void PostFilesToWebServiceEndPoint(HttpWebRequest request, string fileContentString)
         {
             try
@@ -495,6 +513,8 @@ namespace StratixRuanBusinessLogic.Ruan.Action
                 throw;
             }
         }
+
+        //////////////////////////////////////////////////////////////////// 
         #endregion
     }
 }

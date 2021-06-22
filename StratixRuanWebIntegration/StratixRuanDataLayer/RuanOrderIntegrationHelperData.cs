@@ -135,8 +135,7 @@ namespace StratixRuanDataLayer
                       INNER JOIN ORTXRD_REC OrderCrossDetail ON OrderCrossDetail.xrd_ord_no = OD.ord_ord_no AND OrderCrossDetail.xrd_ord_itm =  OD.ord_ord_itm
                       INNER JOIN CPRCLG_Rec PartMaster ON PartMaster.clg_Part = OrderCrossDetail.xrd_part 					  
 					                   AND PartMaster.clg_cus_ven_typ = 'C' 
-									   AND PartMaster.clg_cus_ven_id = CUST.cus_cus_id
-									   AND PartMaster.clg_part_sts = 'C'
+									   AND PartMaster.clg_cus_ven_id = CUST.cus_cus_id									   
 									   AND OrderCrossDetail.xrd_part_revno = PartMaster.clg_part_revno
 					  INNER JOIN TCTIPD_rec PartDimension ON PartDimension.ipd_ref_pfx = 'SO' 
 					                  AND PartDimension.ipd_part_cus_id = CUST.cus_cus_id AND PartDimension.ipd_ref_no = OD.ord_ord_no

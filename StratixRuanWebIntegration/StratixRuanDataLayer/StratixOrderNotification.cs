@@ -18,7 +18,7 @@ namespace StratixRuanDataLayer
         public short AcknowledgedFlag { get; set; }
         public DateTime AcknowledgedDateTime { get; set; }
 
-        private const string whereClause = "WHERE T.not_ref_pfx = 'SO' AND H.noh_cmpy_id = 'HSP' AND noh_intchg_pfx = 'XE' AND noh_ackd_dtts IS NULL AND noh_ackd = 0 AND T.not_ref_no = 930";
+        private const string whereClause = "WHERE T.not_ref_pfx = 'SO' AND H.noh_cmpy_id = 'HSP' AND noh_intchg_pfx = 'XE' AND noh_ackd_dtts IS NULL AND noh_ackd = 0";
 
         public static List<StratixOrderNotification> GetStratixOrderNotification()
         {
@@ -130,7 +130,57 @@ namespace StratixRuanDataLayer
             return resultSet;
         }
 
-       
+        public static void SetOrderNotificationToOpen(long interchangeNumber)
+        {
+
+            using (OdbcConnection connection =
+                new OdbcConnection(StratixRuanDataLayer.GlobalState.StratixConnectionString))
+            {
+                OdbcCommand command = new OdbcCommand();
+                OdbcTransaction transaction = null;
+
+                // Set the Connection to the new OdbcConnection.
+                command.Connection = connection;
+
+                // Open the connection and execute the transaction.
+                try
+                {
+                    connection.Open();
+
+                    // Start a local transaction
+                    transaction = connection.BeginTransaction();
+
+                    // Assign transaction object for a pending local transaction.
+                    command.Connection = connection;
+                    command.Transaction = transaction;
+
+                    // Execute the commands.
+                    command.CommandText =
+                        $"UPDATE XCTNOH_rec SET noh_ackd = 0, noh_ackd_dtts = null where noh_intchg_no = {interchangeNumber} ";
+                    command.ExecuteNonQuery();
+
+
+                    // Commit the transaction.
+                    transaction.Commit();
+
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    try
+                    {
+                        // Attempt to roll back the transaction.
+                        transaction?.Rollback();
+                    }
+                    catch
+                    {
+                        //Log to be added.
+                    }
+                }
+
+            }
+        }
+
         public static void SetOrderNotificationToInProcess(List<long> interchangeNumbers)
         {
 
