@@ -53,6 +53,10 @@ namespace StratixRuanBusinessLogic.Stratix
         public double? PartLength { get; set; }
         public string PackagingCode { get; set; }
 
+        public string LoadComments { get; set; }
+        public string ShippingComments { get; set; }
+        public string DeliveryComments { get; set; }
+
         protected RuanOrderIntegrationHelperData(StratixRuanDataLayer.TSRuanOrderIntegrationHelperData source)
         {
             SalesOrderReleaseNumber = source.SalesOrderReleaseNumber;
@@ -96,7 +100,9 @@ namespace StratixRuanBusinessLogic.Stratix
             PartLength = source.PartLength;
             PartWidth = source.PartWidth;
             PackagingCode = source.PackagingCode;
-
+            LoadComments = source.LoadComments;
+            ShippingComments = source.ShippingComments;
+            DeliveryComments = source.DeliveryComments;
         }
 
         public static RuanOrderIntegrationHelperData GetDataToConstructRuanOrderIntegrationHelperData(long orderReleaseNumber)

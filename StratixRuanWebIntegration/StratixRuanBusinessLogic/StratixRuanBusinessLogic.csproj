@@ -143,6 +143,7 @@
     <Compile Include="Ruan\Serialization\TaShipUnit.cs" />
     <Compile Include="Ruan\Serialization\TaShipUnitContent.cs" />
     <Compile Include="Stratix\RuanOrderIntegrationHelperData.cs" />
+    <Compile Include="Stratix\StratixOrderNotification.cs" />
     <Compile Include="Table.cs" />
     <Compile Include="TableList.cs" />
     <Compile Include="TestAtrributes.cs" />

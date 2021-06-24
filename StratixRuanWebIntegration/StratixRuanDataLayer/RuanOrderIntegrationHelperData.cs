@@ -55,13 +55,17 @@ namespace StratixRuanDataLayer
         public string PartID { get; set; }
         public string PackagingCode { get; set; }
 
+        public string LoadComments { get; set; }
+        public string ShippingComments { get; set; }
+        public string DeliveryComments { get; set; }
+
         public static TSRuanOrderIntegrationHelperData GetSalesOrderDataToConstructRuanOrderIntegrationXML(long orderReleaseNumber)
         {
             TSRuanOrderIntegrationHelperData result = new TSRuanOrderIntegrationHelperData();
 
            
             {
-                string sql = @"
+                string sql = $@"
 
                       SELECT
                       PLANT_SHIP_FROM.whs_whs as ShipFromID,
@@ -131,8 +135,7 @@ namespace StratixRuanDataLayer
                       INNER JOIN ORTXRD_REC OrderCrossDetail ON OrderCrossDetail.xrd_ord_no = OD.ord_ord_no AND OrderCrossDetail.xrd_ord_itm =  OD.ord_ord_itm
                       INNER JOIN CPRCLG_Rec PartMaster ON PartMaster.clg_Part = OrderCrossDetail.xrd_part 					  
 					                   AND PartMaster.clg_cus_ven_typ = 'C' 
-									   AND PartMaster.clg_cus_ven_id = CUST.cus_cus_id
-									   AND PartMaster.clg_part_sts = 'C'
+									   AND PartMaster.clg_cus_ven_id = CUST.cus_cus_id									   
 									   AND OrderCrossDetail.xrd_part_revno = PartMaster.clg_part_revno
 					  INNER JOIN TCTIPD_rec PartDimension ON PartDimension.ipd_ref_pfx = 'SO' 
 					                  AND PartDimension.ipd_part_cus_id = CUST.cus_cus_id AND PartDimension.ipd_ref_no = OD.ord_ord_no
@@ -141,9 +144,9 @@ namespace StratixRuanDataLayer
 					                AND ItemPackaging.ipk_ref_no = OD.ord_ord_no
 									AND ItemPackaging.ipk_ref_itm = OD.ord_ord_itm
                       WHERE 1=1
-                      AND OH.orh_ord_no= 661 ";
+                      AND OH.orh_ord_no= {orderReleaseNumber} ";
 
-                OdbcConnection connection = new OdbcConnection("DSN=PostgreSQL30");//64 bit
+                OdbcConnection connection = new OdbcConnection(GlobalState.StratixConnectionString);//64 bit
 
                 connection.Open();
                 
@@ -152,17 +155,15 @@ namespace StratixRuanDataLayer
                 // Create an ODBC SQL command that will be executed below. Any SQL 
                 // command that is valid with PostgreSQL is valid here (I think, 
                 // but am not 100 percent sure. Every SQL command I've tried works).
-                string query = "select * from scrcva_rec where cva_cus_ven_id = '5142'";
                 OdbcCommand command = new OdbcCommand(sql, connection);
-
-
+                
                 // Execute the SQL command and return a reader for navigating the results.
                 OdbcDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection);
 
 
                 // This loop will output the entire contents of the results, iterating
                 // through each row and through each field of the row.
-                while (reader.Read() == true)
+                while (reader.Read())
                 {
                     result.ShipFromID = reader["ShipFromName"].ToString().Trim();
                     result.ShipFromName = reader["ShipFromID"].ToString().Trim();
@@ -229,7 +230,133 @@ namespace StratixRuanDataLayer
                 
             }
 
+            result.LoadComments = GetOrderHeaderLoadComment(orderReleaseNumber);
+            result.ShippingComments = GetOrderHeaderShippingComment(orderReleaseNumber);
+            result.DeliveryComments = GetOrderDetailDeliveryComment(orderReleaseNumber);
+
             return result;
+        }
+
+        public static string GetOrderHeaderLoadComment(long orderReleaseNumber)
+        {
+            string loadComment = string.Empty;
+                //TODO: change hard code number to based on code.
+                string sql = $@"
+
+                       SELECT T.tsi_txt
+                            FROM TCTTSI_REC T
+							INNER JOIN RPRCDS_REC R ON T.tsi_rmk_typ = R.cds_cd
+                                WHERE T.tsi_ref_pfx = 'SO' AND T.tsi_cmpy_id = 'HSP' AND T.tsi_ref_itm = 0
+								AND cds_data_el_nm = 'RMK-TYP' 
+								AND cds_lng = 'en' and cds_desc = 'Loading'
+                                AND tsi_ref_no =  {orderReleaseNumber} ";
+                
+
+                OdbcConnection connection = new OdbcConnection(GlobalState.StratixConnectionString);//64 bit
+
+                connection.Open();
+
+
+                OdbcCommand command = new OdbcCommand(sql, connection);
+
+                // Execute the SQL command and return a reader for navigating the results.
+                OdbcDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection);
+
+              
+                while (reader.Read())
+                {
+                    loadComment = reader["tsi_txt"].ToString().Trim();
+                  
+                }
+
+                // Close the reader and connection (commands are not closed).
+                reader.Close();
+                connection.Close();
+
+
+
+            return loadComment;
+        }
+
+        public static string GetOrderHeaderShippingComment(long orderReleaseNumber)
+        {
+            string shippingComment = string.Empty;
+            //TODO: change hard code number to based on code.
+            string sql = $@"
+
+                       SELECT T.tsi_txt
+                            FROM TCTTSI_REC T
+							INNER JOIN RPRCDS_REC R ON T.tsi_rmk_typ = R.cds_cd
+                                WHERE T.tsi_ref_pfx = 'SO' AND T.tsi_cmpy_id = 'HSP' AND T.tsi_ref_itm = 0
+								AND cds_data_el_nm = 'RMK-TYP' 
+								AND cds_lng = 'en' and cds_desc = 'Shp/Receiving'
+                                AND tsi_ref_no =  {orderReleaseNumber} ";
+
+
+                OdbcConnection connection = new OdbcConnection(GlobalState.StratixConnectionString);//64 bit
+
+                connection.Open();
+             
+
+                OdbcCommand command = new OdbcCommand(sql, connection);
+
+                // Execute the SQL command and return a reader for navigating the results.
+                OdbcDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection);
+
+
+                while (reader.Read())
+                {
+                    shippingComment = reader["tsi_txt"].ToString().Trim();
+
+                }
+
+                // Close the reader and connection (commands are not closed).
+                reader.Close();
+                connection.Close();
+
+
+            return shippingComment;
+        }
+
+        public static string GetOrderDetailDeliveryComment(long orderReleaseNumber)
+        {
+            string deliveryComments = string.Empty;
+            //TODO: change hard code number to based on code.
+            string sql = $@"
+
+                        SELECT T.tsi_txt
+                            FROM TCTTSI_REC T
+							INNER JOIN RPRCDS_REC R ON T.tsi_rmk_typ = R.cds_cd
+                                WHERE T.tsi_ref_pfx = 'SO' AND T.tsi_cmpy_id = 'HSP' AND T.tsi_ref_itm = 0
+								AND cds_data_el_nm = 'RMK-TYP' 
+								AND cds_lng = 'en' and cds_desc = 'Delivery'
+                                AND tsi_ref_no = {orderReleaseNumber} ";
+
+
+            OdbcConnection connection = new OdbcConnection(GlobalState.StratixConnectionString);//64 bit
+
+            connection.Open();
+
+
+            OdbcCommand command = new OdbcCommand(sql, connection);
+
+            // Execute the SQL command and return a reader for navigating the results.
+            OdbcDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection);
+
+
+            while (reader.Read())
+            {
+                deliveryComments = reader["tsi_txt"].ToString().Trim();
+
+            }
+
+            // Close the reader and connection (commands are not closed).
+            reader.Close();
+            connection.Close();
+
+
+
+            return deliveryComments;
         }
     }
 }

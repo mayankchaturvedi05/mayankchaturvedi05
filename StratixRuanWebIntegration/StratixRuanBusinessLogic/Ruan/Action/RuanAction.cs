@@ -14,6 +14,8 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 using StratixRuanBusinessLogic;
 using StratixRuanBusinessLogic.Ruan.Serialization;
+using StratixRuanBusinessLogic.Stratix;
+using StratixOrderNotification = StratixRuanDataLayer.StratixOrderNotification;
 
 namespace StratixRuanBusinessLogic.Ruan.Action
 {
@@ -87,97 +89,82 @@ namespace StratixRuanBusinessLogic.Ruan.Action
            
         }
 
-        public static void GenerateOrderReleaseForRuan(long keyNumber)
+        public static void GenerateOrderReleaseForRuan(long stratixInterchangeNumber, long orderNumber, string orderReleaseStatusValue)
         {
-            if (Debugger.IsAttached) Debug.WriteLine($"KeyNumber: {keyNumber}");
-
-            string orderReleaseStatusValue = "A";
-           // if (loadAuthCross.StatusNumber != null)
-            //{
-            //   // if (loadAuthCross.StatusNumber != null && loadAuthCross.StatusNumber.Value == cancelledStatus.StatusNumber)
-            //    {
-            //        orderReleaseStatusValue = "C";
-            //    }
-            //  //  else if (loadAuthCross.StatusNumber != null && loadAuthCross.StatusNumber.Value == retenderStatus.StatusNumber)
-            //    {
-            //        orderReleaseStatusValue = "H";
-            //    }
-            //    //else
-            //    {
-            //        orderReleaseStatusValue = "A";
-            //    }
-
-            //    int
-            //        totalOrderCount =
-            //            0; //!string.IsNullOrEmpty(loadAuthCross.ConsolidateIdCode) ? LoadAuthorizationCross.FetchTrucklistCountByConsolidatedIDCode(loadAuthCross.ConsolidateIdCode) : 1; Revisit with Brittany
-
-                
-            //}
-
-
-            //StratixRuanBusinessLogic.Stratix.RuanOrderIntegrationHelperData helperData = StratixRuanBusinessLogic.Stratix.RuanOrderIntegrationHelperData
-            //    .GetDataToConstructRuanOrderIntegrationHelperData(keyNumber);
-            //string releaseWeight = $"{helperData.ReleaseWeight}";
-
-
-
-
-
-            int totalOrderCount = 0;
+            if (Debugger.IsAttached) Debug.WriteLine($"KeyNumber: {orderNumber}");
 
            
+            int totalOrderCount = 0;
 
             StratixRuanBusinessLogic.Stratix.RuanOrderIntegrationHelperData helperData = StratixRuanBusinessLogic.Stratix.RuanOrderIntegrationHelperData
-                .GetDataToConstructRuanOrderIntegrationHelperData(keyNumber);
+                .GetDataToConstructRuanOrderIntegrationHelperData(orderNumber);
             string releaseWeight = $"{helperData.ReleaseWeight}";
-
-
 
             string packageType = helperData.PackagingCode;
 
 
             List<Serialization.Comment> orderReleaseComments = new List<Serialization.Comment>();
-           // if (!string.IsNullOrEmpty(helperData.LoadComments))
+
+            StringBuilder concatenatedComments = new StringBuilder();
+            StringBuilder concatenatedCarrierInstructionComments = new StringBuilder();
+            if (!string.IsNullOrEmpty(helperData.LoadComments))
             {
+                concatenatedComments.Append($"Load Comments: {helperData.LoadComments}");
                 orderReleaseComments.Add(new Serialization.Comment()
                 {
                     CommentType = "PICKUP_INSTR",
-                    CommentValue = "TBD"
+                    CommentValue = helperData.LoadComments
                 });
             }
 
-            //if (!string.IsNullOrEmpty(loadAuthCross.Comment))
+            
+
+            if (!string.IsNullOrEmpty(helperData.ShippingComments))
+            {
+                concatenatedComments.AppendLine($"Shipping Comments: {helperData.ShippingComments}");
+                concatenatedCarrierInstructionComments.AppendLine($"Shipping Comments: {helperData.ShippingComments}");
+            }
+
+            if (!string.IsNullOrEmpty(helperData.DeliveryComments))
+            {
+                concatenatedComments.AppendLine($"Delivery Comments: {helperData.DeliveryComments}");
+                concatenatedCarrierInstructionComments.AppendLine($"Delivery Comments: {helperData.DeliveryComments}");
+            }
+
+            if (!string.IsNullOrEmpty(concatenatedComments.ToString()))
             {
                 orderReleaseComments.Add(new Serialization.Comment()
                 {
                     CommentType = "COMMENTS",
-                    CommentValue = "TBD"
+                    CommentValue = concatenatedComments.ToString()
                 });
             }
 
-            //if (!string.IsNullOrEmpty(loadAuthCross.OpPickUp))
+            if (!string.IsNullOrEmpty(concatenatedCarrierInstructionComments.ToString()))
             {
                 orderReleaseComments.Add(new Serialization.Comment()
                 {
                     CommentType = "CARRIER_INSTR",
-                    CommentValue = "TBD"
+                    CommentValue = concatenatedCarrierInstructionComments.ToString()
                 });
             }
 
-            StringBuilder routingInstructionsComment = new StringBuilder();
-           // if (!string.IsNullOrEmpty(helperData.AMALTRComment))
-            {
-                routingInstructionsComment.AppendLine($"Appointment Comment: TBD");
-            }
+        
 
-            //if (!string.IsNullOrEmpty(routingInstructionsComment.ToString()))
-            {
-                orderReleaseComments.Add(new Serialization.Comment()
-                {
-                    CommentType = "ROUTING_INSTR",
-                    CommentValue = "TBD"
-                });
-            }
+           // StringBuilder routingInstructionsComment = new StringBuilder();
+           //// if (!string.IsNullOrEmpty(helperData.AMALTRComment))
+           // {
+           //     routingInstructionsComment.AppendLine($"Appointment Comment: TBD");
+           // }
+
+           // //if (!string.IsNullOrEmpty(routingInstructionsComment.ToString()))
+           // {
+           //     orderReleaseComments.Add(new Serialization.Comment()
+           //     {
+           //         CommentType = "ROUTING_INSTR",
+           //         CommentValue = "TBD"
+           //     });
+           // }
 
             List<Serialization.ReferenceNumber> orderReleaseReferenceNumbers = new List<Serialization.ReferenceNumber>();
             orderReleaseReferenceNumbers.Add(new Serialization.ReferenceNumber()
@@ -241,7 +228,7 @@ namespace StratixRuanBusinessLogic.Ruan.Action
                                 StatusValue = orderReleaseStatusValue,
                                 StatusType = "CANCELLED",
                                 OrderShippingConfiguration =  "SHIP_UNIT_LINES",
-                                //OrderType = loadAuthCross.SalesOrderReleaseNumber.HasValue ? "SALES_ORDER" : "TRANSFERS",
+                                //OrderType = loadAuthCross.SalesOrderReleaseNumber.HasValue ? "SALES_ORDER" : "TRANSFERS",//TODO: Once transfer process is finalized change the logic here
                                 OrderType = "SALES_ORDER",
                                 CustomerServiceRepInfo = new CustomerServiceRepInfo()
                                 {
@@ -395,80 +382,93 @@ namespace StratixRuanBusinessLogic.Ruan.Action
                 }
             };
 
-            var test = ruanReleaseOrder;
-
-            SubmitToRuan(ruanReleaseOrder);
+         
+            SubmitToRuan(stratixInterchangeNumber, ruanReleaseOrder);
         }
         #endregion
 
         #region "Submit methods"
-        public static void SubmitToRuan(object apiObject)
+        public static void SubmitToRuan(long stratixInterchangeNumber, object apiObject)
         {
             RuanApiType apiType;
             string key = string.Empty;
             if (apiObject is APIReleaseOrder apiReleaseOrder)
             {
                 apiType = RuanApiType.ReleaseOrders;
-                key = apiReleaseOrder.SenderTransmissionNo.Replace("HS-", null);
 
             }
             else if (apiObject is APIActualShipment apiActualShipment)
             {
                 apiType = RuanApiType.ActualShipment;
-                key = apiActualShipment.SenderTransmissionNo.Replace("HS-", null);
             }
             else
             {
                 throw new Exception("Invalid Type of Ruan API cannot send!");
             }
 
-            //if (Synchronize)
+            if (Synchronize)
             {
-                SubmitToRuanAsync(apiType, apiObject, key).Wait();
+                SubmitToRuanAsync(apiType, apiObject, stratixInterchangeNumber).Wait();
             }
-            //else
-            //{
-            //    Task.Run(() => SubmitToRuanAsync(apiType, apiObject, key));
-            //}
+            else
+            {
+                Task.Run(() => SubmitToRuanAsync(apiType, apiObject, stratixInterchangeNumber));
+            }
         }
 
-        public static async Task SubmitToRuanAsync(RuanApiType apiType, object apiObject, string mscKey)
+        public static async Task SubmitToRuanAsync(RuanApiType apiType, object apiObject, long key)
         {
             string xml = Serialize(apiObject);
             string dbXml = SerializeForDb(apiObject);
             string uri = $"{apiUriBase}{GetActionUri(apiType)}";
 
-            PostToRuan(xml);
+            //PostToRuan(xml);
 
-            //try
-            //{
-            //    using (HttpClient client = new HttpClient())
-            //    {
-            //        client.Timeout = TimeSpan.FromSeconds(120d); //default is 100
-            //        using (StringContent httpContent = new StringContent(xml, Encoding.UTF8, "application/xml"))
-            //        {
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    client.Timeout = TimeSpan.FromSeconds(120d); //default is 100
+                    using (StringContent httpContent = new StringContent(xml, Encoding.UTF8, "application/xml"))
+                    {
 
-                       
-            //            //using (HttpResponseMessage response = await client.PostAsync(uri, httpContent))
-            //            // //using (HttpResponseMessage response =  client.PostAsync(uri, httpContent))
-            //            // {
-            //            //     Debug.WriteLine(response.ToString());
-            //            //     LastResponse = response.ToString();
-            //            //     response.EnsureSuccessStatusCode(); //throw exception if not successful 
 
-            //            //     ////save to database after it gets sent to Ruan(If its fails, then it is saved in the job engine to reprocess it)
-            //            //     //RuanXml ruanXml = new RuanXml(apiObject);
-            //            //     //ruanXml.Save();
-            //            // }
-            //        }
-            //    }
-            //}
-            //catch (Exception e)
-            //{
-    
-            //}
+                        using (HttpResponseMessage response = await client.PostAsync(uri, httpContent))
+                        //using (HttpResponseMessage response =  client.PostAsync(uri, httpContent)) // without the await during testing.
+                        {
+                            try
+                            {
+                                Debug.WriteLine(response.ToString());
+                                LastResponse = response.ToString();
+                                response.EnsureSuccessStatusCode(); //throw exception if not successful 
+
+                            }
+                            catch (Exception e)
+                            {
+                                //set it back to be processed.
+                                StratixOrderNotification.SetOrderNotificationToOpen(key);
+                            }
+
+
+                            ////save to database after it gets sent to Ruan(If its fails, then it is saved in the job engine to reprocess it)
+                            RuanXml ruanXml = new RuanXml(apiObject);
+                            ruanXml.Save();
+
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                //let it continue to run as we don't want this queuing service to be stopped.
+            }
         }
 
+
+        /// <summary>
+        /// Both PostToRuan and PostFilesToWebServiceEndPoint were created to triage during the asynchronous testing issue and it should not be used as part of the Ruan send.
+        /// </summary>
+        /// <param name="fileContentString"></param>
         public static void PostToRuan(string fileContentString)
         {
 
@@ -482,6 +482,8 @@ namespace StratixRuanBusinessLogic.Ruan.Action
 
             PostFilesToWebServiceEndPoint(request, fileContentString);
         }
+
+
         public static void PostFilesToWebServiceEndPoint(HttpWebRequest request, string fileContentString)
         {
             try
@@ -511,6 +513,8 @@ namespace StratixRuanBusinessLogic.Ruan.Action
                 throw;
             }
         }
+
+        //////////////////////////////////////////////////////////////////// 
         #endregion
     }
 }
