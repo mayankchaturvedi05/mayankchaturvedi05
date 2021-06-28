@@ -10,6 +10,7 @@ using System.ServiceModel;
 using System.ServiceModel.Web;
 using System.Text;
 using StratixRuanBusinessLogic;
+using StratixRuanBusinessLogic.Ruan.Action;
 using StratixRuanBusinessLogic.Ruan.Serialization;
 
 namespace StratixRuanWebIntegration
@@ -150,6 +151,10 @@ namespace StratixRuanWebIntegration
                 }
 
                 Validate(xmlData);
+
+               // APITransportationShipment transportationShipment = Utilities.DeserializeFromXmlString<APITransportationShipment>(xmlParameter.Value);
+                RuanAction.ProcessTa((APITransportationShipment)xmlData);
+
             }
             catch (FaultException<RuanStratixException>)
             {
