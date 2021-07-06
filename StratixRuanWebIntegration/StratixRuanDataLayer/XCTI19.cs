@@ -42,6 +42,6 @@ namespace StratixRuanDataLayer
         public string i19_gt_dck { get; set; }
         public DateTime i19_sch_dtts { get; set; }
         public long i19_sch_dtms { get; set; }
-        public string i19_crr_ref_no { get; set; }
+        public string i19_crr_ref_no { get; set; } 
     }
 }

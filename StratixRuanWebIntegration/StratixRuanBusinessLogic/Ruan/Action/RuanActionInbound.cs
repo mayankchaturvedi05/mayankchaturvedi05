@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using StratixRuanBusinessLogic.CoreData;
 using StratixRuanBusinessLogic.Ruan.Serialization;
+using StratixRuanDataLayer;
 
 namespace StratixRuanBusinessLogic.Ruan.Action
 {
@@ -74,11 +76,11 @@ namespace StratixRuanBusinessLogic.Ruan.Action
 
             else if (ta.Stops.Any(s => s.Orders.Any(o => o.OrderType == "SALES_ORDER" || o.OrderType == "TRANSFERS")))
             {
-                CreateManifestCrossRecords(ta);
+                TAtoStratix(ta);
             }
         }
 
-        private static void CreateManifestCrossRecords(APITransportationShipment ta)
+        private static void TAtoStratix(APITransportationShipment ta)
         {
             TaFileChanges taFileChanges = new TaFileChanges();
 
@@ -98,10 +100,55 @@ namespace StratixRuanBusinessLogic.Ruan.Action
 
             //List<TaShipUnit> shipUnits = ta.ShipmentUnits.ToList();
 
-            //if (string.IsNullOrWhiteSpace(ta.CarrierScac))
-            //{
-            //    throw new RuanJobException($"Shipment Number {ta.ShipmentNumber}, has no Carrier SCAC.");
-            //}
+            if (string.IsNullOrWhiteSpace(ta.CarrierScac))
+            {
+                throw new RuanJobException($"Shipment Number {ta.ShipmentNumber}, has no Carrier SCAC.");
+            }
+
+            TransportationArrangedStop[] pickupStops = ta.Stops.Where(x => x.StopType == "P").ToArray();
+            DateTime? dateShipped = null;
+            foreach (TransportationArrangedStop stop in pickupStops)
+            {
+                if (DateTime.TryParse(stop.StopPlannedDepartureDateTime, out DateTime dateShippedTemp))
+                {
+                    dateShipped = dateShippedTemp;
+                }
+                else
+                {
+                    throw new RuanJobException($"Shipment Number {ta.ShipmentNumber}, Invalid date {stop.StopPlannedDepartureDateTime}.");
+                }
+
+                foreach (Order order in stop.Orders)
+                {
+                    var objXcti18 = new XCTI18();
+                    objXcti18.i18_intchg_no = StratixHelperData.GetMaxInterchangeNumber() + 1;
+                    objXcti18.i18_trpln_whs = StratixHelperData.GetShipFromWarehouseForOrder(order.OrderId);
+                    
+                    objXcti18.i18_trrte = "RUAN";
+                    objXcti18.i18_dlvy_mthd = "OC";
+                    objXcti18.i18_cmpy_id = "HSP";
+                    objXcti18.i18_intchg_pfx = "XI";
+                    objXcti18.i18_rte_clr = "";
+
+                    string carrierInfo = "{ta.CarrierScac}*{ta.CarrierName}";
+                    carrierInfo = carrierInfo.Substring(0, 35);
+                    objXcti18.i18_crr_nm = carrierInfo;
+                    objXcti18.i18_frt_exrt = 1.00000000;
+                    objXcti18.i18_frt_ex_rt_typ = "V";
+                    objXcti18.i18_sch_rmk = "remark";
+                    objXcti18.i18_trctr = 1;
+                    objXcti18.i18_trlr_typ = "FB";
+
+                    objXcti18.i18_crr_ref_no = ta.ShipmentNumber;
+                    objXcti18.i18_frt_cry = "USD";
+                    objXcti18.i18_frt_ven_id = "9999";
+                    objXcti18.i18_sch_dtts = dateShipped.Value;
+                    XCTI18.AddTransport(objXcti18);
+                }
+            }
+
+
+           
 
             //Carrier carrier = Carrier.FetchSingleBySCACCode(ta.CarrierScac);
 
@@ -390,7 +437,7 @@ namespace StratixRuanBusinessLogic.Ruan.Action
             //    mc.Save(false);
 
 
-                
+
 
             //    if (lac.StatusNumber != cancelledStatus.StatusNumber && lac.StatusNumber != completeStatus.StatusNumber)
             //    {

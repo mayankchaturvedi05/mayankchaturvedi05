@@ -43,6 +43,7 @@
     <Compile Include="GlobalState.cs" />
     <Compile Include="RuanOrderIntegrationHelperData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StratixHelperData.cs" />
     <Compile Include="StratixOrderNotification.cs" />
     <Compile Include="XCTI18.cs" />
     <Compile Include="XCTI19.cs" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Odbc;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -43,6 +44,152 @@ namespace StratixRuanDataLayer
         public string i18_transp_pfx { get; set; }
         public long i18_transp_no { get; set; }
         public string i18_crr_ref_no { get; set; }
+
+
+
+        public static void AddTransport(XCTI18 transportvalues)
+        {
+            OdbcConnection connection = new OdbcConnection("DSN=PostgreSQL30");
+            connection.Open();
+            string insertColumnsQuery = "INSERT INTO xcti18_rec" +
+                                        "(" +
+                                        "i18_intchg_no," +
+                                        "i18_crtd_dtts," +
+                                        " i18_trpln_whs," +
+                                        " i18_trrte," +
+                                        "i18_dlvy_mthd," +
+                                        "i18_cmpy_id," +
+                                        "i18_intchg_pfx," +
+                                        "i18_rte_clr," +
+                                        "i18_crr_nm," +
+                                        "i18_frt_exrt," +
+                                        "i18_frt_ex_rt_typ," +
+                                        "i18_sch_rmk," +
+                                        "i18_lic_pl," +
+                                        "i18_drvr_1," +
+                                        "i18_drvr_2," +
+                                        "i18_trctr," +
+                                        "i18_trlr_typ," +
+                                        "i18_max_stp," +
+                                        "i18_max_wgt," +
+                                        "i18_max_wdth," +
+                                        "i18_max_lgth," +
+                                        "i18_appt_no," +
+                                        "i18_gt_dck," +
+                                        "i18_transp_no," +
+                                        "i18_crr_ref_no," +
+                                        "i18_frt_cry," +
+                                        "i18_frt_ven_id," +
+                                        "i18_sch_dtts" +
+                                        ")";
+            string valuesQuery = " VALUES" +
+                                 "(" +
+                                 "'{transportvalues.i18_intchg_no}', " +
+                                 "'2021-05-05 11:58:03', " +
+                                 "'{transportvalues.i18_trpln_whs}', " +
+                                 "'{transportvalues.i18_trrte}', " +
+                                 "'OC', " +
+                                 "'HSP', " +
+                                 "'XI'," +
+                                 " ''," +
+                                 " 'RUAN'," +
+                                 " 1.00000000," +
+                                 " 'V'," +
+                                 " 'remark'," +
+                                 " ''," +
+                                 " '', " +
+                                 "''," +
+                                 " 1," +
+                                 " 'CC'," +
+                                 " 0, " +
+                                 "0," +
+                                 " 0," +
+                                 " 0, " +
+                                 "''," +
+                                 " '', " +
+                                 "74," +
+                                 " 'R34535'," +
+                                 " 'USD', " +
+                                 "'1000', " +
+                                 "'2021-05-04 20:06:31'" +
+                                 ");";
+
+
+            string Query = "INSERT INTO xcti18_rec" +
+                           "(" +
+                           "i18_intchg_no," +
+                           "i18_crtd_dtts," +
+                           " i18_trpln_whs," +
+                           " i18_trrte," +
+                           "i18_dlvy_mthd," +
+                           "i18_cmpy_id," +
+                           "i18_intchg_pfx," +
+                           "i18_rte_clr," +
+                           "i18_crr_nm," +
+                           "i18_frt_exrt," +
+                           "i18_frt_ex_rt_typ," +
+                           "i18_sch_rmk," +
+                           "i18_lic_pl," +
+                           "i18_drvr_1," +
+                           "i18_drvr_2," +
+                           "i18_trctr," +
+                           "i18_trlr_typ," +
+                           "i18_max_stp," +
+                           "i18_max_wgt," +
+                           "i18_max_wdth," +
+                           "i18_max_lgth," +
+                           "i18_appt_no," +
+                           "i18_gt_dck," +
+                           "i18_transp_no," +
+                           "i18_crr_ref_no," +
+                           "i18_frt_cry," +
+                           "i18_frt_ven_id," +
+                           "i18_sch_dtts" +
+                           ")" +
+                           " VALUES" +
+                           "(" +
+                           "'1122', " +
+                           "'2021-05-05 11:58:03', " +
+                           "'ERI', " +
+                           "'-     ', " +
+                           "'OC', " +
+                           "'HSP', " +
+                           "'XI'," +
+                           " ''," +
+                           " 'RUAN'," +
+                           " 1.00000000," +
+                           " 'V'," +
+                           " 'remark'," +
+                           " ''," +
+                           " '', " +
+                           "''," +
+                           " 1," +
+                           " 'CC'," +
+                           " 0, " +
+                           "0," +
+                           " 0," +
+                           " 0, " +
+                           "''," +
+                           " '', " +
+                           "74," +
+                           " 'R34535'," +
+                           " 'USD', " +
+                           "'1000', " +
+                           "'2021-05-04 20:06:31'" +
+                           ");" +
+                           " insert into xcti00_rec values" +
+                           "(" +
+                           "'HSP', 'XI', 1122, 'ATN', 'jcross', '2021-05-04 10:58:00', 0, NULL,0, 'N', 0, 'E') ";
+
+
+            OdbcCommand cmd = new OdbcCommand(Query, connection);
+
+
+
+            cmd.ExecuteNonQuery();
+
+            connection.Close();
+        }
 
        
     }
