@@ -3,10 +3,15 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using StratixRuanBusinessLogic.Ruan.Action;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using StratixRuanBusinessLogic;
 using StratixRuanBusinessLogic.Stratix;
 using StratixToRuanDataTransfer;
+using System.Xml;
+using System.Xml.Serialization;
+using StratixRuanBusinessLogic.Ruan.Serialization;
+
 
 namespace UnitTestProject1
 {
@@ -57,6 +62,23 @@ namespace UnitTestProject1
                 }
             }
 
+        }
+
+        [TestMethod]
+        public void TestMethod3()
+        {
+
+            StratixRuanDataLayer.GlobalState.StratixConnectionString = ConfigurationManager.AppSettings["StratixDsn"];
+
+            string path = @"C:\Stratix\StratixRuanWebIntegration\UnitTestProject1\testDataFiles\TATest1.xml";
+            XmlSerializer s = new XmlSerializer(typeof(APITransportationShipment));
+            TextReader r = new StreamReader(path);
+
+            APITransportationShipment apiTransportationPITransportationShipment = (APITransportationShipment)s.Deserialize(r);
+            r.Close();
+
+           // RuanAction.TAtoStratix(apiTransportationPITransportationShipment);
+            RuanAction.DeleteTransportFromStratix(apiTransportationPITransportationShipment);
         }
     }
 }

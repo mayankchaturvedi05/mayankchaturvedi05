@@ -12,7 +12,7 @@ namespace StratixRuanDataLayer
         public string i18_cmpy_id { get; set; }
         public string i18_intchg_pfx { get; set; }
         public long i18_intchg_no { get; set; }
-        public DateTime i18_crtd_dtts { get; set; }
+        public string i18_crtd_dtts { get; set; }
         public long i18_crtd_dtms { get; set; }
         public DateTime i18_upd_dtts { get; set; }
         public long i18_upd_dtms { get; set; }
@@ -39,7 +39,7 @@ namespace StratixRuanDataLayer
         public double i18_max_lgth { get; set; }
         public string i18_appt_no { get; set; }
         public string i18_gt_dck { get; set; }
-        public DateTime i18_sch_dtts { get; set; }
+        public string i18_sch_dtts { get; set; }
         public long i18_sch_dtms { get; set; }
         public string i18_transp_pfx { get; set; }
         public long i18_transp_no { get; set; }
@@ -49,7 +49,7 @@ namespace StratixRuanDataLayer
 
         public static void AddTransport(XCTI18 transportvalues)
         {
-            OdbcConnection connection = new OdbcConnection("DSN=PostgreSQL30");
+            OdbcConnection connection = new OdbcConnection(GlobalState.StratixConnectionString);//64 bit
             connection.Open();
             string insertColumnsQuery = "INSERT INTO xcti18_rec" +
                                         "(" +
@@ -84,10 +84,10 @@ namespace StratixRuanDataLayer
                                         ")";
             string valuesQuery = " VALUES" +
                                  "(" +
-                                 "'{transportvalues.i18_intchg_no}', " +
-                                 "'2021-05-05 11:58:03', " +
-                                 "'{transportvalues.i18_trpln_whs}', " +
-                                 "'{transportvalues.i18_trrte}', " +
+                                 $"'{transportvalues.i18_intchg_no}', " +
+                                 $"{transportvalues.i18_crtd_dtts}, " +
+                                 $"'{transportvalues.i18_trpln_whs}', " +
+                                 $"'{transportvalues.i18_trrte}', " +
                                  "'OC', " +
                                  "'HSP', " +
                                  "'XI'," +
@@ -101,18 +101,21 @@ namespace StratixRuanDataLayer
                                  "''," +
                                  " 1," +
                                  " 'CC'," +
-                                 " 0, " +
-                                 "0," +
+                                 $"{transportvalues.i18_max_stp}, " +
+                                 $"{transportvalues.i18_max_wgt}, " +
                                  " 0," +
                                  " 0, " +
                                  "''," +
                                  " '', " +
                                  "74," +
-                                 " 'R34535'," +
+                                 $"'{transportvalues.i18_crr_ref_no}', " +
                                  " 'USD', " +
-                                 "'1000', " +
-                                 "'2021-05-04 20:06:31'" +
-                                 ");";
+                                 $"'{transportvalues.i18_frt_ven_id}', " +
+                                 $"{transportvalues.i18_sch_dtts} " +
+                                 ");" +
+                                " insert into xcti00_rec values" +
+                                "(" +
+                                 $"'HSP', 'XI', {transportvalues.i18_intchg_no}, 'ATN', 'jcross', {transportvalues.i18_crtd_dtts}, 0, NULL,0, 'N', 0, 'E') ";
 
 
             string Query = "INSERT INTO xcti18_rec" +
@@ -182,7 +185,7 @@ namespace StratixRuanDataLayer
                            "'HSP', 'XI', 1122, 'ATN', 'jcross', '2021-05-04 10:58:00', 0, NULL,0, 'N', 0, 'E') ";
 
 
-            OdbcCommand cmd = new OdbcCommand(Query, connection);
+            OdbcCommand cmd = new OdbcCommand(insertColumnsQuery  + valuesQuery, connection);
 
 
 

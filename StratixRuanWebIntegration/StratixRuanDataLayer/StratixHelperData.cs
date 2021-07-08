@@ -13,7 +13,7 @@ namespace StratixRuanDataLayer
 
         public static string GetShipFromWarehouseForOrder(string orderId)
         {
-            String query = @"SELECT Distinct PLANT_SHIP_FROM.whs_whs as ShipFromID		
+            String query = $@"SELECT Distinct PLANT_SHIP_FROM.whs_whs as ShipFromID		
                              FROM
                             ORTORL_REC ORL
                             INNER JOIN SCRWHS_REC PLANT_SHIP_FROM ON PLANT_SHIP_FROM.whs_whs = ORL.orl_shpg_whs

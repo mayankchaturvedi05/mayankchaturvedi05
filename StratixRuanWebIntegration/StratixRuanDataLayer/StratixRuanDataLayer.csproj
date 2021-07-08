@@ -47,6 +47,7 @@
     <Compile Include="StratixOrderNotification.cs" />
     <Compile Include="XCTI18.cs" />
     <Compile Include="XCTI19.cs" />
+    <Compile Include="XCTI20.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
