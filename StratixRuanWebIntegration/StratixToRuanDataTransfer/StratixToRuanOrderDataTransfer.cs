@@ -39,44 +39,25 @@ namespace StratixToRuanDataTransfer
                         {
                             if (stratixInterchangeActivitiesForActiveRuanStatusValue.Contains(currentPendingOrderNtNotification.InterchangeActivity))
                             {
-                                isOrderXmlAlreadySentToRuan = processedNotifications.FirstOrDefault(x =>
-                                    x.ReferenceNumber == currentPendingOrderNtNotification.ReferenceNumber &&
-                                    stratixInterchangeActivitiesForActiveRuanStatusValue.Contains(x.InterchangeActivity));
                                 ruanStatusValue = "A"; //Active for Ruan
                             }
                             else if (stratixInterchangeActivitiesForCancelledRuanStatusValue.Contains(currentPendingOrderNtNotification.InterchangeActivity))
                             {
-                                isOrderXmlAlreadySentToRuan = processedNotifications.FirstOrDefault(x =>
-                                    x.ReferenceNumber == currentPendingOrderNtNotification.ReferenceNumber &&
-                                    stratixInterchangeActivitiesForCancelledRuanStatusValue.Contains(x.InterchangeActivity));
                                 ruanStatusValue = "C"; //Cancelled for Ruan
                             }
 
+                            logText.AppendLine($"{DateTime.Now.ToShortTimeString()}:  Preparing to send to Ruan - InterchangeNumber# {currentPendingOrderNtNotification.InterchangeNumber}/ OrderNumber: {currentPendingOrderNtNotification.ReferenceNumber}");
+                            //send the XML to Ruan
+                            RuanAction.Synchronize = true;
+                            RuanAction.GenerateOrderReleaseForRuan(currentPendingOrderNtNotification.InterchangeNumber, currentPendingOrderNtNotification.ReferenceNumber, currentPendingOrderNtNotification.ReferenceItem, currentPendingOrderNtNotification.ReferenceSubItem, ruanStatusValue);
 
-                            if (isOrderXmlAlreadySentToRuan == null) //Nothing sent to Ruan for this Order and Interchange Activity combination.
-                            {
+                            logText.AppendLine($"{DateTime.Now.ToShortTimeString()}: Sent to Ruan - InterchangeNumber# {currentPendingOrderNtNotification.InterchangeNumber}/ Interchange Activity {currentPendingOrderNtNotification.InterchangeActivity}/ OrderNumber: {currentPendingOrderNtNotification.ReferenceNumber}");
 
-                                logText.AppendLine($"{DateTime.Now.ToShortTimeString()}:  Preparing to send to Ruan - InterchangeNumber# {currentPendingOrderNtNotification.InterchangeNumber}");
-
-                                //send the XML to Ruan
-                                RuanAction.Synchronize = true;
-                                RuanAction.GenerateOrderReleaseForRuan(currentPendingOrderNtNotification.InterchangeNumber, currentPendingOrderNtNotification.ReferenceNumber, ruanStatusValue);
-
-                                //After the Sent Process, add the order and interchange activity to the processed Notification list, so that any subsequent Order/Interchange activity notification NEED NOT BE SENT
-                                processedNotifications.Add(new StratixOrderNotification() { ReferenceNumber = currentPendingOrderNtNotification.ReferenceNumber, InterchangeActivity = currentPendingOrderNtNotification.InterchangeActivity });
-
-
-                            }
-                            else // if it was already in the Processed notification list, DON'T sent to RUAN
-                            {
-                                //Dont send to Ruan
-                                logText.AppendLine($"{DateTime.Now.ToShortTimeString()}: Not sent to Ruan - as InterchangeNumber# {currentPendingOrderNtNotification.InterchangeNumber}/ Interchange Activity {currentPendingOrderNtNotification.InterchangeActivity} is already processed for the Order {currentPendingOrderNtNotification.ReferenceNumber} and sent to Ruan as part of this current transaction list. ");
-
-                            }
+                           
                         }
                         catch (Exception e)
                         {
-                            logText.AppendLine($"{DateTime.Now.ToShortTimeString()}: Error processing - InterchangeNumber# {currentPendingOrderNtNotification.InterchangeNumber}/ Interchange Activity {currentPendingOrderNtNotification.InterchangeActivity}");
+                            logText.AppendLine($"{DateTime.Now.ToShortTimeString()}: Error processing - InterchangeNumber# {currentPendingOrderNtNotification.InterchangeNumber}/ Interchange Activity {currentPendingOrderNtNotification.InterchangeActivity} / OrderNumber: {currentPendingOrderNtNotification.ReferenceNumber}");
                         }
                         
 

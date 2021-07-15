@@ -30,6 +30,8 @@ namespace StratixRuanBusinessLogic.Stratix
         public string SoldToZipCode { get; set; }
         public string SoldToCountry { get; set; }
 
+        public Int16 EarliestDueDateTolerance { get; set; }
+
         public string ShipToID { get; set; }
         public string ShipToName { get; set; }
         public string ShipToName2 { get; set; }
@@ -45,6 +47,8 @@ namespace StratixRuanBusinessLogic.Stratix
         public double ReleaseWeight { get; set; }
         public DateTime OrderDeliveryDateFrom { get; set; }
         public DateTime OrderDeliveryDateTo { get; set; }
+        public Int16 OrderDeliveryDateFromHour { get; set; }
+        public Int16 OrderDeliveryDateToHour { get; set; }
 
         public string OrderProductDescription1 { get; set; }
         public string OrderProductDescription2 { get; set; }
@@ -78,6 +82,7 @@ namespace StratixRuanBusinessLogic.Stratix
             SoldToState = source.SoldToState;
             SoldToZipCode = source.SoldToZipCode;
             SoldToCountry = source.SoldToCountry;
+            EarliestDueDateTolerance = source.EarliestDueDateTolerance;
             ShipToID = source.ShipToID;
             ShipToName = source.ShipToName;
             ShipToName2 = source.ShipToName2;
@@ -92,6 +97,8 @@ namespace StratixRuanBusinessLogic.Stratix
             ReleaseWeight = source.ReleaseWeight;
             OrderDeliveryDateFrom = source.OrderDeliveryDateFrom;
             OrderDeliveryDateTo = source.OrderDeliveryDateTo;
+            OrderDeliveryDateFromHour = source.OrderDeliveryDateFromHour;
+            OrderDeliveryDateToHour = source.OrderDeliveryDateToHour;
             InsideSalesPersonName = source.InsideSalesPersonName;
             InsideSalesPersonEmail = source.InsideSalesPersonEmail;
             OrderProductDescription1 = source.OrderProductDescription1;
@@ -105,18 +112,18 @@ namespace StratixRuanBusinessLogic.Stratix
             DeliveryComments = source.DeliveryComments;
         }
 
-        public static RuanOrderIntegrationHelperData GetDataToConstructRuanOrderIntegrationHelperData(long orderReleaseNumber)
+        public static RuanOrderIntegrationHelperData GetDataToConstructRuanOrderIntegrationHelperData(long orderNumber , Int16 orderItemNumber, Int16 orderSubItemNumber)
         {
             RuanOrderIntegrationHelperData result =
-                GetSalesOrderDataToConstructRuanOrderIntegrationXML(orderReleaseNumber);
+                GetSalesOrderDataToConstructRuanOrderIntegrationXML(orderNumber, orderItemNumber, orderSubItemNumber);
 
 
             return result;
         }
 
-        public static RuanOrderIntegrationHelperData GetSalesOrderDataToConstructRuanOrderIntegrationXML(long orderReleaseNumber)
+        public static RuanOrderIntegrationHelperData GetSalesOrderDataToConstructRuanOrderIntegrationXML(long orderNumber , Int16 orderItemNumber, Int16 orderSubItemNumber)
         {
-            StratixRuanDataLayer.TSRuanOrderIntegrationHelperData dataLayerResult = StratixRuanDataLayer.TSRuanOrderIntegrationHelperData.GetSalesOrderDataToConstructRuanOrderIntegrationXML(orderReleaseNumber);
+            StratixRuanDataLayer.TSRuanOrderIntegrationHelperData dataLayerResult = StratixRuanDataLayer.TSRuanOrderIntegrationHelperData.GetSalesOrderDataToConstructRuanOrderIntegrationXML(orderNumber, orderItemNumber, orderSubItemNumber);
             RuanOrderIntegrationHelperData blInstance = new RuanOrderIntegrationHelperData(dataLayerResult);
             return blInstance;
         }

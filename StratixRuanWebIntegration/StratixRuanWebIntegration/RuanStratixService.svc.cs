@@ -152,8 +152,9 @@ namespace StratixRuanWebIntegration
 
                 Validate(xmlData);
 
-               // APITransportationShipment transportationShipment = Utilities.DeserializeFromXmlString<APITransportationShipment>(xmlParameter.Value);
+               
                 RuanAction.ProcessTa((APITransportationShipment)xmlData);
+              
 
             }
             catch (FaultException<RuanStratixException>)
@@ -238,6 +239,8 @@ namespace StratixRuanWebIntegration
 
         public bool SubmitRuanTransportationAssignedToStratix(RuanCredentials credentials, APITransportationShipment transportationAssigned)
         {
+            //add security and error logging.
+            
             return SubmitRuanToStratix(credentials, transportationAssigned, MethodBase.GetCurrentMethod().Name);
         }
 

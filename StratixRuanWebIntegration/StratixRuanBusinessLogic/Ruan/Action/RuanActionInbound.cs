@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using StratixRuanBusinessLogic.CoreData;
 using StratixRuanBusinessLogic.Ruan.Serialization;
 using StratixRuanDataLayer;
+using System.Threading;
 
 namespace StratixRuanBusinessLogic.Ruan.Action
 {
@@ -124,9 +125,9 @@ namespace StratixRuanBusinessLogic.Ruan.Action
                 }
 
                 
-
+                long interchangeNumberTransport = StratixHelperData.GetMaxInterchangeNumber() + 1;
                 XCTI18 objXcti18 = new XCTI18();
-                objXcti18.i18_intchg_no = StratixHelperData.GetMaxInterchangeNumber() + 1;
+                objXcti18.i18_intchg_no = interchangeNumberTransport;
                 string formatDate = "yyyy-MM-dd HH:mm:ss";
                 objXcti18.i18_crtd_dtts = $"'{DateTime.Now.ToString(formatDate)}'";
                 objXcti18.i18_trrte = "RUAN";
@@ -202,6 +203,28 @@ namespace StratixRuanBusinessLogic.Ruan.Action
 
                     objXcti18.i18_max_wgt = weightTotal;
                     XCTI18.AddTransport(objXcti18);
+
+                    Thread.Sleep(5000);
+                    long transportNumber = StratixHelperData.GetTransportNumber(interchangeNumberTransport);
+                    
+
+                    XCTI21 objXcti21 = new XCTI21();
+                    long interchangeNumberTransportActivity = StratixHelperData.GetMaxInterchangeNumber() + 1;
+                    objXcti21.i21_intchg_no = interchangeNumberTransportActivity;
+                    objXcti21.i21_intchg_itm = 1;
+
+                    objXcti21.i21_crtd_dtts = $"'{DateTime.Now.ToString(formatDate)}'";
+                    objXcti21.i21_transp_no = transportNumber;
+
+                    TRTTAVCondensed tRTTAVCondensedObject = TRTTAVCondensed.GetTrttavCondensed(order.OrderId);
+                    objXcti21.i21_actvy_pfx = tRTTAVCondensedObject.tav_trac_pfx;
+                    objXcti21.i21_actvy_no = tRTTAVCondensedObject.tav_trac_no;
+                    objXcti21.i21_actvy_itm = tRTTAVCondensedObject.tav_trac_itm;
+                    objXcti21.i21_plnd_trs_pcs = tRTTAVCondensedObject.tav_bal_pcs;
+                    objXcti21.i21_plnd_trs_msr = tRTTAVCondensedObject.tav_bal_msr;
+                    objXcti21.i21_plnd_trs_wgt = tRTTAVCondensedObject.tav_bal_wgt;
+
+                    XCTI21.PlanTransportActivity(objXcti21);
                 }
             }
 
@@ -572,17 +595,20 @@ namespace StratixRuanBusinessLogic.Ruan.Action
 
         public static void DeleteTransportFromStratix(APITransportationShipment ta)
         {
+            for (int i = 475; i <= 478; i++)
+            {
+                XCTI20 objXcti20 = new XCTI20();
+                objXcti20.i20_cmpy_id = "HSP";
+                objXcti20.i20_intchg_pfx = "XI";
+                objXcti20.i20_intchg_no = StratixHelperData.GetMaxInterchangeNumber() + 1;
+                string formatDate = "yyyy-MM-dd HH:mm:ss";
+                objXcti20.i20_crtd_dtts = $"'{DateTime.Now.ToString(formatDate)}'";
+                objXcti20.i20_transp_pfx = "TR";
+                objXcti20.i20_transp_no = i;
+                XCTI20.DeleteTransport(objXcti20);
+            }
 
-
-            XCTI20 objXcti20 = new XCTI20();
-            objXcti20.i20_cmpy_id = "HSP";
-            objXcti20.i20_intchg_pfx = "XI";
-            objXcti20.i20_intchg_no = StratixHelperData.GetMaxInterchangeNumber() + 1;
-            string formatDate = "yyyy-MM-dd HH:mm:ss";
-            objXcti20.i20_crtd_dtts = $"'{DateTime.Now.ToString(formatDate)}'";
-            objXcti20.i20_transp_pfx = "TR";
-            objXcti20.i20_transp_no = 448;
-            XCTI20.DeleteTransport(objXcti20);
+           
 
         }
 

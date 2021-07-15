@@ -21,6 +21,7 @@ namespace UnitTestProject1
         [TestMethod]
         public void TestMethod1()
         {
+            StratixRuanDataLayer.GlobalState.StratixConnectionString = ConfigurationManager.AppSettings["StratixDsn"];
 
             var connectionSettings = ConfigurationManager.ConnectionStrings["qa"];
             if (connectionSettings != null)
@@ -28,7 +29,9 @@ namespace UnitTestProject1
                 GlobalState.ConnectionString = connectionSettings.ConnectionString;
                
             }
-            //RuanAction.GenerateOrderReleaseForRuan(661);
+
+            RuanAction.Synchronize = true;
+            RuanAction.GenerateOrderReleaseForRuan(1005,1005, 2, 1 , "A");
             
 
            
@@ -77,8 +80,8 @@ namespace UnitTestProject1
             APITransportationShipment apiTransportationPITransportationShipment = (APITransportationShipment)s.Deserialize(r);
             r.Close();
 
-           // RuanAction.TAtoStratix(apiTransportationPITransportationShipment);
-            RuanAction.DeleteTransportFromStratix(apiTransportationPITransportationShipment);
+           RuanAction.TAtoStratix(apiTransportationPITransportationShipment);
+           //RuanAction.DeleteTransportFromStratix(apiTransportationPITransportationShipment);
         }
     }
 }

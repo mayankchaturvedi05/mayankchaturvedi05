@@ -11,14 +11,14 @@ namespace StratixRuanDataLayer
     {
         public long InterchangeNumber { get; set; }
         public long ReferenceNumber { get; set; }
-        public long ReferenceItem { get; set; }
-        public long ReferenceSubItem { get; set; }
+        public Int16 ReferenceItem { get; set; }
+        public Int16 ReferenceSubItem { get; set; }
         public string InterchangeActivity { get; set; }
         public DateTime ActivityDateTime { get; set; }
         public short AcknowledgedFlag { get; set; }
         public DateTime AcknowledgedDateTime { get; set; }
 
-        private const string whereClause = "WHERE T.not_ref_pfx = 'SO' AND H.noh_cmpy_id = 'HSP' AND noh_intchg_pfx = 'XE' AND noh_ackd_dtts IS NULL AND noh_ackd = 0";
+        private const string whereClause = "WHERE T.not_ref_pfx = 'SO' AND H.noh_cmpy_id = 'HSP' AND noh_intchg_pfx = 'XE' AND noh_ackd_dtts IS NULL AND noh_ackd = 0 AND T.not_intchg_actvy IN ('A','C','D')";
 
         public static List<StratixOrderNotification> GetStratixOrderNotification()
         {
@@ -54,7 +54,7 @@ namespace StratixRuanDataLayer
                     StratixOrderNotification result = new StratixOrderNotification();
                     result.InterchangeNumber = Convert.ToInt64(reader["noh_intchg_no"]);
                     result.ReferenceNumber = Convert.ToInt64(reader["not_ref_no"]);
-                    result.ReferenceItem = Convert.ToInt64(reader["not_ref_itm"]);
+                    result.ReferenceItem = Convert.ToInt16(reader["not_ref_itm"]);
                     result.ReferenceSubItem = Convert.ToInt16(reader["not_ref_sitm"]);
                     result.InterchangeActivity = reader["not_intchg_actvy"].ToString().Trim();
                     object activityDateTimeObject = reader["noh_actvy_dtts"];
@@ -109,7 +109,7 @@ namespace StratixRuanDataLayer
                 StratixOrderNotification result = new StratixOrderNotification();
                 result.InterchangeNumber = Convert.ToInt64(reader["noh_intchg_no"]);
                 result.ReferenceNumber = Convert.ToInt64(reader["not_ref_no"]);
-                result.ReferenceItem = Convert.ToInt64(reader["not_ref_itm"]);
+                result.ReferenceItem = Convert.ToInt16(reader["not_ref_itm"]);
                 result.ReferenceSubItem = Convert.ToInt16(reader["not_ref_sitm"]);
                 result.InterchangeActivity = reader["not_intchg_actvy"].ToString().Trim();
                 object activityDateTimeObject = reader["noh_actvy_dtts"];

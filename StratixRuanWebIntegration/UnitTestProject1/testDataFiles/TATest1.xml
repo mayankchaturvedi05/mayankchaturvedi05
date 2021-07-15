@@ -3,7 +3,7 @@
   <ContactName>Ruan Transportation</ContactName>
   <ContactEmail>R2.0LogisticsSuppo@ruan.com</ContactEmail>
   <ContactPhone>8667826669</ContactPhone>
-  <ShipmentNumber>R2927563</ShipmentNumber>
+  <ShipmentNumber>R2927568</ShipmentNumber>
   <TransactionType>IU</TransactionType>
   <CarrierScac>PKPA</CarrierScac>
   <CarrierName>HS EXPRESS LLC</CarrierName>
@@ -44,7 +44,7 @@
     </ReferenceNumber>
     <ReferenceNumber>
       <ReferenceNumberType>BM</ReferenceNumberType>
-      <ReferenceNumberValue>921</ReferenceNumberValue>
+      <ReferenceNumberValue>977</ReferenceNumberValue>
     </ReferenceNumber>
     <ReferenceNumber>
       <ReferenceNumberType>TRACKING_PROVIDER_URL</ReferenceNumberType>
@@ -52,7 +52,7 @@
     </ReferenceNumber>
     <ReferenceNumber>
       <ReferenceNumberType>CUSTOMER_ORDER_LIST</ReferenceNumberType>
-      <ReferenceNumberValue>921</ReferenceNumberValue>
+      <ReferenceNumberValue>977</ReferenceNumberValue>
     </ReferenceNumber>
   </References>
   <Stops>
@@ -77,13 +77,13 @@
       <StopDeliveryAppointmentDateTime>0001-01-01T00:00:00</StopDeliveryAppointmentDateTime>
       <Orders>
         <TransportationArrangedOrder>
-          <OrderId>921</OrderId>
+          <OrderId>977</OrderId>
           <OrderType>TRANSFERS</OrderType>
           <OrderLines>
             <TransportationArrangedOrderLine>
-              <OrderLineId>921-1</OrderLineId>
-              <OrderLineItem>921</OrderLineItem>
-              <OrderLineItemName>921</OrderLineItemName>
+              <OrderLineId>977-1</OrderLineId>
+              <OrderLineItem>977</OrderLineItem>
+              <OrderLineItemName>977</OrderLineItemName>
               <PackagedItemCount>5</PackagedItemCount>
             </TransportationArrangedOrderLine>
           </OrderLines>
@@ -94,7 +94,7 @@
             </ReferenceNumber>
             <ReferenceNumber>
               <ReferenceNumberType>GLOG</ReferenceNumberType>
-              <ReferenceNumberValue>RUAN/HS.921</ReferenceNumberValue>
+              <ReferenceNumberValue>RUAN/HS.977</ReferenceNumberValue>
             </ReferenceNumber>
             <ReferenceNumber>
               <ReferenceNumberType>LINE_OF_BUSINESS</ReferenceNumberType>
@@ -142,13 +142,13 @@
       <StopDeliveryAppointmentDateTime>0001-01-01T00:00:00</StopDeliveryAppointmentDateTime>
       <Orders>
         <TransportationArrangedOrder>
-          <OrderId>921</OrderId>
+          <OrderId>977</OrderId>
           <OrderType>TRANSFERS</OrderType>
           <OrderLines>
             <TransportationArrangedOrderLine>
-              <OrderLineId>921-1</OrderLineId>
-              <OrderLineItem>921</OrderLineItem>
-              <OrderLineItemName>921</OrderLineItemName>
+              <OrderLineId>977-1</OrderLineId>
+              <OrderLineItem>977</OrderLineItem>
+              <OrderLineItemName>977</OrderLineItemName>
               <PackagedItemCount>5</PackagedItemCount>
             </TransportationArrangedOrderLine>
           </OrderLines>
@@ -159,7 +159,7 @@
             </ReferenceNumber>
             <ReferenceNumber>
               <ReferenceNumberType>GLOG</ReferenceNumberType>
-              <ReferenceNumberValue>RUAN/HS.921</ReferenceNumberValue>
+              <ReferenceNumberValue>RUAN/HS.977</ReferenceNumberValue>
             </ReferenceNumber>
             <ReferenceNumber>
               <ReferenceNumberType>LINE_OF_BUSINESS</ReferenceNumberType>
@@ -194,15 +194,15 @@
   </Stops>
   <ShipmentUnits>
     <TransportationArrangedShipUnit>
-      <ShipUnitId>921-001-0000001-S</ShipUnitId>
+      <ShipUnitId>977-001-0000001-S</ShipUnitId>
       <ShipUnitNMFC xmlns:q1="http://www.w3.org/2001/XMLSchema" xmlns:d4p1="http://www.w3.org/2001/XMLSchema-instance" d4p1:type="q1:double">50</ShipUnitNMFC>
       <ShipUnitCount>5</ShipUnitCount>
       <Contents>
         <TransportationArrangedShipUnitContent>
-          <OrderId>921</OrderId>
-          <OrderLineId>921-1</OrderLineId>
-          <Item>921</Item>
-          <ItemName>921</ItemName>
+          <OrderId>977</OrderId>
+          <OrderLineId>977-1</OrderLineId>
+          <Item>977</Item>
+          <ItemName>977</ItemName>
           <Weight>47660</Weight>
           <WeightUnitOfMeasure>LB</WeightUnitOfMeasure>
           <Volume>1</Volume>
@@ -214,15 +214,15 @@
   </ShipmentUnits>
   <OrderCosts>
     <TransportationArrangedOrderCost>
-      <OrderId>921</OrderId>
+      <OrderId>977</OrderId>
       <CostTypeId>A</CostTypeId>
       <CostAmount>4.720000</CostAmount>
       <CostCurrency>USD</CostCurrency>
       <OrderLineCosts>
         <TransportationArrangedOrderLineCost>
-          <OrderId>921</OrderId>
-          <OrderLineId>921-1</OrderLineId>
-          <OrderLineItem>921</OrderLineItem>
+          <OrderId>977</OrderId>
+          <OrderLineId>977-1</OrderLineId>
+          <OrderLineItem>977</OrderLineItem>
           <CostTypeId>A</CostTypeId>
           <CostAmount>4.720000</CostAmount>
           <CostCurrency>USD</CostCurrency>
@@ -230,15 +230,15 @@
       </OrderLineCosts>
     </TransportationArrangedOrderCost>
     <TransportationArrangedOrderCost>
-      <OrderId>921</OrderId>
+      <OrderId>977</OrderId>
       <CostTypeId>B</CostTypeId>
       <CostAmount>250.020000</CostAmount>
       <CostCurrency>USD</CostCurrency>
       <OrderLineCosts>
         <TransportationArrangedOrderLineCost>
-          <OrderId>921</OrderId>
-          <OrderLineId>921-1</OrderLineId>
-          <OrderLineItem>921</OrderLineItem>
+          <OrderId>977</OrderId>
+          <OrderLineId>977-1</OrderLineId>
+          <OrderLineItem>977</OrderLineItem>
           <CostTypeId>B</CostTypeId>
           <CostAmount>250.020000</CostAmount>
           <CostCurrency>USD</CostCurrency>

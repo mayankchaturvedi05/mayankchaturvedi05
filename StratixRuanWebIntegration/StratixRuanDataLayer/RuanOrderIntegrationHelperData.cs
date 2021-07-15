@@ -30,6 +30,8 @@ namespace StratixRuanDataLayer
         public string SoldToState { get; set; }
         public string SoldToZipCode { get; set; }
         public string SoldToCountry { get; set; }
+        
+        public Int16 EarliestDueDateTolerance { get; set; }
 
         public string ShipToID { get; set; }
         public string ShipToName { get; set; }
@@ -45,6 +47,8 @@ namespace StratixRuanDataLayer
         public  string CustomerPO { get; set; }
         public DateTime OrderDeliveryDateFrom { get; set; }
         public DateTime OrderDeliveryDateTo { get; set; }
+        public Int16 OrderDeliveryDateFromHour { get; set; }
+        public Int16 OrderDeliveryDateToHour { get; set; }
 
         public string OrderProductDescription1 { get; set; }
         public string OrderProductDescription2 { get; set; }
@@ -59,7 +63,7 @@ namespace StratixRuanDataLayer
         public string ShippingComments { get; set; }
         public string DeliveryComments { get; set; }
 
-        public static TSRuanOrderIntegrationHelperData GetSalesOrderDataToConstructRuanOrderIntegrationXML(long orderReleaseNumber)
+        public static TSRuanOrderIntegrationHelperData GetSalesOrderDataToConstructRuanOrderIntegrationXML(long orderNumber, Int16 orderItemNumber, Int16 orderSubItemNumber)
         {
             TSRuanOrderIntegrationHelperData result = new TSRuanOrderIntegrationHelperData();
 
@@ -68,6 +72,7 @@ namespace StratixRuanDataLayer
                 string sql = $@"
 
                       SELECT
+                      DISTINCT
                       PLANT_SHIP_FROM.whs_whs as ShipFromID,
                       PLANT_SHIP_FROM.whs_whs_nm AS ShipFromName,
                       PLANT_SHIP_FROM.whs_addr1 AS ShipFromAddress1,
@@ -90,6 +95,7 @@ namespace StratixRuanDataLayer
                       
                       CUST.cus_cus_id as SoldToID,
                       CUST.cus_cus_nm AS SoldToName,
+                      CUSTAdditional.cai_edue_dt_tol as EarliestDueDateTolerance,
                       CUST_BILL_ADDRESS.cva_addr1 AS SoldToAddress1,
                       CUST_BILL_ADDRESS.cva_addr2 AS SoldToAddress2,
                       CUST_BILL_ADDRESS.cva_addr3 AS SoldToAddress3,
@@ -102,6 +108,8 @@ namespace StratixRuanDataLayer
 					  ORL.orl_rls_wgt AS ReleaseWeight,
 					  ORL.orl_due_fm_dt AS OrderDeliveryDateFrom,
 					  ORL.orl_due_to_dt AS OrderDeliveryDateTo,
+                      ORL.orl_due_fm_hr AS OrderDeliveryDateFromHour,
+					  ORL.orl_due_to_hr AS OrderDeliveryDateToHour,
                       OD.ord_cus_po AS CustomerPO,
                    
                      SalesPersonLoginDetail.usr_nm as InsideSalesPersonName,
@@ -120,6 +128,7 @@ namespace StratixRuanDataLayer
                       INNER JOIN ORTORD_REC OD ON OH.orh_ord_no = OD.ord_ord_no
                       INNER JOIN ORTORL_REC ORL ON OD.ord_ord_no = ORL.orl_ord_no
                       INNER JOIN ARRCUS_REC CUST ON CUST.cus_cus_id = OH.orh_sld_cus_id
+                      INNER JOIN ARRCAI_REC CUSTAdditional ON CustAdditional.cai_cus_id = CUST.cus_cus_id AND CUST.CUS_CMPY_ID = CustAdditional.CAI_CMPY_ID
                       INNER JOIN ARRSHP_REC SHIPTO ON CUST.cus_cus_id = SHIPTO.shp_cus_id AND OH.orh_shp_to = SHIPTO.shp_shp_to
                       INNER JOIN SCRCVA_REC CUST_BILL_ADDRESS ON CUST_BILL_ADDRESS.cva_ref_pfx = 'CU' AND CUST_BILL_ADDRESS.cva_cus_ven_typ = 'C'
                                                               AND CUST_BILL_ADDRESS.cva_cus_ven_id = CUST.cus_cus_id
@@ -140,11 +149,11 @@ namespace StratixRuanDataLayer
 					  INNER JOIN TCTIPD_rec PartDimension ON PartDimension.ipd_ref_pfx = 'SO' 
 					                  AND PartDimension.ipd_part_cus_id = CUST.cus_cus_id AND PartDimension.ipd_ref_no = OD.ord_ord_no
 									  AND PartDimension.ipd_ref_itm   = OD.ord_ord_itm
-                      INNER JOIN PNTIPK_rec ItemPackaging ON ItemPackaging.ipk_ref_pfx = 'SO'
+                      LEFT OUTER JOIN PNTIPK_rec ItemPackaging ON ItemPackaging.ipk_ref_pfx = 'SO'
 					                AND ItemPackaging.ipk_ref_no = OD.ord_ord_no
 									AND ItemPackaging.ipk_ref_itm = OD.ord_ord_itm
                       WHERE 1=1
-                      AND OH.orh_ord_no= {orderReleaseNumber} ";
+                      AND ORL.orl_ord_no= {orderNumber} AND ORL.orl_ord_itm = {orderItemNumber} AND ORL.orl_ord_rls_no = {orderSubItemNumber}";
 
                 OdbcConnection connection = new OdbcConnection(GlobalState.StratixConnectionString);//64 bit
 
@@ -185,6 +194,9 @@ namespace StratixRuanDataLayer
                     result.ShipToZipCode = reader["ShipToZipCode"].ToString().Trim();
                     result.ShipToCountry = reader["ShipToCountry"].ToString().Trim();
 
+                    object earliestDueDateTolerance = reader["EarliestDueDateTolerance"];
+                    result.EarliestDueDateTolerance = Convert.ToInt16(earliestDueDateTolerance);
+
                     result.SoldToID = reader["SoldToName"].ToString().Trim();
                     result.SoldToName = reader["SoldToID"].ToString().Trim();
                     result.SoldToAddress1 = reader["SoldToAddress1"].ToString().Trim();
@@ -211,6 +223,12 @@ namespace StratixRuanDataLayer
                     object orderDeliveryDateTo = reader["OrderDeliveryDateTo"];
                     result.OrderDeliveryDateTo = Convert.ToDateTime(orderDeliveryDateTo);
 
+                    object orderDeliveryDateFromHour = reader["OrderDeliveryDateFromHour"];
+                    result.OrderDeliveryDateFromHour = Convert.ToInt16(orderDeliveryDateFromHour);
+
+                    object orderDeliveryDateToHour = reader["OrderDeliveryDateToHour"];
+                    result.OrderDeliveryDateToHour = Convert.ToInt16(orderDeliveryDateToHour);
+
                     result.OrderProductDescription1 = reader["OrderProductDescription1"].ToString().Trim();
                     result.OrderProductDescription2 = reader["OrderProductDescription2"].ToString().Trim();
                     result.PartID = reader["PartID"].ToString().Trim();
@@ -230,9 +248,9 @@ namespace StratixRuanDataLayer
                 
             }
 
-            result.LoadComments = GetOrderHeaderLoadComment(orderReleaseNumber);
-            result.ShippingComments = GetOrderHeaderShippingComment(orderReleaseNumber);
-            result.DeliveryComments = GetOrderDetailDeliveryComment(orderReleaseNumber);
+            result.LoadComments = GetOrderHeaderLoadComment(orderNumber);
+            result.ShippingComments = GetOrderHeaderShippingComment(orderNumber);
+            result.DeliveryComments = GetOrderDetailDeliveryComment(orderNumber);
 
             return result;
         }

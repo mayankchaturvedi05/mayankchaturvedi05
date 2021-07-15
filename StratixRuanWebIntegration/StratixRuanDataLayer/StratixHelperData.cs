@@ -52,5 +52,26 @@ namespace StratixRuanDataLayer
             }
         }
 
+        public static long GetTransportNumber(long tranportInterchangeNumber)
+        {
+            String query = $@"
+select i18_transp_no from  XCTI18_rec
+WHERE i18_intchg_pfx = 'XI' and i18_intchg_no = {tranportInterchangeNumber}";
+
+            using (OdbcConnection connection = new OdbcConnection(GlobalState.StratixConnectionString))
+            {
+                using (OdbcCommand cmd = new OdbcCommand(query, connection))
+                {
+                    connection.Open();
+                    cmd.CommandType = CommandType.Text;
+                    object transportNumberObject = cmd.ExecuteScalar();
+                    long transportNumber = Convert.ToInt64(transportNumberObject);
+                    cmd.Connection.Close();
+
+                    return transportNumber;
+                }
+            }
+        }
+
     }
 }
