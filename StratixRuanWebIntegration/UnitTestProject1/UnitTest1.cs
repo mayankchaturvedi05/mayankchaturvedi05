@@ -5,12 +5,14 @@ using StratixRuanBusinessLogic.Ruan.Action;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.ServiceModel.Syndication;
 using StratixRuanBusinessLogic;
 using StratixRuanBusinessLogic.Stratix;
 using StratixToRuanDataTransfer;
 using System.Xml;
 using System.Xml.Serialization;
 using StratixRuanBusinessLogic.Ruan.Serialization;
+using StratixRuanWebIntegration;
 
 
 namespace UnitTestProject1
@@ -32,6 +34,7 @@ namespace UnitTestProject1
 
             RuanAction.Synchronize = true;
             RuanAction.GenerateOrderReleaseForRuan(1005,1005, 2, 1 , "A");
+            
             
 
            
@@ -80,8 +83,12 @@ namespace UnitTestProject1
             APITransportationShipment apiTransportationPITransportationShipment = (APITransportationShipment)s.Deserialize(r);
             r.Close();
 
-           RuanAction.TAtoStratix(apiTransportationPITransportationShipment);
-           //RuanAction.DeleteTransportFromStratix(apiTransportationPITransportationShipment);
+            RuanAction.ProcessTaTest(apiTransportationPITransportationShipment);
+            //RuanAction.DeleteTransportFromStratix(apiTransportationPITransportationShipment);
+
+            //var test = new RuanStratixServiceClient();
+
+            //RuanStratixService svcTest = new RuanStratixService();
         }
     }
 }

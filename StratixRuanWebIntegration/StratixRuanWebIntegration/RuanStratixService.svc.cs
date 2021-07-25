@@ -111,17 +111,7 @@ namespace StratixRuanWebIntegration
             }
 
         }
-
-        private void GenerateRuanStratixException(string exceptionMessage, string exceptionDetail)
-        {
-            RuanStratixException ruanStratixException = new RuanStratixException { ExceptionMesssage = exceptionMessage, ExceptionDescription = exceptionDetail };
-            StringBuilder logText = new StringBuilder();
-            logText.AppendLine($"Exception Message: {exceptionMessage}");
-            logText.AppendLine($"Exception Description: {exceptionDetail}");
-            Log(logText.ToString());
-            throw new FaultException<RuanStratixException>(ruanStratixException);
-        }
-
+        
         public string GetConnectionString(string connectionCode)
         {
             ConnectionStringSettings csSettings = ConfigurationManager.ConnectionStrings[connectionCode];
@@ -136,9 +126,16 @@ namespace StratixRuanWebIntegration
             }
         }
 
-        private void SetupDataConnection(string methodName)
+        private void SetupDataConnection()
         {
-           //todo:
+            StratixRuanDataLayer.GlobalState.StratixConnectionString = ConfigurationManager.AppSettings["StratixDsn"];
+
+            var connectionSettings = ConfigurationManager.ConnectionStrings["ruancon"];
+            if (connectionSettings != null)
+            {
+                GlobalState.ConnectionString = connectionSettings.ConnectionString;
+
+            }
         }
 
         public bool SubmitRuanToStratix(RuanCredentials credentials, IRuanStratixClass xmlData, string callingMethodName)
@@ -150,12 +147,7 @@ namespace StratixRuanWebIntegration
                     return false;
                 }
 
-                Validate(xmlData);
-
-               
-                RuanAction.ProcessTa((APITransportationShipment)xmlData);
-              
-
+                ProcessTA(xmlData);
             }
             catch (FaultException<RuanStratixException>)
             {
@@ -171,16 +163,20 @@ namespace StratixRuanWebIntegration
             return true;
         }
 
-        private void Validate(IRuanStratixClass transportationAssigned)
+        private void ProcessTA(IRuanStratixClass transportationAssigned)
         {
             WriteToLog(transportationAssigned);
-            SetupDataConnection(MethodBase.GetCurrentMethod().Name);
+            SetupDataConnection();
+
+            RuanAction.ProcessTa((APITransportationShipment)transportationAssigned);
+
             SendToXmlTable(transportationAssigned);
         }
 
         private void SendToXmlTable(IRuanStratixClass xmlData)
         {
-          
+            RuanXml ruanXml = new RuanXml(xmlData);
+            ruanXml.Save();
         }
 
         
@@ -239,9 +235,7 @@ namespace StratixRuanWebIntegration
 
         public bool SubmitRuanTransportationAssignedToStratix(RuanCredentials credentials, APITransportationShipment transportationAssigned)
         {
-            //add security and error logging.
-            
-            return SubmitRuanToStratix(credentials, transportationAssigned, MethodBase.GetCurrentMethod().Name);
+           return SubmitRuanToStratix(credentials, transportationAssigned, MethodBase.GetCurrentMethod().Name);
         }
 
         #endregion

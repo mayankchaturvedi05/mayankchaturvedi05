@@ -44,8 +44,15 @@ namespace StratixRuanBusinessLogic.Ruan.Action
             }
         }
 
+        public static void ProcessTaTest(IRuanStratixClass xmlData)
+        {
+            var test = Utilities.SerializeObjectToStringUtf8(xmlData);
+            ProcessTa((APITransportationShipment)xmlData);
+        }
+
         public static void ProcessTa(APITransportationShipment ta)
         {
+            var test = Utilities.SerializeObjectToStringUtf8(ta);
             if (string.IsNullOrWhiteSpace(ta.ShipmentNumber))
             {
                // throw new RuanJobException($"No Shipment Number.");
@@ -79,6 +86,11 @@ namespace StratixRuanBusinessLogic.Ruan.Action
             {
                 TAtoStratix(ta);
             }
+        }
+
+        public static void test(IRuanStratixClass xmlData)
+        {
+
         }
 
         public static void TAtoStratix(APITransportationShipment ta)
