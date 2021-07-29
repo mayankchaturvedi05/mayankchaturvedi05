@@ -170,7 +170,17 @@ namespace StratixRuanBusinessLogic.Ruan.Action
                 long orderID = 0;
                 foreach (Order order in pickupStop.Orders)
                 {
-                    objXcti18.i18_trpln_whs = StratixHelperData.GetShipFromWarehouseForOrder(order.OrderId);
+                    string orderIdWithReleaseInformation = order.OrderId;
+                    char separationCharacter = '_';
+
+                    int separationCharacterCount = orderIdWithReleaseInformation.Count(x => (x == separationCharacter));
+                    if (separationCharacterCount != 2)
+                    {
+                        throw new RuanJobException($"Invalid OrderID {orderIdWithReleaseInformation}.");
+                    }
+
+                    var orderSplitArray = order.OrderId.Split(separationCharacter);//First array value is the OrderID, second is the Detail and the third array is the release item id.
+                    objXcti18.i18_trpln_whs = StratixHelperData.GetShipFromWarehouseForOrder(orderSplitArray[0]);
 
                     double weightTotal = 0;
                     foreach (TaShipUnit shipUnit in shipUnits)
@@ -183,7 +193,10 @@ namespace StratixRuanBusinessLogic.Ruan.Action
 
                         string shipUnitBase = shipUnit.ShipUnitId.Contains("-") ? shipUnit.ShipUnitId.Substring(0, shipUnit.ShipUnitId.IndexOf("-", StringComparison.Ordinal)) : shipUnit.ShipUnitId;
 
-                        if (!long.TryParse(shipUnitBase, out long shipUnitId))
+                        var shipUnitBaseArray = shipUnitBase.Split(separationCharacter);//First array value is the shipUnitBase(order or transferid)
+                        
+
+                        if (!long.TryParse(shipUnitBaseArray[0], out long shipUnitId))
                         {
                             throw new RuanJobException($"Shipment Unit {shipUnit.ShipUnitId} should have all numeric digits before the first dash.");
                         }
@@ -228,7 +241,7 @@ namespace StratixRuanBusinessLogic.Ruan.Action
                     objXcti21.i21_crtd_dtts = $"'{DateTime.Now.ToString(formatDate)}'";
                     objXcti21.i21_transp_no = transportNumber;
 
-                    TRTTAVCondensed tRTTAVCondensedObject = TRTTAVCondensed.GetTrttavCondensed(order.OrderId);
+                    TRTTAVCondensed tRTTAVCondensedObject = TRTTAVCondensed.GetTrttavCondensed(orderSplitArray[0], orderSplitArray[1], orderSplitArray[2]);
                     objXcti21.i21_actvy_pfx = tRTTAVCondensedObject.tav_trac_pfx;
                     objXcti21.i21_actvy_no = tRTTAVCondensedObject.tav_trac_no;
                     objXcti21.i21_actvy_itm = tRTTAVCondensedObject.tav_trac_itm;
@@ -607,7 +620,7 @@ namespace StratixRuanBusinessLogic.Ruan.Action
 
         public static void DeleteTransportFromStratix(APITransportationShipment ta)
         {
-            for (int i = 475; i <= 478; i++)
+            for (int i = 515; i <= 516; i++)
             {
                 XCTI20 objXcti20 = new XCTI20();
                 objXcti20.i20_cmpy_id = "HSP";

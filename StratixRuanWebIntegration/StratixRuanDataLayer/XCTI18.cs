@@ -98,7 +98,7 @@ namespace StratixRuanDataLayer
                                              " 'RUAN'," +
                                              " 1.00000000," +
                                              " 'V'," +
-                                             " 'remark'," +
+                                             " ''," +
                                              " ''," +
                                              " '', " +
                                              "''," +
@@ -110,7 +110,7 @@ namespace StratixRuanDataLayer
                                              " 0, " +
                                              "''," +
                                              " '', " +
-                                             "74," +
+                                             "0," +
                                              $"'{transportvalues.i18_crr_ref_no}', " +
                                              " 'USD', " +
                                              $"'{transportvalues.i18_frt_ven_id}', " +
@@ -119,7 +119,7 @@ namespace StratixRuanDataLayer
 
             string eventTableInsertQuery = " insert into xcti00_rec values" +
                                            "(" +
-                                           $"'HSP', 'XI', {transportvalues.i18_intchg_no}, 'ATN', 'jcross', {transportvalues.i18_crtd_dtts}, 0, NULL,0, 'N', 0, 'E') ";
+                                           $"'HSP', 'XI', {transportvalues.i18_intchg_no}, 'ATN', 'skhan', {transportvalues.i18_crtd_dtts}, 0, NULL,0, 'N', 0, 'E') ";
 
             ;
 

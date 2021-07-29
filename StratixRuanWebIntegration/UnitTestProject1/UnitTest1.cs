@@ -84,7 +84,7 @@ namespace UnitTestProject1
             r.Close();
 
             RuanAction.ProcessTaTest(apiTransportationPITransportationShipment);
-            //RuanAction.DeleteTransportFromStratix(apiTransportationPITransportationShipment);
+           // RuanAction.DeleteTransportFromStratix(apiTransportationPITransportationShipment);
 
             //var test = new RuanStratixServiceClient();
 
