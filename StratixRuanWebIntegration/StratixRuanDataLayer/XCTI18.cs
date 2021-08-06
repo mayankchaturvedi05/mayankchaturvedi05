@@ -113,7 +113,7 @@ namespace StratixRuanDataLayer
                                              "0," +
                                              $"'{transportvalues.i18_crr_ref_no}', " +
                                              " 'USD', " +
-                                             $"'{transportvalues.i18_frt_ven_id}', " +
+                                             $"'', " +
                                              $"{transportvalues.i18_sch_dtts} " +
                                              ");";
 
