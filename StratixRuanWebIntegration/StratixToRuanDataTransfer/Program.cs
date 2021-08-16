@@ -71,15 +71,15 @@ namespace StratixToRuanDataTransfer
 
         static void RunAsAConsole()
         {
-            aTimer = new Timer(10000); // 10 Seconds
-            aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
-            aTimer.Enabled = true;
+            //aTimer = new Timer(1000000); // 10 Seconds
+            //aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+            //aTimer.Enabled = true;
 
-           // StratixToRuanOrderDataTransfer dataTransfer = new StratixToRuanOrderDataTransfer();
-            //dataTransfer.Execute();
+            StratixToRuanOrderDataTransfer dataTransfer = new StratixToRuanOrderDataTransfer();
+            dataTransfer.Execute();
 
             Console.ReadLine();
-            aTimer.Stop();
+            //aTimer.Stop();
 
 
         }

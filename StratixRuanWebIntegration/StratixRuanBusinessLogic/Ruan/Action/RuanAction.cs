@@ -15,6 +15,7 @@ using System.Xml.Serialization;
 using StratixRuanBusinessLogic;
 using StratixRuanBusinessLogic.Ruan.Serialization;
 using StratixRuanBusinessLogic.Stratix;
+using StratixRuanDataLayer;
 using StratixOrderNotification = StratixRuanDataLayer.StratixOrderNotification;
 
 namespace StratixRuanBusinessLogic.Ruan.Action
@@ -89,17 +90,32 @@ namespace StratixRuanBusinessLogic.Ruan.Action
            
         }
 
-        public static void GenerateOrderReleaseForRuan(long stratixInterchangeNumber, long orderNumber, Int16 orderItemNumber, Int16 orderSubItemNumber, string orderReleaseStatusValue)
+        public static void GenerateOrderReleaseForRuan(StratixOrderReleaseParametersForRuan stratixOrderReleaseParametersForRuan)
         {
-            if (Debugger.IsAttached) Debug.WriteLine($"KeyNumber: {orderNumber}");
+            if (Debugger.IsAttached) Debug.WriteLine($"KeyNumber: {stratixOrderReleaseParametersForRuan.orderFileKeyNumber}");
 
-           
             int totalOrderCount = 0;
 
             StratixRuanBusinessLogic.Stratix.RuanOrderIntegrationHelperData helperData = StratixRuanBusinessLogic.Stratix.RuanOrderIntegrationHelperData
-                .GetDataToConstructRuanOrderIntegrationHelperData(orderNumber, orderItemNumber, orderSubItemNumber);
+                    .GetDataToConstructRuanOrderIntegrationHelperData(stratixOrderReleaseParametersForRuan);
 
-            string ruanUniqueOrderNumber = $"{helperData.SalesOrderReleaseNumber}_{orderItemNumber}_{orderSubItemNumber}";
+            if (helperData == null)
+            {
+                return;
+            }
+
+            string ruanUniqueOrderNumber;
+            if (stratixOrderReleaseParametersForRuan.orderFileKeyPfx.Equals("SO"))
+            {
+                ruanUniqueOrderNumber =
+                    $"{stratixOrderReleaseParametersForRuan.orderFileKeyNumber}_{stratixOrderReleaseParametersForRuan.orderFileItemNumber}_{stratixOrderReleaseParametersForRuan.orderFileKeyNumber}";
+            }
+            else //JS or IP
+            {
+                ruanUniqueOrderNumber =
+                    $"{stratixOrderReleaseParametersForRuan.orderFileKeyPfx}_{stratixOrderReleaseParametersForRuan.orderFileKeyNumber}";
+            }
+
             string releaseWeight = $"{helperData.ReleaseWeight}";
 
             string packageType = helperData.PackagingCode;
@@ -236,11 +252,10 @@ namespace StratixRuanBusinessLogic.Ruan.Action
                                 PaymentMethod = "TPB",
                                 TimeWindowEmphasis = "DELV",
                                 Priority = "3",
-                                StatusValue = orderReleaseStatusValue,
+                                StatusValue = stratixOrderReleaseParametersForRuan.orderReleaseStatusValue,
                                 StatusType = "CANCELLED",
                                 OrderShippingConfiguration =  "SHIP_UNIT_LINES",
-                                //OrderType = loadAuthCross.SalesOrderReleaseNumber.HasValue ? "SALES_ORDER" : "TRANSFERS",//TODO: Once transfer process is finalized change the logic here
-                                OrderType = "SALES_ORDER",
+                                OrderType = stratixOrderReleaseParametersForRuan.orderFileKeyPfx.Equals("SO") ? "SALES_ORDER" : "TRANSFERS",
                                 CustomerServiceRepInfo = new CustomerServiceRepInfo()
                                 {
                                     CustomerServiceRepName = helperData.InsideSalesPersonName,
@@ -394,7 +409,7 @@ namespace StratixRuanBusinessLogic.Ruan.Action
             };
 
          
-            SubmitToRuan(stratixInterchangeNumber, ruanReleaseOrder);
+            SubmitToRuan(stratixOrderReleaseParametersForRuan.stratixInterchangeNumber, ruanReleaseOrder);
         }
         #endregion
 

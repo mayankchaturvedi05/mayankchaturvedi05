@@ -63,6 +63,16 @@ namespace StratixRuanDataLayer
         public string ShippingComments { get; set; }
         public string DeliveryComments { get; set; }
 
+        public string tav_trgt_ord_pfx { get; set; }
+        public Int16 tav_trgt_ord_itm { get; set; }
+        public Int16 tav_trgt_ord_rls { get; set; }
+        public string tav_ref_pfx { get; set; }
+        public long tav_ref_no { get; set; }
+        public string tav_jbs_pfx { get; set; }
+        public long tav_jbs_no { get; set; }
+
+        
+
         public static TSRuanOrderIntegrationHelperData GetSalesOrderDataToConstructRuanOrderIntegrationXML(long orderNumber, Int16 orderItemNumber, Int16 orderSubItemNumber)
         {
             TSRuanOrderIntegrationHelperData result = new TSRuanOrderIntegrationHelperData();
@@ -124,9 +134,10 @@ namespace StratixRuanDataLayer
                       
                       
                       FROM
-                      ORTORH_REC OH
-                      INNER JOIN ORTORD_REC OD ON OH.orh_ord_no = OD.ord_ord_no
-                      INNER JOIN ORTORL_REC ORL ON OD.ord_ord_no = ORL.orl_ord_no
+					  TRTTAV_rec TAV
+					  INNER JOIN ORTORL_REC ORL  ON ORL.orl_ord_no = TAV.tav_trgt_ord_no AND ORL.orl_ord_itm = TAV.tav_trgt_ord_itm AND ORL.orl_ord_rls_no = TAV.tav_trgt_ord_rls
+                      INNER JOIN ORTORD_REC OD ON ORL.orl_ord_no = OD.ord_ord_no
+                      INNER JOIN ORTORH_REC OH ON OH.orh_ord_no = ORL.orl_ord_no
                       INNER JOIN ARRCUS_REC CUST ON CUST.cus_cus_id = OH.orh_sld_cus_id
                       INNER JOIN ARRCAI_REC CUSTAdditional ON CustAdditional.cai_cus_id = CUST.cus_cus_id AND CUST.CUS_CMPY_ID = CustAdditional.CAI_CMPY_ID
                       INNER JOIN ARRSHP_REC SHIPTO ON CUST.cus_cus_id = SHIPTO.shp_cus_id AND OH.orh_shp_to = SHIPTO.shp_shp_to
@@ -153,7 +164,7 @@ namespace StratixRuanDataLayer
 					                AND ItemPackaging.ipk_ref_no = OD.ord_ord_no
 									AND ItemPackaging.ipk_ref_itm = OD.ord_ord_itm
                       WHERE 1=1
-                      AND ORL.orl_ord_no= {orderNumber} AND ORL.orl_ord_itm = {orderItemNumber} AND ORL.orl_ord_rls_no = {orderSubItemNumber}";
+                      AND ORL.orl_ord_no= {orderNumber} AND ORL.orl_ord_itm = {orderItemNumber} AND ORL.orl_ord_rls_no = {orderSubItemNumber} AND tav_trac_typ = 'SH'";
 
                 OdbcConnection connection = new OdbcConnection(GlobalState.StratixConnectionString);//64 bit
 
@@ -255,97 +266,82 @@ namespace StratixRuanDataLayer
             return result;
         }
 
-        public static TSRuanOrderIntegrationHelperData GetTransferDataToConstructRuanOrderIntegrationXML(long jobSetNumber, long iPNumber)
+        public static TSRuanOrderIntegrationHelperData GetTransferDataToConstructRuanOrderIntegrationXML(string keyPfx, long? keyNumber)
         {
             TSRuanOrderIntegrationHelperData result = new TSRuanOrderIntegrationHelperData();
 
 
             {
+                string whereClause = string.Empty;
+
+                if (keyPfx.Equals("IP"))
+                {
+                    whereClause = $@" AND tav_ref_pfx = '{keyPfx}' and tav_ref_no = {keyNumber}";
+                }
+                else if(keyPfx.Equals("JS"))
+                {
+                    whereClause = $@" AND tav_jbs_pfx = '{keyPfx}' and tav_jbs_no = {keyNumber}";
+                }
+
                 string sql = $@"
 
-                      SELECT
-                      DISTINCT
-                      PLANT_SHIP_FROM.whs_whs as ShipFromID,
-                      PLANT_SHIP_FROM.whs_whs_nm AS ShipFromName,
-                      PLANT_SHIP_FROM.whs_addr1 AS ShipFromAddress1,
-                      PLANT_SHIP_FROM.whs_addr2 AS ShipFromAddress2,
-                      PLANT_SHIP_FROM.whs_addr3 AS ShipFromAddress3,
-                      PLANT_SHIP_FROM.whs_city AS ShipFromCity,
-                      PLANT_SHIP_FROM.whs_st_prov AS ShipFromState,
-                      PLANT_SHIP_FROM.whs_pcd AS ShipFromZipCode,
-                      PLANT_SHIP_FROM.whs_cty AS ShipFromCountry,
-                      
-                      CUST_SHIP_ADDRESS.cva_addr_no AS ShipToID,
-                      CUST_SHIP_ADDRESS.cva_nm1 AS ShipToName,
-                      CUST_SHIP_ADDRESS.cva_addr1 AS ShipToAddress1,
-                      CUST_SHIP_ADDRESS.cva_addr2 AS ShipToAddress2,
-                      CUST_SHIP_ADDRESS.cva_addr3 AS ShipToAddress3,
-                      CUST_SHIP_ADDRESS.cva_city AS ShipToCity,
-                      CUST_SHIP_ADDRESS.cva_st_prov AS ShipToState,
-                      CUST_SHIP_ADDRESS.cva_pcd AS ShipToZipCode,
-                      CUST_SHIP_ADDRESS.cva_cty AS ShipToCountry,
-                      
-                      CUST.cus_cus_id as SoldToID,
-                      CUST.cus_cus_nm AS SoldToName,
-                      CUSTAdditional.cai_edue_dt_tol as EarliestDueDateTolerance,
-                      CUST_BILL_ADDRESS.cva_addr1 AS SoldToAddress1,
-                      CUST_BILL_ADDRESS.cva_addr2 AS SoldToAddress2,
-                      CUST_BILL_ADDRESS.cva_addr3 AS SoldToAddress3,
-                      CUST_BILL_ADDRESS.cva_city AS SoldToCity,
-                      CUST_BILL_ADDRESS.cva_st_prov AS SoldToState,
-                      CUST_BILL_ADDRESS.cva_pcd AS SoldToZipCode,
-                      CUST_BILL_ADDRESS.cva_cty AS SoldToCountry,
-
-                      ORL.orl_ord_no AS SalesOrderReleaseNumber,
-					  ORL.orl_rls_wgt AS ReleaseWeight,
-					  ORL.orl_due_fm_dt AS OrderDeliveryDateFrom,
-					  ORL.orl_due_to_dt AS OrderDeliveryDateTo,
-                      ORL.orl_due_fm_hr AS OrderDeliveryDateFromHour,
-					  ORL.orl_due_to_hr AS OrderDeliveryDateToHour,
-                      OD.ord_cus_po AS CustomerPO,
+                      				SELECT
+							      	PLANT_SHIP_FROM.whs_whs as ShipFromID,
+                      				PLANT_SHIP_FROM.whs_whs_nm AS ShipFromName,
+                      				PLANT_SHIP_FROM.whs_addr1 AS ShipFromAddress1,
+                      				PLANT_SHIP_FROM.whs_addr2 AS ShipFromAddress2,
+                      				PLANT_SHIP_FROM.whs_addr3 AS ShipFromAddress3,
+                      				PLANT_SHIP_FROM.whs_city AS ShipFromCity,
+                      				PLANT_SHIP_FROM.whs_st_prov AS ShipFromState,
+                      				PLANT_SHIP_FROM.whs_pcd AS ShipFromZipCode,
+                      				PLANT_SHIP_FROM.whs_cty AS ShipFromCountry,
+									
+									PLANT_SHIP_TO.whs_whs as ShipToID,
+                      				PLANT_SHIP_TO.whs_whs AS ShipToName,
+                      				PLANT_SHIP_TO.whs_addr1 AS ShipToAddress1,
+                      				PLANT_SHIP_TO.whs_addr2 AS ShipToAddress2,
+                      				PLANT_SHIP_TO.whs_addr3 AS ShipToAddress3,
+                      				PLANT_SHIP_TO.whs_city AS ShipToCity,
+                      				PLANT_SHIP_TO.whs_st_prov AS ShipToState,
+                      				PLANT_SHIP_TO.whs_pcd AS ShipToZipCode,
+                      				PLANT_SHIP_TO.whs_cty AS ShipToCountry,
+									
+									0 as EarliestDueDateTolerance,
+									
+									SOLD_TO.whs_whs as SoldToID,
+                      				SOLD_TO.whs_whs AS SoldToName,                      
+                      				SOLD_TO.whs_addr1 AS SoldToAddress1,
+                      				SOLD_TO.whs_addr2 AS SoldToAddress2,
+                      				SOLD_TO.whs_addr3 AS SoldToAddress3,
+                      				SOLD_TO.whs_city AS SoldToCity,
+                      				SOLD_TO.whs_st_prov AS SoldToState,
+                      				SOLD_TO.whs_pcd AS SoldToZipCode,
+                      				SOLD_TO.whs_cty AS SoldToCountry,									
+									
+					  				tav.tav_reqd_wgt AS ReleaseWeight,
+									tav.tav_trgt_ord_pfx, tav.tav_trgt_ord_no AS SalesOrderReleaseNumber, tav.tav_trgt_ord_itm,  tav.tav_trgt_ord_rls,
+									tav_ref_pfx, tav_ref_no,
+                                    tav_jbs_pfx, tav_jbs_no,
+					  				tav.tav_actvy_dtts AS OrderDeliveryDateFrom,
+					  				tav.tav_actvy_dtts AS OrderDeliveryDateTo,
+                      				0 AS OrderDeliveryDateFromHour,
+					  				0 AS OrderDeliveryDateToHour,
+                      				'' AS CustomerPO,
                    
-                     SalesPersonLoginDetail.usr_nm as InsideSalesPersonName,
-                     SalesPersonLoginDetail.usr_email as InsideSalesPersonEmail,
-
-                     CommonOrderInformation.pds_prd_desc50a as OrderProductDescription1,
-	                 CommonOrderInformation.pds_prd_desc50b as OrderProductDescription2,
-					 OrderCrossDetail.xrd_part as PartID,
-                     PartDimension.ipd_wdth as PartWidth,
-                     PartDimension.ipd_lgth as PartLength,
-                     ItemPackaging.ipk_pkg as PackagingCode
-                      
-                      
-                      FROM
-                      ORTORH_REC OH
-                      INNER JOIN ORTORD_REC OD ON OH.orh_ord_no = OD.ord_ord_no
-                      INNER JOIN ORTORL_REC ORL ON OD.ord_ord_no = ORL.orl_ord_no
-                      INNER JOIN ARRCUS_REC CUST ON CUST.cus_cus_id = OH.orh_sld_cus_id
-                      INNER JOIN ARRCAI_REC CUSTAdditional ON CustAdditional.cai_cus_id = CUST.cus_cus_id AND CUST.CUS_CMPY_ID = CustAdditional.CAI_CMPY_ID
-                      INNER JOIN ARRSHP_REC SHIPTO ON CUST.cus_cus_id = SHIPTO.shp_cus_id AND OH.orh_shp_to = SHIPTO.shp_shp_to
-                      INNER JOIN SCRCVA_REC CUST_BILL_ADDRESS ON CUST_BILL_ADDRESS.cva_ref_pfx = 'CU' AND CUST_BILL_ADDRESS.cva_cus_ven_typ = 'C'
-                                                              AND CUST_BILL_ADDRESS.cva_cus_ven_id = CUST.cus_cus_id
-                      INNER JOIN SCRCVA_REC CUST_SHIP_ADDRESS ON CUST_SHIP_ADDRESS.cva_ref_pfx = 'CS' AND CUST_SHIP_ADDRESS.cva_cus_ven_typ = 'C'
-                      										AND CUST_SHIP_ADDRESS.cva_addr_typ = 'S'
-                                                              AND CUST_SHIP_ADDRESS.cva_cus_ven_id = CUST.cus_cus_id 
-                      										AND CUST_SHIP_ADDRESS.cva_addr_no = OH.orh_shp_to
-                      INNER JOIN SCRSLP_rec SalesPersonLogin ON SalesPersonLogin.slp_slp = SHIPTO.shp_is_slp
-					  INNER JOIN MXRUSR_REC SalesPersonLoginDetail ON SalesPersonLoginDetail.usr_lgn_id = SalesPersonLogin.slp_lgn_id
-                      INNER JOIN SCRWHS_REC PLANT_SHIP_FROM ON PLANT_SHIP_FROM.whs_whs = ORL.orl_shpg_whs
-                      INNER JOIN TCTPDS_rec CommonOrderInformation ON CommonOrderInformation.pds_ref_pfx = 'SO' 
-					                                      AND CommonOrderInformation.pds_ref_no = OD.ord_ord_no  AND CommonOrderInformation.pds_ref_itm = OD.ord_ord_itm
-                      INNER JOIN ORTXRD_REC OrderCrossDetail ON OrderCrossDetail.xrd_ord_no = OD.ord_ord_no AND OrderCrossDetail.xrd_ord_itm =  OD.ord_ord_itm
-                      INNER JOIN CPRCLG_Rec PartMaster ON PartMaster.clg_Part = OrderCrossDetail.xrd_part 					  
-					                   AND PartMaster.clg_cus_ven_typ = 'C' 
-									   AND PartMaster.clg_cus_ven_id = CUST.cus_cus_id									   
-									   AND OrderCrossDetail.xrd_part_revno = PartMaster.clg_part_revno
-					  INNER JOIN TCTIPD_rec PartDimension ON PartDimension.ipd_ref_pfx = 'SO' 
-					                  AND PartDimension.ipd_part_cus_id = CUST.cus_cus_id AND PartDimension.ipd_ref_no = OD.ord_ord_no
-									  AND PartDimension.ipd_ref_itm   = OD.ord_ord_itm
-                      LEFT OUTER JOIN PNTIPK_rec ItemPackaging ON ItemPackaging.ipk_ref_pfx = 'SO'
-					                AND ItemPackaging.ipk_ref_no = OD.ord_ord_no
-									AND ItemPackaging.ipk_ref_itm = OD.ord_ord_itm
-                      WHERE 1=1
-                      AND ORL.orl_ord_no= {orderNumber} AND ORL.orl_ord_itm = {orderItemNumber} AND ORL.orl_ord_rls_no = {orderSubItemNumber}";
+                                    '' as InsideSalesPersonName,
+                                    '' as InsideSalesPersonEmail,
+									'' as OrderProductDescription1,
+	                                '' as OrderProductDescription2,
+					                '' as PartID,
+                                    '' as PackagingCode,
+									TAV.tav_wdth as PartWidth,
+                                    TAV.tav_lgth as PartLength
+							     FROM TRTTAV_rec TAV
+								 INNER JOIN SCRWHS_REC PLANT_SHIP_FROM ON TAV.tav_pkp_whs = PLANT_SHIP_FROM.whs_whs AND PLANT_SHIP_FROM.whs_cmpy_id = 'HSP'
+								 INNER JOIN SCRWHS_REC PLANT_SHIP_TO ON TAV.tav_dlvy_whs = PLANT_SHIP_TO.whs_whs AND PLANT_SHIP_TO.whs_cmpy_id = 'HSP'
+								 INNER JOIN SCRWHS_REC SOLD_TO ON TAV.tav_plng_whs = SOLD_TO.whs_whs AND SOLD_TO.whs_cmpy_id = 'HSP'
+							     WHERE tav_trac_typ = 'TF'";
+                sql = sql + whereClause;
 
                 OdbcConnection connection = new OdbcConnection(GlobalState.StratixConnectionString);//64 bit
 
@@ -421,16 +417,55 @@ namespace StratixRuanDataLayer
                     object orderDeliveryDateToHour = reader["OrderDeliveryDateToHour"];
                     result.OrderDeliveryDateToHour = Convert.ToInt16(orderDeliveryDateToHour);
 
-                    result.OrderProductDescription1 = reader["OrderProductDescription1"].ToString().Trim();
-                    result.OrderProductDescription2 = reader["OrderProductDescription2"].ToString().Trim();
-                    result.PartID = reader["PartID"].ToString().Trim();
+                    if (reader["OrderProductDescription1"] != null)
+                    {
+                        result.OrderProductDescription1 = reader["OrderProductDescription1"].ToString().Trim();
+                    }
 
+                    if (reader["OrderProductDescription2"] != null)
+                    {
+                        result.OrderProductDescription2 = reader["OrderProductDescription2"].ToString().Trim();
+                    }
+
+                    if (reader["PartID"] != null)
+                    {
+                        result.PartID = reader["PartID"].ToString().Trim();
+                    }
+                    
                     object partWidth = reader["PartWidth"];
-                    result.PartWidth = Convert.ToDouble(partWidth);
+                    if (partWidth != null)
+                    {
+                        result.PartWidth = Convert.ToDouble(partWidth);
+                    }
 
                     object partLength = reader["PartLength"];
-                    result.PartLength = Convert.ToDouble(partLength);
-                    result.PackagingCode = reader["PackagingCode"].ToString().Trim();
+                    if (partLength != null)
+                    {
+                        result.PartLength = Convert.ToDouble(partLength);
+                    }
+
+                    if (reader["PackagingCode"] != null)
+                    {
+                        result.PackagingCode = reader["PackagingCode"].ToString().Trim();
+                    }
+
+                    result.tav_trgt_ord_pfx = reader["tav_trgt_ord_pfx"].ToString().Trim(); 
+
+                    object tav_trgt_ord_itm = reader["tav_trgt_ord_itm"];
+                    result.tav_trgt_ord_itm = Convert.ToInt16(tav_trgt_ord_itm);
+
+                    object tav_trgt_ord_rls = reader["tav_trgt_ord_rls"];
+                    result.tav_trgt_ord_rls = Convert.ToInt16(tav_trgt_ord_rls);
+
+                    result.tav_ref_pfx = reader["tav_ref_pfx"].ToString().Trim(); 
+                    
+                    object tav_ref_no = reader["tav_ref_no"];
+                    result.tav_ref_no = Convert.ToInt64(tav_ref_no);
+
+                    result.tav_jbs_pfx = reader["tav_jbs_pfx"].ToString().Trim(); 
+
+                    object tav_jbs_no = reader["tav_jbs_no"];
+                    result.tav_jbs_no = Convert.ToInt64(tav_jbs_no);
                 }
 
                 // Close the reader and connection (commands are not closed).
