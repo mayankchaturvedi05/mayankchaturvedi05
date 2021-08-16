@@ -108,7 +108,7 @@ namespace StratixRuanBusinessLogic.Ruan.Action
             if (stratixOrderReleaseParametersForRuan.orderFileKeyPfx.Equals("SO"))
             {
                 ruanUniqueOrderNumber =
-                    $"{stratixOrderReleaseParametersForRuan.orderFileKeyNumber}_{stratixOrderReleaseParametersForRuan.orderFileItemNumber}_{stratixOrderReleaseParametersForRuan.orderFileKeyNumber}";
+                    $"{stratixOrderReleaseParametersForRuan.orderFileKeyNumber}_{stratixOrderReleaseParametersForRuan.orderFileItemNumber}_{stratixOrderReleaseParametersForRuan.orderFileSubItemNumber}";
             }
             else //JS or IP
             {

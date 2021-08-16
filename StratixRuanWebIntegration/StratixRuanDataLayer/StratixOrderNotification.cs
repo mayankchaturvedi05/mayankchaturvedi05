@@ -15,6 +15,7 @@ namespace StratixRuanDataLayer
         public short ReferenceItem { get; set; }
         public short ReferenceSubItem { get; set; }
         public string InterchangeActivity { get; set; }
+        public string ReferencePrefix { get; set; }
         public DateTime ActivityDateTime { get; set; }
         public short AcknowledgedFlag { get; set; }
         public DateTime AcknowledgedDateTime { get; set; }
@@ -31,7 +32,7 @@ namespace StratixRuanDataLayer
                 string sql1 = @"
 
                       SELECT
-                            H.noh_intchg_no, T.not_ref_no, T.not_ref_itm, T.not_ref_sitm, T.not_intchg_actvy, H.noh_actvy_dtts
+                            H.noh_intchg_no, T.not_ref_no, T.not_ref_itm, T.not_ref_sitm, T.not_intchg_actvy, H.noh_actvy_dtts, T.not_ref_pfx
                                 FROM
                                 XCTNOH_rec H
                                     INNER JOIN XCTNOT_rec T ON H.noh_cmpy_id = T.not_cmpy_id
@@ -42,7 +43,7 @@ namespace StratixRuanDataLayer
              string sql2 = @"
                       UNION
                       SELECT
-                            H.noh_intchg_no, T.not_ref_no, T.not_ref_itm, T.not_ref_sitm, T.not_intchg_actvy, H.noh_actvy_dtts
+                            H.noh_intchg_no, T.not_ref_no, T.not_ref_itm, T.not_ref_sitm, T.not_intchg_actvy, H.noh_actvy_dtts, T.not_ref_pfx
                                 FROM
                                 XCTNOH_rec H
                                     INNER JOIN XCTNOT_rec T ON H.noh_cmpy_id = T.not_cmpy_id
@@ -54,7 +55,7 @@ namespace StratixRuanDataLayer
             string sql3 = @"
                       UNION
                       SELECT
-                            H.noh_intchg_no, T.not_ref_no, T.not_ref_itm, T.not_ref_sitm, T.not_intchg_actvy, H.noh_actvy_dtts
+                            H.noh_intchg_no, T.not_ref_no, T.not_ref_itm, T.not_ref_sitm, T.not_intchg_actvy, H.noh_actvy_dtts, T.not_ref_pfx
                                 FROM
                                 XCTNOH_rec H
                                     INNER JOIN XCTNOT_rec T ON H.noh_cmpy_id = T.not_cmpy_id
@@ -88,6 +89,7 @@ namespace StratixRuanDataLayer
                     result.ReferenceItem = Convert.ToInt16(reader["not_ref_itm"]);
                     result.ReferenceSubItem = Convert.ToInt16(reader["not_ref_sitm"]);
                     result.InterchangeActivity = reader["not_intchg_actvy"].ToString().Trim();
+                    result.ReferencePrefix = reader["not_ref_pfx"].ToString().Trim();
                     object activityDateTimeObject = reader["noh_actvy_dtts"];
                     result.ActivityDateTime = Convert.ToDateTime(activityDateTimeObject);
 

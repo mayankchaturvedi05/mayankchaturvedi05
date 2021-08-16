@@ -22,19 +22,20 @@ namespace StratixToRuanDataTransfer
                 List<StratixOrderNotification> processedNotifications = new List<StratixOrderNotification>();
 
                 List<long> interChangeNumbers = allPendingOrderNtNotifications.Select(x => x.InterchangeNumber).ToList();
-
+              
                 if (interChangeNumbers.Count > 0)
                 {
 
                     StratixOrderNotification.SetOrderNotificationToInProcess(interChangeNumbers); //Mark them all In process
                     List<string> stratixInterchangeActivitiesForActiveRuanStatusValue = new List<string>(){"A", "C", "S", "U"}; // Status value for Ruan mapping will be "A"
                     List<string> stratixInterchangeActivitiesForCancelledRuanStatusValue = new List<string>() { "D" }; // Status value for Ruan mapping will be "C"
+                    
                     foreach (StratixOrderNotification currentPendingOrderNtNotification in allPendingOrderNtNotifications)
                     {
                         string ruanStatusValue = "A";
 
                         StratixOrderNotification isOrderXmlAlreadySentToRuan = null;
-
+                        
                         try
                         {
                             if (stratixInterchangeActivitiesForActiveRuanStatusValue.Contains(currentPendingOrderNtNotification.InterchangeActivity))
@@ -52,8 +53,10 @@ namespace StratixToRuanDataTransfer
                             StratixOrderReleaseParametersForRuan stratixOrderReleaseParametersForRuan = new StratixOrderReleaseParametersForRuan
                                 {
                                     stratixInterchangeNumber = currentPendingOrderNtNotification.InterchangeNumber,
-                                    orderFileKeyNumber = currentPendingOrderNtNotification.ReferenceNumber
-                                };
+                                    orderFileKeyNumber = currentPendingOrderNtNotification.ReferenceNumber,
+                                    orderFileKeyPfx = currentPendingOrderNtNotification.ReferencePrefix
+
+                            };
                             if (currentPendingOrderNtNotification.ReferenceItem > 0)
                             {
                                 stratixOrderReleaseParametersForRuan.orderFileItemNumber = currentPendingOrderNtNotification.ReferenceItem;
@@ -65,7 +68,7 @@ namespace StratixToRuanDataTransfer
                             }
 
                             stratixOrderReleaseParametersForRuan.orderReleaseStatusValue = ruanStatusValue;
-
+                            
                             RuanAction.GenerateOrderReleaseForRuan(stratixOrderReleaseParametersForRuan);
 
                             logText.AppendLine($"{DateTime.Now.ToShortTimeString()}: Sent to Ruan - InterchangeNumber# {currentPendingOrderNtNotification.InterchangeNumber}/ Interchange Activity {currentPendingOrderNtNotification.InterchangeActivity}/ OrderNumber: {currentPendingOrderNtNotification.ReferenceNumber}");
