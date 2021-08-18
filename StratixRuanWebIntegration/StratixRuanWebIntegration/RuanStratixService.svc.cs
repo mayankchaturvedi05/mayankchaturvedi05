@@ -169,8 +169,7 @@ namespace StratixRuanWebIntegration
             SetupDataConnection();
 
             RuanAction.ProcessTa((APITransportationShipment)transportationAssigned);
-
-            SendToXmlTable(transportationAssigned);
+           
         }
 
         private void SendToXmlTable(IRuanStratixClass xmlData)

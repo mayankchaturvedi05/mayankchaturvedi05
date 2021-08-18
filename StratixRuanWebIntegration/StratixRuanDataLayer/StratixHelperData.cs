@@ -52,11 +52,11 @@ namespace StratixRuanDataLayer
             }
         }
 
-        public static long GetTransportNumber(long tranportInterchangeNumber)
+        public static long GetTransportNumberFromTransportAddGateway(long transportInterchangeNumber)
         {
             String query = $@"
 select i18_transp_no from  XCTI18_rec
-WHERE i18_intchg_pfx = 'XI' and i18_intchg_no = {tranportInterchangeNumber}";
+WHERE i18_intchg_pfx = 'XI' and i18_intchg_no = {transportInterchangeNumber}";
 
             using (OdbcConnection connection = new OdbcConnection(GlobalState.StratixConnectionString))
             {
@@ -69,6 +69,32 @@ WHERE i18_intchg_pfx = 'XI' and i18_intchg_no = {tranportInterchangeNumber}";
                     cmd.Connection.Close();
 
                     return transportNumber;
+                }
+            }
+        }
+
+        public static string GetPickupWarehouseFromTransportAddGateway(long transportInterchangeNumber)
+        {
+            String query = $@"
+select i18_trpln_whs from  XCTI18_rec
+WHERE i18_intchg_pfx = 'XI' and i18_intchg_no = {transportInterchangeNumber}";
+
+            string warehouseCode = string.Empty;
+            using (OdbcConnection connection = new OdbcConnection(GlobalState.StratixConnectionString))
+            {
+                using (OdbcCommand cmd = new OdbcCommand(query, connection))
+                {
+                    connection.Open();
+                    cmd.CommandType = CommandType.Text;
+                    object warehouseObject = cmd.ExecuteScalar();
+                    if (warehouseObject != null)
+                    {
+                        warehouseCode = Convert.ToString(warehouseObject);
+                    }
+
+                    cmd.Connection.Close();
+
+                    return warehouseCode;
                 }
             }
         }

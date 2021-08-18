@@ -55,6 +55,25 @@ namespace StratixRuanBusinessLogic
             }
         }
 
+        public static T DeserializeFromXmlString<T>(string xmlString)
+        {
+            XmlSerializer serializer = new XmlSerializer(typeof(T));
+            using (TextReader reader = new StringReader(xmlString))
+            {
+                return (T)serializer.Deserialize(reader);
+            }
+        }
+
+        public static Stream GenerateStreamFromString(string s)
+        {
+            MemoryStream stream = new MemoryStream();
+            StreamWriter writer = new StreamWriter(stream);
+            writer.Write(s);
+            writer.Flush();
+            stream.Position = 0;
+            return stream;
+        }
+
         public class Utf8StringWriter : StringWriter
         {
             public Utf8StringWriter() : base() { }

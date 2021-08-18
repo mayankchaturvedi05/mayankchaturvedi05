@@ -69,6 +69,7 @@ namespace StratixRuanBusinessLogic.Stratix
         public long tav_ref_no { get; set; }
         public string tav_jbs_pfx { get; set; }
         public long tav_jbs_no { get; set; }
+        public DateTime? ShipDateTimeEarly { get; set; }
 
         protected RuanOrderIntegrationHelperData(StratixRuanDataLayer.TSRuanOrderIntegrationHelperData source)
         {
@@ -127,6 +128,7 @@ namespace StratixRuanBusinessLogic.Stratix
             tav_ref_no = source.tav_ref_no;
             tav_jbs_pfx = source.tav_jbs_pfx;
             tav_jbs_no = source.tav_jbs_no;
+            ShipDateTimeEarly = source.ShipDateTimeEarly;
         }
 
         public static RuanOrderIntegrationHelperData GetDataToConstructRuanOrderIntegrationHelperData(StratixOrderReleaseParametersForRuan stratixOrderReleaseParametersForRuan)

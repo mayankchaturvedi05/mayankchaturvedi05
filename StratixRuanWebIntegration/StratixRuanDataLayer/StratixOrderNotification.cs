@@ -21,8 +21,8 @@ namespace StratixRuanDataLayer
         public DateTime AcknowledgedDateTime { get; set; }
 
         private const string whereClauseSalesOrder = " WHERE T.not_ref_pfx IN ('SO') AND H.noh_cmpy_id = 'HSP' AND noh_intchg_pfx = 'XE' AND noh_ackd_dtts IS NULL AND noh_ackd = 0 AND T.not_intchg_actvy IN ('A','C','D', 'U') AND tav.tav_trac_typ = 'SH' ";
-        private const string whereClauseTransfer = " WHERE T.not_ref_pfx IN ('IP') AND H.noh_cmpy_id = 'HSP' AND noh_intchg_pfx = 'XE' AND noh_ackd_dtts IS NULL AND noh_ackd = 0 AND T.not_intchg_actvy IN ('A','C','D', 'U') AND tav.tav_trac_typ = 'IP' ";
-        private const string whereClauseJob = " WHERE T.not_ref_pfx IN ('JS') AND H.noh_cmpy_id = 'HSP' AND noh_intchg_pfx = 'XE' AND noh_ackd_dtts IS NULL AND noh_ackd = 0 AND T.not_intchg_actvy IN ('A','C','D', 'U') AND tav.tav_trac_typ = 'IP' ";
+        private const string whereClauseTransfer = " WHERE T.not_ref_pfx IN ('IP') AND H.noh_cmpy_id = 'HSP' AND noh_intchg_pfx = 'XE' AND noh_ackd_dtts IS NULL AND noh_ackd = 0 AND T.not_intchg_actvy IN ('A','C','D', 'U') AND tav.tav_trac_typ = 'TF' ";
+        private const string whereClauseJob = " WHERE T.not_ref_pfx IN ('JS') AND H.noh_cmpy_id = 'HSP' AND noh_intchg_pfx = 'XE' AND noh_ackd_dtts IS NULL AND noh_ackd = 0 AND T.not_intchg_actvy IN ('A','C','D', 'U') AND tav.tav_trac_typ = 'TF' ";
 
         public static List<StratixOrderNotification> GetStratixOrderNotification()
         {

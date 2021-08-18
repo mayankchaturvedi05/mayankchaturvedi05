@@ -70,8 +70,9 @@ namespace StratixRuanDataLayer
         public long tav_ref_no { get; set; }
         public string tav_jbs_pfx { get; set; }
         public long tav_jbs_no { get; set; }
+        public DateTime? ShipDateTimeEarly { get; set; }
 
-        
+
 
         public static TSRuanOrderIntegrationHelperData GetSalesOrderDataToConstructRuanOrderIntegrationXML(long orderNumber, Int16 orderItemNumber, Int16 orderSubItemNumber)
         {
@@ -120,6 +121,7 @@ namespace StratixRuanDataLayer
 					  ORL.orl_due_to_dt AS OrderDeliveryDateTo,
                       ORL.orl_due_fm_hr AS OrderDeliveryDateFromHour,
 					  ORL.orl_due_to_hr AS OrderDeliveryDateToHour,
+                      tav.tav_rdy_by_ltts AS ShipDateTimeEarly,
                       OD.ord_cus_po AS CustomerPO,
                    
                      SalesPersonLoginDetail.usr_nm as InsideSalesPersonName,
@@ -240,6 +242,12 @@ namespace StratixRuanDataLayer
                     object orderDeliveryDateToHour = reader["OrderDeliveryDateToHour"];
                     result.OrderDeliveryDateToHour = Convert.ToInt16(orderDeliveryDateToHour);
 
+                    object shipDateTimeEarly = reader["tav_rdy_by_ltts"];
+                    if (shipDateTimeEarly != null)
+                    {
+                        result.ShipDateTimeEarly = Convert.ToDateTime(shipDateTimeEarly);
+                    }
+
                     result.OrderProductDescription1 = reader["OrderProductDescription1"].ToString().Trim();
                     result.OrderProductDescription2 = reader["OrderProductDescription2"].ToString().Trim();
                     result.PartID = reader["PartID"].ToString().Trim();
@@ -322,6 +330,7 @@ namespace StratixRuanDataLayer
 									tav.tav_trgt_ord_pfx, tav.tav_trgt_ord_no AS SalesOrderReleaseNumber, tav.tav_trgt_ord_itm,  tav.tav_trgt_ord_rls,
 									tav_ref_pfx, tav_ref_no,
                                     tav_jbs_pfx, tav_jbs_no,
+                                    tav.tav_rdy_by_ltts AS ShipDateTimeEarly,
 					  				tav.tav_actvy_dtts AS OrderDeliveryDateFrom,
 					  				tav.tav_actvy_dtts AS OrderDeliveryDateTo,
                       				0 AS OrderDeliveryDateFromHour,
@@ -416,6 +425,13 @@ namespace StratixRuanDataLayer
 
                     object orderDeliveryDateToHour = reader["OrderDeliveryDateToHour"];
                     result.OrderDeliveryDateToHour = Convert.ToInt16(orderDeliveryDateToHour);
+
+                    object shipDateTimeEarly = reader["tav_rdy_by_ltts"];
+                    if (shipDateTimeEarly != null)
+                    {
+                        result.ShipDateTimeEarly = Convert.ToDateTime(shipDateTimeEarly);
+                    }
+
 
                     if (reader["OrderProductDescription1"] != null)
                     {

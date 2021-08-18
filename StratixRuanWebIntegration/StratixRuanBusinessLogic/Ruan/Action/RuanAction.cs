@@ -291,7 +291,7 @@ namespace StratixRuanBusinessLogic.Ruan.Action
                                 Role = "SHIPFROM/SHIPTO",
                                 PostLocationToOTM = "true"
                             },
-                            ShippingAndDeliveryDates = !String.IsNullOrEmpty(helperData.OrderDeliveryDateFrom.ToString())? new ShippingAndDeliveryDates()
+                            ShippingAndDeliveryDates = !String.IsNullOrEmpty(helperData.ShipDateTimeEarly.ToString())? new ShippingAndDeliveryDates()
                             {
                                 ShipDateTimeEarly = helperData.OrderDeliveryDateFrom,
                                 DeliveryDateTimeEarly = helperData.OrderDeliveryDateFrom, //$"{earliestDeliveryDateTimeWithTimeStamp:yyyy-MM-ddTHH:mm:ss.fffffffzzz}",
@@ -462,23 +462,24 @@ namespace StratixRuanBusinessLogic.Ruan.Action
                         using (HttpResponseMessage response = await client.PostAsync(uri, httpContent))
                         //using (HttpResponseMessage response =  client.PostAsync(uri, httpContent)) // without the await during testing.
                         {
-                            try
-                            {
-                                Debug.WriteLine(response.ToString());
-                                LastResponse = response.ToString();
-                                response.EnsureSuccessStatusCode(); //throw exception if not successful 
+                            //try
+                            //{
+                            //    Debug.WriteLine(response.ToString());
+                            //    LastResponse = response.ToString();
+                            //    response.EnsureSuccessStatusCode(); //throw exception if not successful 
 
-                            }
-                            catch (Exception e)
-                            {
-                                //set it back to be processed.
-                                StratixOrderNotification.SetOrderNotificationToOpen(key);
-                            }
+                            //}
+                            //catch (Exception e)
+                            //{
+                            //    //set it back to be processed.
+                            //    StratixOrderNotification.SetOrderNotificationToOpen(key);
+                            //}
 
 
                             ////save to database after it gets sent to Ruan(If its fails, then it is saved in the job engine to reprocess it)
                             RuanXml ruanXml = new RuanXml(apiObject);
                             ruanXml.Save();
+                            var test = ruanXml.RuanXMLNumber;
 
                         }
                     }
