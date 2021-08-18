@@ -149,7 +149,7 @@ namespace UnitTestProject1
             APITransportationShipment apiTransportationPITransportationShipment = (APITransportationShipment)s.Deserialize(r);
             r.Close();
 
-            RuanAction.ProcessTaTest(apiTransportationPITransportationShipment);
+            //RuanAction.ProcessTaTest(apiTransportationPITransportationShipment);
            // RuanAction.DeleteTransportFromStratix(apiTransportationPITransportationShipment);
 
             //var test = new RuanStratixServiceClient();

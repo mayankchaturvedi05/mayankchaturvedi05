@@ -14,44 +14,7 @@ namespace StratixRuanBusinessLogic.Ruan.Action
 {
     public static partial class RuanAction
     {
-        public class TaFileChanges
-        {
-            public string ShipmentId { get; set; }
-            //public Carrier NewCarrier { get; set; }
-            public List<TaShipUnit> PreChangeShipUnits { get; set; } = new List<TaShipUnit>();
-            public List<TaShipUnit> AfterChangeShipUnits { get; set; } = new List<TaShipUnit>();
-
-            public class TaShipUnit
-            {
-                public TaShipUnit(long? shipUnitId, long? locationNumber, long? carrierNumber, string shipmentId)
-                {
-                    ShipUnitId = shipUnitId;
-                    LocationNumber = locationNumber;
-                    CarrierNumber = carrierNumber;
-                    ShipmentId = shipmentId;
-                }
-
-                public TaShipUnit(string shipUnitId, long? locationNumber, long? carrierNumber, string shipmentId)
-                {
-                    ShipUnitId = Convert.ToInt64(shipUnitId);
-                    LocationNumber = locationNumber;
-                    CarrierNumber = carrierNumber;
-                    ShipmentId = shipmentId;
-                }
-
-                public long? ShipUnitId { get; private set; }
-                public long? LocationNumber { get; private set; }
-                public long? CarrierNumber { get; private set; }
-                public string ShipmentId { get; private set; }
-            }
-        }
-
-        public static void ProcessTaTest(IRuanStratixClass xmlData)
-        {
-            var test = Utilities.SerializeObjectToStringUtf8(xmlData);
-            ProcessTa((APITransportationShipment)xmlData);
-        }
-
+        
         public static void ProcessTa(APITransportationShipment ta)
         {
             
@@ -89,10 +52,6 @@ namespace StratixRuanBusinessLogic.Ruan.Action
             }
         }
 
-        public static void test(IRuanStratixClass xmlData)
-        {
-
-        }
 
         public static void TAtoStratix(APITransportationShipment ta)
         {
@@ -122,37 +81,86 @@ namespace StratixRuanBusinessLogic.Ruan.Action
                     throw new RuanJobException($"Shipment Number {ta.ShipmentNumber}, Invalid date {pickupStop.StopPlannedDepartureDateTime}.");
                 }
 
-                
-                long interchangeNumberTransport = StratixHelperData.GetMaxInterchangeNumber() + 1;
-                XCTI18 objXcti18 = new XCTI18();
-                objXcti18.i18_intchg_no = interchangeNumberTransport;
-                string formatDate = "yyyy-MM-dd HH:mm:ss";
-                objXcti18.i18_crtd_dtts = $"'{DateTime.Now.ToString(formatDate)}'";
-                objXcti18.i18_trrte = "RUAN";
-                objXcti18.i18_dlvy_mthd = "OC";
-                objXcti18.i18_cmpy_id = "HSP";
-                objXcti18.i18_intchg_pfx = "XI";
-                objXcti18.i18_rte_clr = string.Empty;
-
-                string carrierInfo = $"{ta.CarrierScac}*{ta.CarrierName}";
-                if (carrierInfo.Length > 35)
+                // Check for existing transport.
+                if (string.IsNullOrWhiteSpace(ta.ShipmentNumber))
                 {
-                    carrierInfo = carrierInfo.Substring(0, 35);
+                    throw new RuanJobException($"Missing Ruan Shipment Number");
                 }
-                objXcti18.i18_crr_nm = carrierInfo;
 
-                objXcti18.i18_frt_exrt = 1.00000000;
-                objXcti18.i18_frt_ex_rt_typ = "V";
-                objXcti18.i18_sch_rmk = "remark";
-                objXcti18.i18_trctr = 1;
-                objXcti18.i18_trlr_typ = "FB";
-                objXcti18.i18_max_stp = deliveryStops.Length + pickupStops.Length;
+                if (string.IsNullOrWhiteSpace(pickupStop.Location.Name))
+                {
+                    throw new RuanJobException($"Shipment Number {ta.ShipmentNumber}, has missing Pickup location name");
+                }
+                string ruanCarrierRefNum = ta.ShipmentNumber;
+                string wareHouse = pickupStop.Location.Name;
 
-                objXcti18.i18_crr_ref_no = ta.ShipmentNumber;
-                objXcti18.i18_frt_cry = "USD";
-                objXcti18.i18_frt_ven_id = "9999";
-                objXcti18.i18_sch_dtts = $"'{dateShipped.Value.ToString(formatDate)}'";
-                objXcti18.i18_trpln_whs = pickupStop.Location.Name;
+                long transportNumber =
+                    StratixHelperData.GetTransportNumberByRuanCarrierRefAndWarehouse(ruanCarrierRefNum, wareHouse);
+                long interchangeNumberTransport = StratixHelperData.GetMaxInterchangeNumber() + 1;
+
+                XCTI18 objXcti18 = new XCTI18();
+                XCTI19 objXcti19 = new XCTI19();
+                if (transportNumber > 0) //change
+                {
+                    objXcti19.i19_intchg_no = interchangeNumberTransport;
+                    string formatDate = "yyyy-MM-dd HH:mm:ss";
+                    objXcti19.i19_crtd_dtts = $"'{DateTime.Now.ToString(formatDate)}'";
+                    objXcti19.i19_trrte = "RUAN";
+                    objXcti19.i19_dlvy_mthd = "OC";
+                    objXcti19.i19_cmpy_id = "HSP";
+                    objXcti19.i19_intchg_pfx = "XI";
+                    objXcti19.i19_rte_clr = string.Empty;
+
+                    string carrierInfo = $"{ta.CarrierScac}*{ta.CarrierName}";
+                    if (carrierInfo.Length > 35)
+                    {
+                        carrierInfo = carrierInfo.Substring(0, 35);
+                    }
+                    objXcti19.i19_crr_nm = carrierInfo;
+
+                    objXcti19.i19_frt_exrt = 1.00000000;
+                    objXcti19.i19_frt_ex_rt_typ = "V";
+                    objXcti19.i19_sch_rmk = "remark";
+                    objXcti19.i19_trctr = 1;
+                    objXcti19.i19_trlr_typ = "FB";
+                    objXcti19.i19_max_stp = deliveryStops.Length + pickupStops.Length;
+
+                    objXcti19.i19_crr_ref_no = ta.ShipmentNumber;
+                    objXcti19.i19_frt_cry = "USD";
+                    objXcti19.i19_frt_ven_id = "9999";
+                    objXcti19.i19_sch_dtts = $"'{dateShipped.Value.ToString(formatDate)}'";
+                }
+                else
+                {
+                    objXcti18.i18_intchg_no = interchangeNumberTransport;
+                    string formatDate = "yyyy-MM-dd HH:mm:ss";
+                    objXcti18.i18_crtd_dtts = $"'{DateTime.Now.ToString(formatDate)}'";
+                    objXcti18.i18_trrte = "RUAN";
+                    objXcti18.i18_dlvy_mthd = "OC";
+                    objXcti18.i18_cmpy_id = "HSP";
+                    objXcti18.i18_intchg_pfx = "XI";
+                    objXcti18.i18_rte_clr = string.Empty;
+
+                    string carrierInfo = $"{ta.CarrierScac}*{ta.CarrierName}";
+                    if (carrierInfo.Length > 35)
+                    {
+                        carrierInfo = carrierInfo.Substring(0, 35);
+                    }
+                    objXcti18.i18_crr_nm = carrierInfo;
+
+                    objXcti18.i18_frt_exrt = 1.00000000;
+                    objXcti18.i18_frt_ex_rt_typ = "V";
+                    objXcti18.i18_sch_rmk = "remark";
+                    objXcti18.i18_trctr = 1;
+                    objXcti18.i18_trlr_typ = "FB";
+                    objXcti18.i18_max_stp = deliveryStops.Length + pickupStops.Length;
+
+                    objXcti18.i18_crr_ref_no = ta.ShipmentNumber;
+                    objXcti18.i18_frt_cry = "USD";
+                    objXcti18.i18_frt_ven_id = "9999";
+                    objXcti18.i18_sch_dtts = $"'{dateShipped.Value.ToString(formatDate)}'";
+                    objXcti18.i18_trpln_whs = pickupStop.Location.Name;
+                }
 
                 long orderID = 0;
                 foreach (Order order in pickupStop.Orders)
@@ -210,26 +218,47 @@ namespace StratixRuanBusinessLogic.Ruan.Action
                 } // Pickup Orders
 
                 objXcti18.i18_max_wgt = weightTotal;
+                objXcti18.i18_max_wgt = weightTotal;
+
+                if (transportNumber > 0)//change
+                {
+                    objXcti19.i19_max_wgt = weightTotal;
+                }
+                else
+                {
+                    objXcti18.i18_max_wgt = weightTotal;
+                }
+
                 RuanXml ruanXml = new RuanXml(ta);//Save the TA
                 try
                 {
-                    XCTI18.AddTransport(objXcti18);
-                    ruanXml.Save();
+                    if (transportNumber > 0)//change
+                    {
+                        XCTI19.ModifyTransport(objXcti19);
+                        PrepareForTransportActivity(ta, pickupStop.Location.Name, transportNumber);
+                        ruanXml.Save();
+                    }
+                    else
+                    {
+                        XCTI18.AddTransport(objXcti18);
+                        ruanXml.Save();
+
+                        //Send this to activities queue to be processed little bit later as we won't have a transport number immediately(for few seconds atleast) and the Plan Activities require the transport number.
+                        RuanXMLQueue activitiesQueue = new RuanXMLQueue
+                        {
+                            RuanXMLNumber = ruanXml.RuanXMLNumber,
+                            QueueFlagNumber = queueFlagForActivityNotAssigned.QueueTypeNumber, //Denotes Transport Number Not available
+                            StratixInterchangeNumber = interchangeNumberTransport
+                        };
+
+                        activitiesQueue.Save();
+
+                    }
                 }
                 catch (Exception e)
                 {
                     throw new RuanJobException($"Error Adding Transport.");
                 }
-               
-                //Send this to activities queue to be processed as long as there is a Transport Number assigned by Stratix Add Transport gateweay queue.
-                RuanXMLQueue activitiesQueue = new RuanXMLQueue
-                {
-                    RuanXMLNumber = ruanXml.RuanXMLNumber,
-                    QueueFlagNumber = queueFlagForActivityNotAssigned.QueueTypeNumber, //Denotes Transport Number Not available
-                    StratixInterchangeNumber = interchangeNumberTransport
-                };
-                
-                activitiesQueue.Save();
 
             }//Pickup Stops
 
@@ -271,33 +300,7 @@ namespace StratixRuanBusinessLogic.Ruan.Action
                     {
                         APITransportationShipment ta = Utilities.DeserializeFromXmlString<APITransportationShipment>(xmlParameter);
 
-                        TransportationArrangedStop[] pickupStops = ta.Stops.Where(x => x.StopType == "P").ToArray();
-                        TransportationArrangedStop pickupStopsByLocation = pickupStops.FirstOrDefault(x => x.Location.Name.Equals(pickupWarehouse));
-                        if (pickupStopsByLocation != null)
-                        {
-                            foreach (var pickupOrder in pickupStopsByLocation.Orders)
-                            {
-                                string orderIdWithReleaseInformation = pickupOrder.OrderId;
-                                char separationCharacter = '_';
-
-                                int separationCharacterCount =
-                                    orderIdWithReleaseInformation.Count(x => (x == separationCharacter));
-                                if (separationCharacterCount != 2)
-                                {
-                                    throw new RuanJobException($"Invalid OrderID {orderIdWithReleaseInformation}.");
-                                }
-
-                                var orderSplitArray =
-                                    pickupOrder.OrderId.Split(
-                                        separationCharacter); //First array value is the OrderID, second is the Detail and the third array is the release item id.
-
-                                AddTranportActivity(transportNumber, orderSplitArray);
-                            }
-                        }
-                        else
-                        {
-                            throw new RuanJobException($"PickStop NOT found");
-                        }
+                        PrepareForTransportActivity(ta, pickupWarehouse, transportNumber);
                     }
 
                     ruanXmlQueueObject.QueueFlagNumber = queueFlagForActivityAssigned.QueueTypeNumber;//Flag it, so that it wouldn't be processed in future calls.
@@ -310,7 +313,40 @@ namespace StratixRuanBusinessLogic.Ruan.Action
             
         }
 
-        private static void AddTranportActivity(long transportNumber, string[] orderSplitArray)
+        private static void PrepareForTransportActivity(APITransportationShipment ta, string pickupWarehouse,
+            long transportNumber)
+        {
+            TransportationArrangedStop[] pickupStops = ta.Stops.Where(x => x.StopType == "P").ToArray();
+            TransportationArrangedStop pickupStopsByLocation =
+                pickupStops.FirstOrDefault(x => x.Location.Name.Equals(pickupWarehouse));
+            if (pickupStopsByLocation != null)
+            {
+                foreach (var pickupOrder in pickupStopsByLocation.Orders)
+                {
+                    string orderIdWithReleaseInformation = pickupOrder.OrderId;
+                    char separationCharacter = '_';
+
+                    int separationCharacterCount =
+                        orderIdWithReleaseInformation.Count(x => (x == separationCharacter));
+                    if (separationCharacterCount != 2)
+                    {
+                        throw new RuanJobException($"Invalid OrderID {orderIdWithReleaseInformation}.");
+                    }
+
+                    var orderSplitArray =
+                        pickupOrder.OrderId.Split(
+                            separationCharacter); //First array value is the OrderID, second is the Detail and the third array is the release item id.
+
+                    PlanTransportActivity(transportNumber, orderSplitArray);
+                }
+            }
+            else
+            {
+                throw new RuanJobException($"PickStop NOT found");
+            }
+        }
+
+        private static void PlanTransportActivity(long transportNumber, string[] orderSplitArray)
         {
             string formatDate = "yyyy-MM-dd HH:mm:ss";
             XCTI21 objXcti21 = new XCTI21();
@@ -343,8 +379,30 @@ namespace StratixRuanBusinessLogic.Ruan.Action
 
         public static void DeleteTransportFromStratix(APITransportationShipment ta)
         {
-            for (int i = 515; i <= 516; i++)
+            if (string.IsNullOrWhiteSpace(ta.CarrierScac))
             {
+                throw new RuanJobException($"Shipment Number {ta.ShipmentNumber}, has no Carrier SCAC.");
+            }
+
+            TransportationArrangedStop[] pickupStops = ta.Stops.Where(x => x.StopType == "P").ToArray();
+            foreach (TransportationArrangedStop pickupStop in pickupStops)
+            {
+
+                if (string.IsNullOrWhiteSpace(ta.ShipmentNumber))
+                {
+                    throw new RuanJobException($"Missing Ruan Shipment Number");
+                }
+
+                if (string.IsNullOrWhiteSpace(pickupStop.Location.Name))
+                {
+                    throw new RuanJobException($"Shipment Number {ta.ShipmentNumber}, has missing Pickup location name");
+                }
+                string ruanCarrierRefNum = ta.ShipmentNumber;
+                string wareHouse = pickupStop.Location.Name;
+
+                long transportNumber =
+                    StratixHelperData.GetTransportNumberByRuanCarrierRefAndWarehouse(ruanCarrierRefNum, wareHouse);
+
                 XCTI20 objXcti20 = new XCTI20();
                 objXcti20.i20_cmpy_id = "HSP";
                 objXcti20.i20_intchg_pfx = "XI";
@@ -352,11 +410,10 @@ namespace StratixRuanBusinessLogic.Ruan.Action
                 string formatDate = "yyyy-MM-dd HH:mm:ss";
                 objXcti20.i20_crtd_dtts = $"'{DateTime.Now.ToString(formatDate)}'";
                 objXcti20.i20_transp_pfx = "TR";
-                objXcti20.i20_transp_no = i;
+                objXcti20.i20_transp_no = transportNumber;
                 XCTI20.DeleteTransport(objXcti20);
             }
 
-           
         }
        
     }
