@@ -53,6 +53,56 @@ namespace StratixToRuanDataTransfer
             {
                 queueProcess = ConfigurationManager.AppSettings["QueueProcess"];
             }
+            else
+            {
+                string exceptionText =
+                    $"{DateTime.Now.ToShortTimeString()}: Error getting Queue Process";
+                throw new Exception(exceptionText);
+            }
+
+            if (!string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["StratixUser"]))
+            {
+                GlobalState.StratixUserName = ConfigurationManager.AppSettings["StratixUser"];
+            }
+            else
+            {
+                string exceptionText =
+                    $"{DateTime.Now.ToShortTimeString()}: Error getting Stratix User Name";
+                throw new Exception(exceptionText);
+            }
+
+            if (!string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["StratixPassword"]))
+            {
+                GlobalState.StratixPassword = ConfigurationManager.AppSettings["StratixPassword"];
+            }
+            else
+            {
+                string exceptionText =
+                    $"{DateTime.Now.ToShortTimeString()}: Error getting Stratix Password";
+                throw new Exception(exceptionText);
+            }
+
+            if (!string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["StratixEnvironmentName"]))
+            {
+                GlobalState.StratixEnvironmentName = ConfigurationManager.AppSettings["StratixEnvironmentName"];
+            }
+            else
+            {
+                string exceptionText =
+                    $"{DateTime.Now.ToShortTimeString()}: Error getting Stratix Environment name";
+                throw new Exception(exceptionText);
+            }
+
+            if (!string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["StratixEnvironmentClass"]))
+            {
+                GlobalState.StratixEnvironmentClass = ConfigurationManager.AppSettings["StratixEnvironmentClass"];
+            }
+            else
+            {
+                string exceptionText =
+                    $"{DateTime.Now.ToShortTimeString()}: Error getting Stratix Environment Class";
+                throw new Exception(exceptionText);
+            }
 
 
             if ((!Environment.UserInteractive))

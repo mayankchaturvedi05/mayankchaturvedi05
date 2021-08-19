@@ -49,6 +49,12 @@ namespace StratixRuanBusinessLogic
 
         }
 
+        
+        public static string StratixUserName { get; set; }
+        public static string StratixPassword { get; set; }
+        public static string StratixEnvironmentName { get; set; }
+        public static string StratixEnvironmentClass { get; set; }
+
         private static QueueFlagList _queueFlags;
         public static QueueFlagList QueueFlags
         {

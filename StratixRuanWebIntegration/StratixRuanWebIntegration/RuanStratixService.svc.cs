@@ -24,6 +24,10 @@ namespace StratixRuanWebIntegration
         private const string JobUser = "System";
         private string EventLogSource = "RuanSource";
         private string EventLogName = "RuanLog";
+        private readonly string _stratixUser;
+        private readonly string _stratixPassword;
+        private readonly string _stratixEnvironmentName;
+        private readonly string _stratixEnvironmentClass;
 
         public RuanStratixService()
         {
@@ -33,6 +37,10 @@ namespace StratixRuanWebIntegration
                 _ruanUser = ConfigurationManager.AppSettings["RuanStratixUser"];
                 _ruanPassword = ConfigurationManager.AppSettings["RuanStratixUPW"];
                 _shouldLogXml = Convert.ToBoolean(ConfigurationManager.AppSettings["ShouldLogXML"]);
+                _stratixUser = ConfigurationManager.AppSettings["StratixUser"];
+                _stratixPassword = ConfigurationManager.AppSettings["StratixPassword"];
+                _stratixUser = ConfigurationManager.AppSettings["StratixEnvironmentName"];
+                _stratixPassword = ConfigurationManager.AppSettings["StratixEnvironmentClass"];
             }
             catch (FaultException<RuanStratixException>)
             {
@@ -167,7 +175,7 @@ namespace StratixRuanWebIntegration
         {
             WriteToLog(transportationAssigned);
             SetupDataConnection();
-
+            SetGlobalStates();
             RuanAction.ProcessTa((APITransportationShipment)transportationAssigned);
            
         }
@@ -176,6 +184,14 @@ namespace StratixRuanWebIntegration
         {
             RuanXml ruanXml = new RuanXml(xmlData);
             ruanXml.Save();
+        }
+
+        private void SetGlobalStates()
+        {
+            GlobalState.StratixUserName = _stratixUser;
+            GlobalState.StratixPassword = _stratixPassword;
+            GlobalState.StratixEnvironmentName = _stratixEnvironmentName;
+            GlobalState.StratixEnvironmentClass = _stratixEnvironmentClass;
         }
 
         

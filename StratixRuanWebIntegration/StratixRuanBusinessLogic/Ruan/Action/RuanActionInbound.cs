@@ -57,8 +57,7 @@ namespace StratixRuanBusinessLogic.Ruan.Action
                 TAtoStratix(ta);
             }
         }
-
-
+        
         public static void TAtoStratix(APITransportationShipment ta)
         {
             QueueFlag queueFlagForActivityNotAssigned = GlobalState.QueueFlags.QueueFlagByCode("ActivityNotAssigned");
@@ -426,10 +425,10 @@ namespace StratixRuanBusinessLogic.Ruan.Action
         {
             AuthenticationServiceClient authenticationServiceClient = new AuthenticationServiceClient();
             GatewayLoginRequestType gatewayLoginRequestType = new GatewayLoginRequestType();
-            gatewayLoginRequestType.username = "smills ";//todo change these to config values.
-            gatewayLoginRequestType.password = "password";
-            gatewayLoginRequestType.environmentName = "tsthsp";
-            gatewayLoginRequestType.environmentClass = "TST";
+            gatewayLoginRequestType.username = GlobalState.StratixUserName;
+            gatewayLoginRequestType.password = GlobalState.StratixPassword;
+            gatewayLoginRequestType.environmentName = GlobalState.StratixEnvironmentName;
+            gatewayLoginRequestType.environmentClass = GlobalState.StratixEnvironmentClass;
             gatewayLoginRequestType.forceDisconnect = true;
             gatewayLoginRequestType.connectedAccessType = "I";
             gatewayLoginRequestType.forceDisconnectSpecified = true;
