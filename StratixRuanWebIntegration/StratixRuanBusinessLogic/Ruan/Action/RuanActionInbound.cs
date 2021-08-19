@@ -115,6 +115,8 @@ namespace StratixRuanBusinessLogic.Ruan.Action
                     objXcti19.i19_cmpy_id = "HSP";
                     objXcti19.i19_intchg_pfx = "XI";
                     objXcti19.i19_rte_clr = string.Empty;
+                    objXcti19.i19_crr_nm = "RUAN";
+                    objXcti19.i19_frt_exrt = "1.00000000";
 
                     string carrierInfo = $"{ta.CarrierScac}*{ta.CarrierName}";
                     if (carrierInfo.Length > 35)
@@ -123,11 +125,11 @@ namespace StratixRuanBusinessLogic.Ruan.Action
                     }
                     objXcti19.i19_crr_nm = carrierInfo;
 
-                    objXcti19.i19_frt_exrt = 1.00000000;
+                    objXcti19.i19_frt_exrt = "1.00000000";
                     objXcti19.i19_frt_ex_rt_typ = "V";
                     objXcti19.i19_sch_rmk = "remark";
                     objXcti19.i19_trctr = 1;
-                    objXcti19.i19_trlr_typ = "FB";
+                    objXcti19.i19_trlr_typ = "CC";
                     objXcti19.i19_max_stp = deliveryStops.Length + pickupStops.Length;
 
                     objXcti19.i19_crr_ref_no = ta.ShipmentNumber;
@@ -239,13 +241,13 @@ namespace StratixRuanBusinessLogic.Ruan.Action
                 {
                     if (transportNumber > 0)//change
                     {
-                        XCTI19.ModifyTransport(objXcti19);
+                        XCTI19.ModifyTransportForSalesOrderAndTransfer(objXcti19);
                         PrepareForTransportActivity(ta, pickupStop.Location.Name, transportNumber);
                         ruanXml.Save();
                     }
                     else
                     {
-                        XCTI18.AddTransport(objXcti18);
+                        XCTI18.AddTransportForSalesOrderAndTransfer(objXcti18);
                         ruanXml.Save();
 
                         //Send this to activities queue to be processed little bit later as we won't have a transport number immediately(for few seconds atleast) and the Plan Activities require the transport number.
@@ -421,6 +423,7 @@ namespace StratixRuanBusinessLogic.Ruan.Action
 
         }
 
+        //TODO Merge AssignFreightCost from SKhan's local brank.
         public static void AssignFreightCost()
         {
             AuthenticationServiceClient authenticationServiceClient = new AuthenticationServiceClient();
@@ -444,16 +447,16 @@ namespace StratixRuanBusinessLogic.Ruan.Action
             authenticationToken.value = gatewayLoginResponseType.authenticationToken.value;
 
             UpdateTRFreightCostInput updateTrFreightCostInput = new UpdateTRFreightCostInput();
-            updateTrFreightCostInput.trNumber = 533;
+            updateTrFreightCostInput.trNumber = 533;//todo
             updateTrFreightCostInput.trFreightCostSpecified = true;
             updateTrFreightCostInput.trFreightCostUM = "CWT";
-            updateTrFreightCostInput.trFreightCost = 0.6m;
+            updateTrFreightCostInput.trFreightCost = 0.6m;//todo
 
             updateTrFreightCostInput.trFlSurChrgCostSpecified = false;
             updateTrFreightCostInput.trFlSurChrgCostUM = "PCT";
 
 
-            updateTrFreightCostInput.trCarrierRef = "R11121";
+            updateTrFreightCostInput.trCarrierRef = "R11121";//todo
 
 
             updateTrFreightCostInput.trStopChrgSpecified = false;

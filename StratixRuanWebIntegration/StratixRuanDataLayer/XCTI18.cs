@@ -48,12 +48,12 @@ namespace StratixRuanDataLayer
 
 
 
-        public static void AddTransport(XCTI18 transportvalues)
+        public static void AddTransportForSalesOrderAndTransfer(XCTI18 transportvalues)
         {
             OdbcConnection connection = new OdbcConnection(GlobalState.StratixConnectionString);//64 bit
             connection.Open();
 
-
+            //TODO: pass in the values thru the XCTI18 object, Username from config etc
             string insertColumnsQueryForTransport = "INSERT INTO xcti18_rec" +
                                         "(" +
                                         "i18_intchg_no," +

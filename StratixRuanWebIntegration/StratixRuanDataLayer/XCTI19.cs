@@ -24,7 +24,7 @@ namespace StratixRuanDataLayer
         public string i19_frt_ven_id { get; set; }
         public string i19_crr_nm { get; set; }
         public string i19_frt_cry { get; set; }
-        public double i19_frt_exrt { get; set; }
+        public string i19_frt_exrt { get; set; }
         public string i19_frt_ex_rt_typ { get; set; }
         public string i19_vcl_no { get; set; }
         public string i19_sch_rmk { get; set; }
@@ -44,11 +44,11 @@ namespace StratixRuanDataLayer
         public long i19_sch_dtms { get; set; }
         public string i19_crr_ref_no { get; set; }
 
-        public static void ModifyTransport(XCTI19 transportvalues)
+        public static void ModifyTransportForSalesOrderAndTransfer(XCTI19 transportvalues)
         {
             OdbcConnection connection = new OdbcConnection(GlobalState.StratixConnectionString);//64 bit
             connection.Open();
-
+            //TODO: pass in the values thru the XCTI18 object, Username from config etc
 
             string insertColumnsQueryForTransport = "INSERT INTO xcti19_rec" +
                                         "(" +
@@ -85,19 +85,19 @@ namespace StratixRuanDataLayer
                                              $"'{transportvalues.i19_intchg_no}', " +
                                              $"{transportvalues.i19_crtd_dtts}, " +
                                              $"'{transportvalues.i19_trrte}', " +
-                                             "'OC', " +
-                                             "'HSP', " +
-                                             "'XI'," +
-                                             " ''," +
-                                             " 'RUAN'," +
-                                             " 1.00000000," +
-                                             " 'V'," +
+                                             $"'{transportvalues.i19_dlvy_mthd}', " +
+                                             $"'{transportvalues.i19_cmpy_id}', " +
+                                             $"'{transportvalues.i19_intchg_pfx}'," +
+                                             $" ''," +
+                                             $" '{transportvalues.i19_crr_nm}'," +
+                                             $" {transportvalues.i19_frt_exrt}," +
+                                             $" '{transportvalues.i19_frt_ex_rt_typ}'," +
                                              " ''," +
                                              " ''," +
                                              " '', " +
-                                             "''," +
-                                             " 1," +
-                                             " 'CC'," +
+                                             " ''," +
+                                             $" {transportvalues.i19_trctr}," +
+                                             $" '{transportvalues.i19_trlr_typ}'," +
                                              $"{transportvalues.i19_max_stp}, " +
                                              $"{transportvalues.i19_max_wgt}, " +
                                              " 0," +
@@ -106,7 +106,7 @@ namespace StratixRuanDataLayer
                                              " '', " +
                                              "0," +
                                              $"'{transportvalues.i19_crr_ref_no}', " +
-                                             " 'USD', " +
+                                             $" '{transportvalues.i19_frt_cry}', " +
                                              $"'', " +
                                              $"{transportvalues.i19_sch_dtts} " +
                                              ");";

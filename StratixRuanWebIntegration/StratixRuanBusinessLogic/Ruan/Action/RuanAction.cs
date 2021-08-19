@@ -84,10 +84,10 @@ namespace StratixRuanBusinessLogic.Ruan.Action
         //mapping functions go here
         #region Mapping Functions 
             
-        //creates and submits Actual Shipment (SA) to Ruan from a manifestHeaderNumber
-        public static void SubmitActualShipment(long manifestHeaderNumber)
+       
+        public static void SubmitActualShipmentForSalesOrderAndTransfer()
         {
-           
+           //Currently being worked on locally by Skhan
         }
 
         public static void GenerateOrderReleaseForRuan(StratixOrderReleaseParametersForRuan stratixOrderReleaseParametersForRuan)
