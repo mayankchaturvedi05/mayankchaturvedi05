@@ -17,7 +17,7 @@ namespace StratixRuanBusinessLogic.Ruan.Action
 
         public string StopNumber { get; set; }
         public double TotalCost { get; set; } = 0d;
-        public List<long> TruckReleases { get; set; } = new List<long>();
+        public List<string> KeyOrderIds { get; set; } = new List<string>();
 
         public void AddCost(string stringCost)
         {
@@ -27,12 +27,9 @@ namespace StratixRuanBusinessLogic.Ruan.Action
             }
         }
 
-        public void AddTruckRelease(string stringTruckRelease)
+        public void AddOrders(string keyorderId)
         {
-            if (Int64.TryParse(stringTruckRelease, out long truckRelease))
-            {
-                TruckReleases.Add(truckRelease);
-            }
+                KeyOrderIds.Add(keyorderId);
         }
     }
 }

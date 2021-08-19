@@ -1,48 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.ServiceModel;
 using System.Text.RegularExpressions;
+using StratixRuanBusinessLogic.CoreData;
 using StratixRuanBusinessLogic.Ruan.Serialization;
+using StratixRuanDataLayer;
+using System.Threading;
+using System.Xml;
+using System.Xml.Linq;
+using StratixRuanDataLayer.StratixAuthenticationService;
+using StratixRuanDataLayer.StratixTransportFreightService;
+using AuthenticationToken = StratixRuanDataLayer.StratixAuthenticationService.AuthenticationToken;
+using ServiceMessages = StratixRuanDataLayer.StratixAuthenticationService.ServiceMessages;
 
 namespace StratixRuanBusinessLogic.Ruan.Action
 {
     public static partial class RuanAction
     {
-        public class TaFileChanges
-        {
-            public string ShipmentId { get; set; }
-            //public Carrier NewCarrier { get; set; }
-            public List<TaShipUnit> PreChangeShipUnits { get; set; } = new List<TaShipUnit>();
-            public List<TaShipUnit> AfterChangeShipUnits { get; set; } = new List<TaShipUnit>();
-
-            public class TaShipUnit
-            {
-                public TaShipUnit(long? shipUnitId, long? locationNumber, long? carrierNumber, string shipmentId)
-                {
-                    ShipUnitId = shipUnitId;
-                    LocationNumber = locationNumber;
-                    CarrierNumber = carrierNumber;
-                    ShipmentId = shipmentId;
-                }
-
-                public TaShipUnit(string shipUnitId, long? locationNumber, long? carrierNumber, string shipmentId)
-                {
-                    ShipUnitId = Convert.ToInt64(shipUnitId);
-                    LocationNumber = locationNumber;
-                    CarrierNumber = carrierNumber;
-                    ShipmentId = shipmentId;
-                }
-
-                public long? ShipUnitId { get; private set; }
-                public long? LocationNumber { get; private set; }
-                public long? CarrierNumber { get; private set; }
-                public string ShipmentId { get; private set; }
-            }
-        }
-
+        
         public static void ProcessTa(APITransportationShipment ta)
         {
+            
             if (string.IsNullOrWhiteSpace(ta.ShipmentNumber))
             {
                // throw new RuanJobException($"No Shipment Number.");
@@ -59,8 +40,7 @@ namespace StratixRuanBusinessLogic.Ruan.Action
                 return;
             }
 
-            //before phase 2 ignore purchase orders,
-            //TODO: for phase2 logic should change to any then process PO logic
+            //Purchase order or returns logic
             if (ta.Stops.All(s => s.Orders.All(o => o.OrderType == "PURCHASE_ORDER" || o.OrderType == "RETURNS")))
             {
                 //ignore but don't throw error
@@ -69,559 +49,445 @@ namespace StratixRuanBusinessLogic.Ruan.Action
 
             if (ta.TransactionType == "D")
             {
-                CancelTa(ta);
+                DeleteTransportFromStratix(ta);
             }
 
             else if (ta.Stops.Any(s => s.Orders.Any(o => o.OrderType == "SALES_ORDER" || o.OrderType == "TRANSFERS")))
             {
-                CreateManifestCrossRecords(ta);
+                TAtoStratix(ta);
+            }
+        }
+        
+        public static void TAtoStratix(APITransportationShipment ta)
+        {
+            QueueFlag queueFlagForActivityNotAssigned = GlobalState.QueueFlags.QueueFlagByCode("ActivityNotAssigned");
+
+
+            if (string.IsNullOrWhiteSpace(ta.CarrierScac))
+            {
+                throw new RuanJobException($"Shipment Number {ta.ShipmentNumber}, has no Carrier SCAC.");
+            }
+
+            List<TaShipUnit> shipUnits = ta.ShipmentUnits.ToList();
+            TransportationArrangedStop[] pickupStops = ta.Stops.Where(x => x.StopType == "P").ToArray();
+            TransportationArrangedStop[] deliveryStops = ta.Stops.Where(x => x.StopType == "D").ToArray();
+            DateTime? dateShipped = null;
+
+
+            foreach (TransportationArrangedStop pickupStop in pickupStops)
+            {
+                double weightTotal = 0;
+                if (DateTime.TryParse(pickupStop.StopPlannedDepartureDateTime, out DateTime dateShippedTemp))
+                {
+                    dateShipped = dateShippedTemp;
+                }
+                else
+                {
+                    throw new RuanJobException($"Shipment Number {ta.ShipmentNumber}, Invalid date {pickupStop.StopPlannedDepartureDateTime}.");
+                }
+
+                // Check for existing transport.
+                if (string.IsNullOrWhiteSpace(ta.ShipmentNumber))
+                {
+                    throw new RuanJobException($"Missing Ruan Shipment Number");
+                }
+
+                if (string.IsNullOrWhiteSpace(pickupStop.Location.Name))
+                {
+                    throw new RuanJobException($"Shipment Number {ta.ShipmentNumber}, has missing Pickup location name");
+                }
+                string ruanCarrierRefNum = ta.ShipmentNumber;
+                string wareHouse = pickupStop.Location.Name;
+
+                long transportNumber =
+                    StratixHelperData.GetTransportNumberByRuanCarrierRefAndWarehouse(ruanCarrierRefNum, wareHouse);
+                long interchangeNumberTransport = StratixHelperData.GetMaxInterchangeNumber() + 1;
+
+                XCTI18 objXcti18 = new XCTI18();
+                XCTI19 objXcti19 = new XCTI19();
+                if (transportNumber > 0) //change
+                {
+                    objXcti19.i19_intchg_no = interchangeNumberTransport;
+                    string formatDate = "yyyy-MM-dd HH:mm:ss";
+                    objXcti19.i19_crtd_dtts = $"'{DateTime.Now.ToString(formatDate)}'";
+                    objXcti19.i19_trrte = "RUAN";
+                    objXcti19.i19_dlvy_mthd = "OC";
+                    objXcti19.i19_cmpy_id = "HSP";
+                    objXcti19.i19_intchg_pfx = "XI";
+                    objXcti19.i19_rte_clr = string.Empty;
+                    objXcti19.i19_crr_nm = "RUAN";
+                    objXcti19.i19_frt_exrt = "1.00000000";
+
+                    string carrierInfo = $"{ta.CarrierScac}*{ta.CarrierName}";
+                    if (carrierInfo.Length > 35)
+                    {
+                        carrierInfo = carrierInfo.Substring(0, 35);
+                    }
+                    objXcti19.i19_crr_nm = carrierInfo;
+
+                    objXcti19.i19_frt_exrt = "1.00000000";
+                    objXcti19.i19_frt_ex_rt_typ = "V";
+                    objXcti19.i19_sch_rmk = "remark";
+                    objXcti19.i19_trctr = 1;
+                    objXcti19.i19_trlr_typ = "CC";
+                    objXcti19.i19_max_stp = deliveryStops.Length + pickupStops.Length;
+
+                    objXcti19.i19_crr_ref_no = ta.ShipmentNumber;
+                    objXcti19.i19_frt_cry = "USD";
+                    objXcti19.i19_frt_ven_id = "9999";
+                    objXcti19.i19_sch_dtts = $"'{dateShipped.Value.ToString(formatDate)}'";
+                }
+                else // new
+                {
+                    objXcti18.i18_intchg_no = interchangeNumberTransport;
+                    string formatDate = "yyyy-MM-dd HH:mm:ss";
+                    objXcti18.i18_crtd_dtts = $"'{DateTime.Now.ToString(formatDate)}'";
+                    objXcti18.i18_trrte = "RUAN";
+                    objXcti18.i18_dlvy_mthd = "OC";
+                    objXcti18.i18_cmpy_id = "HSP";
+                    objXcti18.i18_intchg_pfx = "XI";
+                    objXcti18.i18_rte_clr = string.Empty;
+
+                    string carrierInfo = $"{ta.CarrierScac}*{ta.CarrierName}";
+                    if (carrierInfo.Length > 35)
+                    {
+                        carrierInfo = carrierInfo.Substring(0, 35);
+                    }
+                    objXcti18.i18_crr_nm = carrierInfo;
+
+                    objXcti18.i18_frt_exrt = 1.00000000;
+                    objXcti18.i18_frt_ex_rt_typ = "V";
+                    objXcti18.i18_sch_rmk = "remark";
+                    objXcti18.i18_trctr = 1;
+                    objXcti18.i18_trlr_typ = "FB";
+                    objXcti18.i18_max_stp = deliveryStops.Length + pickupStops.Length;
+
+                    objXcti18.i18_crr_ref_no = ta.ShipmentNumber;
+                    objXcti18.i18_frt_cry = "USD";
+                    objXcti18.i18_frt_ven_id = "9999";
+                    objXcti18.i18_sch_dtts = $"'{dateShipped.Value.ToString(formatDate)}'";
+                    objXcti18.i18_trpln_whs = pickupStop.Location.Name;
+                }
+
+                long orderID = 0;
+                foreach (Order order in pickupStop.Orders)
+                {
+                    string orderIdWithReleaseInformation = order.OrderId;
+                    char separationCharacter = '_';
+
+                    int separationCharacterCount = orderIdWithReleaseInformation.Count(x => (x == separationCharacter));
+                    if (separationCharacterCount != 2)
+                    {
+                        throw new RuanJobException($"Invalid OrderID {orderIdWithReleaseInformation}.");
+                    }
+                    
+                    foreach (TaShipUnit shipUnit in shipUnits)
+                    {
+                        //skip invalid shipunits
+                        //if (!validTslacTest.IsMatch(shipUnit.ShipUnitId))
+                        //{
+                        //    continue;
+                        //}
+
+                        string shipUnitBase = shipUnit.ShipUnitId.Contains("-") ? shipUnit.ShipUnitId.Substring(0, shipUnit.ShipUnitId.IndexOf("-", StringComparison.Ordinal)) : shipUnit.ShipUnitId;
+
+                        var shipUnitBaseArray = shipUnitBase.Split(separationCharacter);//First array value is the shipUnitBase(order or transferid)
+                        
+
+                        if (!long.TryParse(shipUnitBaseArray[0], out long shipUnitId))
+                        {
+                            throw new RuanJobException($"Shipment Unit {shipUnit.ShipUnitId} should have all numeric digits before the first dash.");
+                        }
+
+                        Order orderWithinShipUnit = pickupStop.Orders.FirstOrDefault(x => x.OrderId == shipUnitBase);
+                        string orderId = orderWithinShipUnit?.OrderId;
+                        if (orderId == null)
+                        {
+                            continue;
+                        }
+
+                        double weight = shipUnit.Contents.Sum(x =>
+                        {
+                            if (double.TryParse(x.Weight, out weight))
+                            {
+                                return weight;
+                            }
+
+                            return 0;
+                        });
+                        weightTotal = weightTotal + weight;
+
+
+                    }
+
+                    objXcti18.i18_max_wgt = weightTotal;
+                   
+                } // Pickup Orders
+
+                objXcti18.i18_max_wgt = weightTotal;
+                objXcti18.i18_max_wgt = weightTotal;
+
+                if (transportNumber > 0)//change
+                {
+                    objXcti19.i19_max_wgt = weightTotal;
+                }
+                else
+                {
+                    objXcti18.i18_max_wgt = weightTotal;
+                }
+
+                RuanXml ruanXml = new RuanXml(ta);//Save the TA
+                try
+                {
+                    if (transportNumber > 0)//change
+                    {
+                        XCTI19.ModifyTransportForSalesOrderAndTransfer(objXcti19);
+                        PrepareForTransportActivity(ta, pickupStop.Location.Name, transportNumber);
+                        ruanXml.Save();
+                    }
+                    else
+                    {
+                        XCTI18.AddTransportForSalesOrderAndTransfer(objXcti18);
+                        ruanXml.Save();
+
+                        //Send this to activities queue to be processed little bit later as we won't have a transport number immediately(for few seconds atleast) and the Plan Activities require the transport number.
+                        RuanXMLQueue activitiesQueue = new RuanXMLQueue
+                        {
+                            RuanXMLNumber = ruanXml.RuanXMLNumber,
+                            QueueFlagNumber = queueFlagForActivityNotAssigned.QueueTypeNumber, //Denotes Transport Number Not available
+                            StratixInterchangeNumber = interchangeNumberTransport
+                        };
+
+                        activitiesQueue.Save();
+
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw new RuanJobException($"Error Adding Transport.");
+                }
+
+            }//Pickup Stops
+
+        }
+
+        public static void ProcessTransportActivities(long ruanXMLQueueNumber)
+        {
+            QueueFlag queueFlagForActivityAssigned = GlobalState.QueueFlags.QueueFlagByCode("ActivityAssigned");
+            try
+            {
+                RuanXMLQueue ruanXmlQueueObject = RuanXMLQueue.FetchByNumber(ruanXMLQueueNumber) ?? throw new ArgumentNullException(nameof(ruanXMLQueueNumber));
+                RuanXml ruanXmlObject = RuanXml.FetchByNumber(ruanXmlQueueObject.RuanXMLNumber);
+
+                if (ruanXmlQueueObject.StratixInterchangeNumber != null)
+                {
+                    long transportNumber = StratixHelperData.GetTransportNumberFromTransportAddGateway(ruanXmlQueueObject.StratixInterchangeNumber.Value);
+                    string pickupWarehouse = StratixHelperData.GetPickupWarehouseFromTransportAddGateway(ruanXmlQueueObject.StratixInterchangeNumber.Value);
+
+                    string xmlParameter = ruanXmlObject.XML;
+
+                    XDocument xdoc;
+                    if (xmlParameter == null)
+                    {
+                        throw new Exception("Invalid XML");
+                    }
+
+                    using (Stream s = Utilities.GenerateStreamFromString(xmlParameter))
+                    {
+                        xdoc = XDocument.Load(s);
+                    }
+
+                    XElement root = xdoc.Root;
+                    if (root == null)
+                    {
+                        throw new Exception("The XML Root is null");
+                    }
+
+                    if (root.Name == "APITransportationShipment")
+                    {
+                        APITransportationShipment ta = Utilities.DeserializeFromXmlString<APITransportationShipment>(xmlParameter);
+
+                        PrepareForTransportActivity(ta, pickupWarehouse, transportNumber);
+                    }
+
+                    ruanXmlQueueObject.QueueFlagNumber = queueFlagForActivityAssigned.QueueTypeNumber;//Flag it, so that it wouldn't be processed in future calls.
+                }
+            }
+            catch (Exception e)
+            {
+                throw new RuanJobException($"Error processing Transport Activities");
+            }
+            
+        }
+
+        private static void PrepareForTransportActivity(APITransportationShipment ta, string pickupWarehouse,
+            long transportNumber)
+        {
+            TransportationArrangedStop[] pickupStops = ta.Stops.Where(x => x.StopType == "P").ToArray();
+            TransportationArrangedStop pickupStopsByLocation =
+                pickupStops.FirstOrDefault(x => x.Location.Name.Equals(pickupWarehouse));
+            if (pickupStopsByLocation != null)
+            {
+                foreach (var pickupOrder in pickupStopsByLocation.Orders)
+                {
+                    string orderIdWithReleaseInformation = pickupOrder.OrderId;
+                    char separationCharacter = '_';
+
+                    int separationCharacterCount =
+                        orderIdWithReleaseInformation.Count(x => (x == separationCharacter));
+                    if (separationCharacterCount != 2)
+                    {
+                        throw new RuanJobException($"Invalid OrderID {orderIdWithReleaseInformation}.");
+                    }
+
+                    var orderSplitArray =
+                        pickupOrder.OrderId.Split(
+                            separationCharacter); //First array value is the OrderID, second is the Detail and the third array is the release item id.
+
+                    PlanTransportActivity(transportNumber, orderSplitArray);
+                }
+            }
+            else
+            {
+                throw new RuanJobException($"PickStop NOT found");
             }
         }
 
-        private static void CreateManifestCrossRecords(APITransportationShipment ta)
+        private static void PlanTransportActivity(long transportNumber, string[] orderSplitArray)
         {
-            TaFileChanges taFileChanges = new TaFileChanges();
+            string formatDate = "yyyy-MM-dd HH:mm:ss";
+            XCTI21 objXcti21 = new XCTI21();
+            long interchangeNumberTransportActivity = StratixHelperData.GetMaxInterchangeNumber() + 1;
+            objXcti21.i21_intchg_no = interchangeNumberTransportActivity;
+            objXcti21.i21_intchg_itm = 1;
 
-            //Tuple Item1 - RuanNumber, Item2- LocationNumber, Item3 - TruckReleaseNumber, Item4-SalesOrderRelease, Item5-TransferHeaderNumber
-            //List<Tuple<string, long, long, long?, long?>> opLocationsWithTaDetailsForEmail = new List<Tuple<string, long, long, long?, long?>>();
-            //List<EmailHelper.RuanTaShippingEmailHelper> opLocationsWithTaDetailsForEmail = new List<EmailHelper.RuanTaShippingEmailHelper>();
+            objXcti21.i21_crtd_dtts = $"'{DateTime.Now.ToString(formatDate)}'";
+            objXcti21.i21_transp_no = transportNumber;
 
-            //ManifestHeaderList manifestListByRuanShipmentID = ManifestHeader.FetchAllByRuanShipmentID(ta.ShipmentNumber);
+            TRTTAVCondensed tRttavCondensedObject =
+                TRTTAVCondensed.GetTrttavCondensed(orderSplitArray[0], orderSplitArray[1], orderSplitArray[2]);
+            objXcti21.i21_actvy_pfx = tRttavCondensedObject.tav_trac_pfx;
+            objXcti21.i21_actvy_no = tRttavCondensedObject.tav_trac_no;
+            objXcti21.i21_actvy_itm = tRttavCondensedObject.tav_trac_itm;
+            objXcti21.i21_plnd_trs_pcs = tRttavCondensedObject.tav_bal_pcs;
+            objXcti21.i21_plnd_trs_msr = tRttavCondensedObject.tav_bal_msr;
+            objXcti21.i21_plnd_trs_wgt = tRttavCondensedObject.tav_bal_wgt;
 
-            ////check to see if there are any valid tslac, if there are continue and ignore invalid inline
-            //Regex validTslacTest = new Regex("^[0-9]{6,}(?=-).+$");
-            //if (!ta.ShipmentUnits.Any(su => validTslacTest.IsMatch(su.ShipUnitId)))
-            //{
-            //    //throw new RuanJobException($"All ShipmentIds are invalid : {ta.ShipmentNumber}");
-            //    return;
-            //}
+            try
+            {
+                XCTI21.PlanTransportActivity(objXcti21);
+            }
+            catch (Exception e)
+            {
+                throw new RuanJobException($"Error Adding Transport Activities for transport number {transportNumber}");
+            }
+            
+        }
 
-            //List<TaShipUnit> shipUnits = ta.ShipmentUnits.ToList();
+        public static void DeleteTransportFromStratix(APITransportationShipment ta)
+        {
+            if (string.IsNullOrWhiteSpace(ta.CarrierScac))
+            {
+                throw new RuanJobException($"Shipment Number {ta.ShipmentNumber}, has no Carrier SCAC.");
+            }
 
-            //if (string.IsNullOrWhiteSpace(ta.CarrierScac))
-            //{
-            //    throw new RuanJobException($"Shipment Number {ta.ShipmentNumber}, has no Carrier SCAC.");
-            //}
+            TransportationArrangedStop[] pickupStops = ta.Stops.Where(x => x.StopType == "P").ToArray();
+            foreach (TransportationArrangedStop pickupStop in pickupStops)
+            {
 
-            //Carrier carrier = Carrier.FetchSingleBySCACCode(ta.CarrierScac);
+                if (string.IsNullOrWhiteSpace(ta.ShipmentNumber))
+                {
+                    throw new RuanJobException($"Missing Ruan Shipment Number");
+                }
 
-            //if (carrier == null)
-            //{
-            //    Carrier newCarrier = new Carrier()
-            //    {
-            //        CarrierCode = ta.CarrierScac,
-            //        SCACCode = ta.CarrierScac,
-            //        Description = ta.CarrierName
-            //    };
-            //    try
-            //    {
-            //        newCarrier.Save();
-            //    }
-            //    catch (Exception e)
-            //    {
-            //        throw new RuanJobException($"Failed to insert new carrier SCAC {ta.CarrierScac}.", e);
-            //    }
+                if (string.IsNullOrWhiteSpace(pickupStop.Location.Name))
+                {
+                    throw new RuanJobException($"Shipment Number {ta.ShipmentNumber}, has missing Pickup location name");
+                }
+                string ruanCarrierRefNum = ta.ShipmentNumber;
+                string wareHouse = pickupStop.Location.Name;
 
-            //    carrier = Carrier.FetchSingleBySCACCode(ta.CarrierScac);
-            //}
+                long transportNumber =
+                    StratixHelperData.GetTransportNumberByRuanCarrierRefAndWarehouse(ruanCarrierRefNum, wareHouse);
 
-            //taFileChanges.ShipmentId = ta.ShipmentNumber;
-            //taFileChanges.NewCarrier = carrier;
-
-            //List<ManifestCross> oldShipUnitList = ManifestCross.FetchAllShipmentsByRuanShipmentId(ta.ShipmentNumber).ToList();
-
-            //foreach (ManifestCross mx in oldShipUnitList)
-            //{
-            //    taFileChanges.PreChangeShipUnits.Add(new TaFileChanges.TaShipUnit(mx.LoadAuthorizationCrossNumber, mx.LocationNumber, mx.CarrierNumber, mx.ShipmentID));
-            //}
-
-            //TransportationArrangedStop[] pickupStops = ta.Stops.Where(x => x.StopType == "P").ToArray();
-
-            //List<RuanCostStop> stopCosts = new List<RuanCostStop>();
-            ////get total cost by stop and apply stop cost to manifest cross
-            //foreach (TransportationArrangedStop stop in pickupStops)
-            //{
-            //    RuanCostStop stopCost = new RuanCostStop(stop.StopNumber);
-            //    foreach (Order order in stop.Orders)
-            //    {
-            //        stopCost.AddTruckRelease(order.OrderId);
-            //        foreach (TransportationArrangedOrderCost orderCost in ta.OrderCosts)
-            //        {
-            //            if (order.OrderId == orderCost.OrderId)
-            //            {
-            //                stopCost.AddCost(orderCost.CostAmount);
-            //            }
-            //        }
-            //    }
-
-            //    stopCosts.Add(stopCost);
-            //}
-
-            //foreach (TaShipUnit shipUnit in shipUnits)
-            //{
-            //    //skip invalid shipunits
-            //    if (!validTslacTest.IsMatch(shipUnit.ShipUnitId))
-            //    {
-            //        continue;
-            //    }
-
-            //    string shipUnitBase = shipUnit.ShipUnitId.Contains("-") ? shipUnit.ShipUnitId.Substring(0, shipUnit.ShipUnitId.IndexOf("-", StringComparison.Ordinal)) : shipUnit.ShipUnitId;
-
-            //    if (!long.TryParse(shipUnitBase, out long shipUnitId))
-            //    {
-            //        throw new RuanJobException($"Shipment Unit {shipUnit.ShipUnitId} should have all numeric digits before the first dash.");
-            //    }
-
-            //    LoadAuthorizationCross lac = LoadAuthorizationCross.FetchByNumber(shipUnitId);
-
-            //    if (lac == null)
-            //    {
-            //        try
-            //        {
-            //            Module mod = Module.FetchByCode("AD");
-            //            ErrorLogT errorLogT = new ErrorLogT(mod, mod, "TA", $"Shipment Number {ta.ShipmentNumber}, invalid TSLAC {shipUnit.ShipUnitId}.", null, Environment.StackTrace);
-            //            errorLogT.Save();
-            //        }
-            //        catch
-            //        {
-            //            //fail silently
-            //        }
-
-            //        throw new RuanJobException($"Shipment Number {ta.ShipmentNumber}, invalid TSLAC {shipUnit.ShipUnitId}.");
-            //    }
-
-            //    DateTime? dateShipped = null;
-
-            //    if (pickupStops.Length == 0)
-            //    {
-            //        throw new RuanJobException($"Shipment Number {ta.ShipmentNumber}, No pickup stops.");
-            //    }
-
-            //    double cost = 0;
-            //    cost = stopCosts.Single(sc => sc.TruckReleases.Contains(shipUnitId)).TotalCost;
-
-            //    long? pickupStopSequence = null;
-            //    long? dropoffStopSequence = null;
-            //    string trackingUrl = null;
-
-            //    foreach (TransportationArrangedStop stop in pickupStops)
-            //    {
-            //        Order order = stop.Orders.FirstOrDefault(x => x.OrderId == shipUnitBase);
-            //        string orderId = order?.OrderId;
-            //        if (orderId == null)
-            //        {
-            //            continue;
-            //        }
-            //        else
-            //        {
-            //            try
-            //            {
-            //                if (order.References != null)
-            //                {
-            //                    if (order.References.Any(r => r.ReferenceNumberType == "RUAN_TRACKING_ORDER_URL"))
-            //                    {
-            //                        trackingUrl = order.References?.FirstOrDefault(r => r.ReferenceNumberType == "RUAN_TRACKING_ORDER_URL")?.ReferenceNumberValue;
-            //                    }
-            //                }
-            //            }
-            //            catch
-            //            {
-            //                //fail silently
-            //            }
-            //        }
-
-            //        if (stop.StopPlannedDepartureDateTime == null)
-            //        {
-            //            continue;
-            //        }
-
-            //        if (long.TryParse(stop.StopNumber, out long tempStop))
-            //        {
-            //            pickupStopSequence = tempStop;
-            //        }
-
-            //        if (DateTime.TryParse(stop.StopPlannedDepartureDateTime, out DateTime dateShippedTemp))
-            //        {
-            //            dateShipped = dateShippedTemp;
-            //        }
-            //        else
-            //        {
-            //            throw new RuanJobException($"Shipment Number {ta.ShipmentNumber}, Invalid date {stop.StopPlannedDepartureDateTime}.");
-            //        }
-
-            //    }
-
-            //    string estTimeArrival = null;
-            //    TransportationArrangedStop[] deliveryStops = ta.Stops.Where(x => x.StopType == "D").ToArray();
-
-            //    if (deliveryStops.Length == 0)
-            //    {
-            //        throw new RuanJobException($"Shipment Number {ta.ShipmentNumber}, No delivery stops.");
-            //    }
-
-            //    foreach (TransportationArrangedStop stop in deliveryStops)
-            //    {
-            //        string orderId = stop.Orders.FirstOrDefault(x => x.OrderId == shipUnitBase)?.OrderId;
-            //        if (orderId == null)
-            //        {
-            //            continue;
-            //        }
-
-            //        estTimeArrival = stop.StopPlannedArrivalDateTime;
-            //        if (long.TryParse(stop.StopNumber, out long tempStop))
-            //        {
-            //            dropoffStopSequence = tempStop;
-            //        }
-
-            //    }
-
-            //    double weight = shipUnit.Contents.Sum(x =>
-            //    {
-            //        if (double.TryParse(x.Weight, out weight))
-            //        {
-            //            return weight;
-            //        }
-            //        else
-            //        {
-            //            return 0;
-            //        }
-            //    });
-
-            //    ManifestCross mc = ManifestCross.FetchSingleByLoadAuthCross(lac.LoadAuthorizationCrossNumber);
-            //    long? currentManifestNumber = ManifestHeader.FetchManifestHeaderNumberByLoadAuthorizationCrossNumber(lac.LoadAuthorizationCrossNumber);
-            //    //The above call should fetch a single number if any. If there are multiples, it should error out and stop processing.
-            //    //Better to have TA Fail than incorrect ManifestCRoss and manifest number.
-
-            //    if (mc == null)
-            //    {
-            //        mc = new ManifestCross
-            //        {
-            //            LoadAuthorizationCrossNumber = lac.LoadAuthorizationCrossNumber,
-            //            ManifestHeaderNumber = currentManifestNumber,
-            //            SalesOrderReleaseNumber = lac.SalesOrderReleaseNumber,
-            //            TransferDetailNumber = lac.TransferDetailNumber,
-            //            SalesShipAuthorizationDetailNumber = lac.SalesShipAuthorizationDetailNumber,
-            //            LocationNumber = lac.LocationNumber,
-            //            TransferHeaderNumber = lac.TransferHeaderNumber,
-            //            StatusNumber = lac.StatusNumber,
-            //            CarrierNumber = carrier.Number,
-            //            Weight = weight,
-            //            DateShipped = dateShipped,
-            //            EstTimeArrival = estTimeArrival,
-            //            ShipmentID = ta.ShipmentNumber,
-            //            TransportMode = ta.ModeOfTransport,
-            //            StopCount = ta.Stops.Length,
-            //            TotalEstimatedCost = cost,
-            //            Equipment = ta.Equipment,
-            //            PickupStopSequence = pickupStopSequence,
-            //            DropoffStopSequence = dropoffStopSequence,
-            //            DeliveryTrackingUrl = trackingUrl
-            //        };
-            //    }
-            //    else
-            //    {
-            //        taFileChanges.AfterChangeShipUnits.Add(new TaFileChanges.TaShipUnit(mc.LoadAuthorizationCrossNumber, lac.LocationNumber, mc.CarrierNumber, mc.ShipmentID));
-
-            //        mc.LoadAuthorizationCrossNumber = lac.LoadAuthorizationCrossNumber;
-            //        mc.ManifestHeaderNumber = currentManifestNumber;
-            //        mc.SalesOrderReleaseNumber = lac.SalesOrderReleaseNumber;
-            //        mc.TransferDetailNumber = lac.TransferDetailNumber;
-            //        mc.SalesShipAuthorizationDetailNumber = lac.SalesShipAuthorizationDetailNumber;
-            //        mc.LocationNumber = lac.LocationNumber;
-            //        mc.TransferHeaderNumber = lac.TransferHeaderNumber;
-            //        mc.StatusNumber = lac.StatusNumber;
-            //        mc.CarrierNumber = carrier.Number;
-            //        mc.Weight = weight;
-            //        mc.DateShipped = dateShipped;
-            //        mc.EstTimeArrival = estTimeArrival;
-            //        mc.ShipmentID = ta.ShipmentNumber;
-            //        mc.TransportMode = ta.ModeOfTransport;
-            //        mc.StopCount = ta.Stops.Length;
-            //        mc.TotalEstimatedCost = cost;
-            //        mc.Equipment = ta.Equipment;
-            //        mc.PickupStopSequence = pickupStopSequence;
-            //        mc.DropoffStopSequence = dropoffStopSequence;
-            //        if (!string.IsNullOrEmpty(trackingUrl))
-            //        {
-            //            mc.DeliveryTrackingUrl = trackingUrl;
-            //        }
-            //    }
-
-            //    bool taFileHasChanged = TaFileHasChanges(ta); //calculate once
-
-            //    List<string> changes = mc.GetChangedProperties();
-            //    if (changes.Count > 0)
-            //    {
-            //        ManifestHeader manifest = ManifestHeader.FetchByNumber(mc.ManifestHeaderNumber);
-
-            //        if (manifest != null)
-            //        {
-            //            manifest.FreightCost = mc.TotalEstimatedCost;
-            //            manifest.CarrierNumber = mc.CarrierNumber;
-
-            //            if (manifest.GetChangedProperties().Contains("CarrierNumber"))
-            //            {
-            //                manifest.CarrierChangedByTaFile = true;
-            //            }
-
-            //            if (taFileHasChanged)
-            //            {
-            //                manifest.ChangedByTAFile = true;
-            //            }
-
-            //            manifest.Save();
-            //            manifest.CalculateFreightCosting();
-            //        }
-            //    }
-
-
-            //    Status openStatus = GlobalState.Statuses.StatusByCodeAndModule("OPEN", "TS");
-            //    Status builtStatus = GlobalState.Statuses.StatusByCodeAndModule("BUILT", "TS");
-            //    Status inProcessStatus = GlobalState.Statuses.StatusByCodeAndModule("In Process", "TS");
-            //    Status cancelledStatus = GlobalState.Statuses.StatusByCodeAndModule("CANCELLED", "TS");
-            //    Status completeStatus = GlobalState.Statuses.StatusByCodeAndModule("COMPLETE", "TS");
-            //    Status retenderStatus = GlobalState.Statuses.StatusByCodeAndModule("RETENDER", "TS");
-            //    Status voidStatus = GlobalState.Statuses.StatusByCodeAndModule("Void", "TS");
-
-            //    if (lac.Status.StatusNumber == retenderStatus.StatusNumber)
-            //    {
-            //        mc.StatusNumber = openStatus.StatusNumber;
-            //    }
-            //    mc.Save(false);
-
-
-                
-
-            //    if (lac.StatusNumber != cancelledStatus.StatusNumber && lac.StatusNumber != completeStatus.StatusNumber)
-            //    {
-            //        if (lac.StatusNumber != retenderStatus.StatusNumber)
-            //        {
-            //            if (lac.StatusNumber != builtStatus.StatusNumber)
-            //            {
-            //                lac.StatusNumber = inProcessStatus.StatusNumber;
-            //            }
-            //            else if(lac.StatusNumber == voidStatus.StatusNumber)
-            //            {
-            //                lac.StatusNumber = builtStatus.StatusNumber;
-            //            }
-            //        }
-            //        else
-            //        {
-            //            lac.StatusNumber = inProcessStatus.StatusNumber;
-            //        }
-            //    }
-
-            //    lac.Save();
-
-            //    if (lac.LocationNumber.HasValue)
-            //    {
-            //        //MSC-4250 Certain OP Shipping offices need similar email notification like they get when a Sellers load is created.
-            //        BusinessLogic.Location loc = BusinessLogic.Location.FetchByNumber(lac.LocationNumber);
-            //        if (loc.EnableShippingEmail && !String.IsNullOrWhiteSpace(loc.ShippingEmail))
-            //        {
-            //            opLocationsWithTaDetailsForEmail.Add(new EmailHelper.RuanTaShippingEmailHelper(ta.ShipmentNumber, lac.LocationNumber.Value, lac.LoadAuthorizationCrossNumber, lac.SalesOrderReleaseNumber, lac.TransferHeaderNumber));
-            //        }
-            //    }
-            //}
-
-            //if (manifestListByRuanShipmentID.Any())
-            //{
-            //    foreach (ManifestHeader manifestByRuanShipmentID in manifestListByRuanShipmentID.Where(x=>x.Complete))
-            //    {
-            //        if (manifestByRuanShipmentID.Complete) //Check if we got any updates from Ruan after it has been completed.
-            //        {
-            //            ManifestDetailList manifestDetailList = ManifestDetail.FetchAllByHeaderNumber(manifestByRuanShipmentID.ManifestHeaderNumber);
-            //            ManifestCrossList manifestCrossList = ManifestCross.FetchAllByManifest(manifestByRuanShipmentID.ManifestHeaderNumber);
-
-            //            foreach (ManifestCross manifestCross in manifestCrossList)
-            //            {
-            //                if (manifestDetailList.All(x => x.LoadAuthorizationCrossNumber != manifestCross.LoadAuthorizationCrossNumber))
-            //                {
-            //                    ManifestHeader manifestHeader = ManifestHeader.FetchByNumber(manifestCross.ManifestHeaderNumber);
-            //                    manifestHeader.Complete = false;
-            //                    if (!manifestHeader.ChangedByTAFile.HasValue)
-            //                    {
-            //                        manifestHeader.ChangedByTAFile = false;
-            //                    }
-            //                    manifestHeader.Save(false);
-            //                    break;
-            //                }
-            //            }
-            //        }
-            //    }
-
-            //    if (manifestListByRuanShipmentID.Any(x => x.Printed))
-            //    {
-            //        return; //Should not send OP email for shipped Ruan Loads.
-            //    }
-            //}
-
-            //if (opLocationsWithTaDetailsForEmail.Any())
-            //{
-            //    EmailHelper.RuanComposeTaShippingEmail(opLocationsWithTaDetailsForEmail);
-            //}
-
-            //EmailHelper.RuanComposeTaChangedEmail(taFileChanges);
+                XCTI20 objXcti20 = new XCTI20();
+                objXcti20.i20_cmpy_id = "HSP";
+                objXcti20.i20_intchg_pfx = "XI";
+                objXcti20.i20_intchg_no = StratixHelperData.GetMaxInterchangeNumber() + 1;
+                string formatDate = "yyyy-MM-dd HH:mm:ss";
+                objXcti20.i20_crtd_dtts = $"'{DateTime.Now.ToString(formatDate)}'";
+                objXcti20.i20_transp_pfx = "TR";
+                objXcti20.i20_transp_no = transportNumber;
+                XCTI20.DeleteTransport(objXcti20);
+            }
 
         }
 
-        private static void CancelTa(APITransportationShipment ta)
+        //TODO Merge AssignFreightCost from SKhan's local brank.
+        public static void AssignFreightCost()
         {
-            //List<EmailHelper.RuanTaCancelEmailHelper> emailDetails = new List<EmailHelper.RuanTaCancelEmailHelper>();
-            //List<long> truckReleases = new List<long>();
-            //Regex validTslacTest = new Regex("^[0-9]{6,}(?=-).+$");
+            AuthenticationServiceClient authenticationServiceClient = new AuthenticationServiceClient();
+            GatewayLoginRequestType gatewayLoginRequestType = new GatewayLoginRequestType();
+            gatewayLoginRequestType.username = GlobalState.StratixUserName;
+            gatewayLoginRequestType.password = GlobalState.StratixPassword;
+            gatewayLoginRequestType.environmentName = GlobalState.StratixEnvironmentName;
+            gatewayLoginRequestType.environmentClass = GlobalState.StratixEnvironmentClass;
+            gatewayLoginRequestType.forceDisconnect = true;
+            gatewayLoginRequestType.connectedAccessType = "I";
+            gatewayLoginRequestType.forceDisconnectSpecified = true;
 
-            ////get Truck Releases
-            //foreach (TaShipUnit shipUnit in ta.ShipmentUnits)
-            //{
-            //    if (validTslacTest.IsMatch(shipUnit.ShipUnitId))
-            //    {
-            //        string shipUnitBase = shipUnit.ShipUnitId.Contains("-") ? shipUnit.ShipUnitId.Substring(0, shipUnit.ShipUnitId.IndexOf("-", StringComparison.Ordinal)) : shipUnit.ShipUnitId;
-            //        if (long.TryParse(shipUnitBase, out long tslacNumber))
-            //        {
-            //            truckReleases.Add(tslacNumber);
-            //        }
-            //    }
-            //}
+            GatewayLoginResponseType gatewayLoginResponseType = new GatewayLoginResponseType();
+            authenticationServiceClient.GatewayLogin(gatewayLoginRequestType, out gatewayLoginResponseType);
 
-            //foreach (long tslac in truckReleases)
-            //{
-            //    ManifestCross mc = ManifestCross.FetchSingleByLoadAuthCross(tslac);
-            //    if (mc != null && mc.ManifestCrossNumber > 0)
-            //    {
-            //        //send email w/ manifestCode+BOL else w/o
-            //        if (ManifestHeader.FetchByNumber(mc.ManifestHeaderNumber) is ManifestHeader mh)
-            //        {
-            //            if (mh.DateShipped.HasValue && mh.Printed)
-            //            {
-            //                throw new RuanJobException($"Could not process Cancel TA for {ta.ShipmentNumber} because Manifest {mh.ManifestHeaderCode} has already shipped.");
-            //            }
+            TransportFreightServiceClient trn = new TransportFreightServiceClient();
+            UpdateTRFreightCostRequest updateTRFreightCostRequest = new UpdateTRFreightCostRequest();
 
-            //            if (!(ManifestDetail.FetchSingleByLoadAuthCrossNumber(mc.LoadAuthorizationCrossNumber ?? 0) is ManifestDetail md))
-            //            {
-            //                throw new RuanJobException("Could not process Cancel TA for {t.ShipmentNumber} because Truck Release {mc.LoadAuthorizationCrossNumber} is not on  a BOL");
-            //            }
+            StratixRuanDataLayer.StratixTransportFreightService.AuthenticationToken authenticationToken = new StratixRuanDataLayer.StratixTransportFreightService.AuthenticationToken();
+            authenticationToken.username = gatewayLoginResponseType.authenticationToken.username;
+            authenticationToken.value = gatewayLoginResponseType.authenticationToken.value;
 
-            //            LoadAuthorizationHeader bol = md.LoadAuthoriation;
-            //            // ReSharper disable once InlineOutVariableDeclaration
-            //            // ReSharper disable once RedundantAssignment
-            //            long costRef = bol.LoadAuthorizationHeaderNumber;
-            //            long.TryParse(bol.LoadAuthorizationHeaderCode, out costRef);
+            UpdateTRFreightCostInput updateTrFreightCostInput = new UpdateTRFreightCostInput();
+            updateTrFreightCostInput.trNumber = 533;//todo
+            updateTrFreightCostInput.trFreightCostSpecified = true;
+            updateTrFreightCostInput.trFreightCostUM = "CWT";
+            updateTrFreightCostInput.trFreightCost = 0.6m;//todo
 
-            //            emailDetails.Add(
-            //                new EmailHelper.RuanTaCancelEmailHelper(
-            //                    ta.ShipmentNumber,
-            //                    mh.ManifestHeaderCode,
-            //                    bol.LoadAuthorizationHeaderCode,
-            //                    mc.LoadAuthorizationCrossNumber,
-            //                    mc.LocationNumber
-            //                )
-            //            );
+            updateTrFreightCostInput.trFlSurChrgCostSpecified = false;
+            updateTrFreightCostInput.trFlSurChrgCostUM = "PCT";
 
-            //            //delete costs
-            //            foreach (LoadAuthorizationDetail detail in bol.Details)
-            //            {
-            //                Inventory item = detail.InventoryItem;
-            //                foreach (ItemCost cost in item.Costs)
-            //                {
-            //                    if (cost.Source == "MS-Outbound" && cost.Reference == costRef)
-            //                    {
-            //                        cost.Delete(false);
-            //                    }
-            //                }
-            //            }
 
-            //            //remove truck release from manifest detail (manifest select screen)
-            //            md.LoadAuthorizationCrossNumber = null;
-            //            md.Save(false);
-            //            mh.Complete = false;
-            //            mh.Save(false);
-            //        }
-            //        else
-            //        {
-            //            emailDetails.Add(
-            //                new EmailHelper.RuanTaCancelEmailHelper(
-            //                    ta.ShipmentNumber,
-            //                    string.Empty,
-            //                    string.Empty,
-            //                    mc.LoadAuthorizationCrossNumber,
-            //                    mc.LocationNumber
-            //                )
-            //            );
-            //        }
+            updateTrFreightCostInput.trCarrierRef = "R11121";//todo
 
-            //        //delete manifest cross record
-            //        mc.Delete(false);
-            //    }
-            //}
 
-            //if (emailDetails.Count > 0)
-            //{
-            //    EmailHelper.RuanComposeTaCancelEmail(emailDetails);
-            //}
+            updateTrFreightCostInput.trStopChrgSpecified = false;
+
+
+            updateTRFreightCostRequest.AuthenticationHeader = authenticationToken;
+            updateTRFreightCostRequest.updateTRFreightCostInput = updateTrFreightCostInput;
+
+            try
+            {
+                StratixRuanDataLayer.StratixTransportFreightService.ServiceMessages updateFreightCostMessages = trn.UpdateTRFreightCost(ref authenticationToken, updateTrFreightCostInput);
+            }
+            catch (FaultException faultex)
+            {
+                var msgFault = faultex.CreateMessageFault();
+
+                if (msgFault.HasDetail)
+                {
+                    XmlElement detailNode = msgFault.GetDetail<XmlElement>();
+                    FaultReason faultReason = msgFault.Reason;
+                    string faultReasonMessage = faultReason.ToString();
+
+                    throw new RuanJobException($"Error calling Stratix service: {faultReasonMessage}.");
+                }
+            }
+            catch (Exception exception)
+            {
+                throw new RuanJobException($"{exception.Message}.");
+            }
+
         }
 
-        private static bool TaFileHasChanges(this APITransportationShipment ta)
-        {
-            bool taFileHasChanged = false;
-            ////get TSLACS from manifest cross
-            //List<string> orderIds = new List<string>();
-            //List<long> truckReleases = new List<long>();
-
-            ////get all order Ids'
-            //foreach (TransportationArrangedStop stop in ta.Stops.Where(s => s.StopType == "P"))
-            //{
-            //    orderIds.AddRange(stop.Orders.Select(o => o.OrderId).Distinct());
-            //}
-
-            ////get truckReleases
-            //foreach (string orderId in orderIds.Distinct())
-            //{
-            //    if (long.TryParse(orderId, out long truckRelease))
-            //    {
-            //        truckReleases.Add(truckRelease);
-            //    }
-            //}
-
-            ////get manifest crosses
-            //ManifestCrossList mcs = ManifestCross.FetchAllShipmentsByRuanShipmentId(ta.ShipmentNumber);
-            //if (mcs.Count == 0)
-            //{
-            //    //this is new or changed lets check
-            //    foreach (long truckRelease in truckReleases)
-            //    {
-            //        mcs = ManifestCross.FetchAllByLoadAuthCrossNumber(truckRelease);
-            //        foreach (ManifestCross mc in mcs)
-            //        {
-            //            if (mc.ShipmentID != ta.ShipmentNumber)
-            //            {
-            //                taFileHasChanged = true;
-            //                break;
-            //            }
-            //        }
-
-            //        if (taFileHasChanged) break;
-            //    }
-            //}
-            //else
-            //{
-            //    //if different R# 
-            //    if (mcs.Any(mc => mc.ShipmentID != ta.ShipmentNumber))
-            //    {
-            //        taFileHasChanged = true;
-            //    }
-            //    else
-            //    {
-            //        //see if any truck releases not on the manifest cross.
-            //        List<long> currentTruckReleases = mcs.Select(mc => Convert.ToInt64(mc.LoadAuthorizationCrossNumber)).ToList();
-            //        if (truckReleases.Any(tr => !currentTruckReleases.Contains(tr)))
-            //        {
-            //            taFileHasChanged = true;
-            //        }
-            //    }
-            //}
-
-            return taFileHasChanged;
-        }
     }
 }

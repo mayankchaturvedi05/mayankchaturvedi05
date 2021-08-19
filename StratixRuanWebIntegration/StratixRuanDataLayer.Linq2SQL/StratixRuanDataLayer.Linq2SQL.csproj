@@ -50,9 +50,11 @@
     <Compile Include="ItemChangedException.cs" />
     <Compile Include="NonUpdatableAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SMCODEQUEUEFlag.cs" />
     <Compile Include="SMCODEXMLTYPE.cs" />
     <Compile Include="TSRuanSavedXML.cs" />
     <Compile Include="TSRuanXML.cs" />
+    <Compile Include="TSRuanXMLQueue.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ClassLibrary1\StratixRuanInterfaces.csproj">

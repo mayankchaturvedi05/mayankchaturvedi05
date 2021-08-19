@@ -49,6 +49,27 @@ namespace StratixRuanBusinessLogic
 
         }
 
+        
+        public static string StratixUserName { get; set; }
+        public static string StratixPassword { get; set; }
+        public static string StratixEnvironmentName { get; set; }
+        public static string StratixEnvironmentClass { get; set; }
+
+        private static QueueFlagList _queueFlags;
+        public static QueueFlagList QueueFlags
+        {
+            get
+            {
+                if (_queueFlags == null)
+                {
+                    var genericXMLs = QueueFlag.FetchAll();
+                    _queueFlags = (QueueFlagList)genericXMLs.To(typeof(QueueFlagList));
+                }
+
+                return _queueFlags;
+            }
+        }
+
         private static XMLTypeList _xmlTypes;
         public static XMLTypeList XMLTypes
         {
@@ -150,6 +171,81 @@ namespace StratixRuanBusinessLogic
 
         public void CustomTriggerLogic()
         {
+        }
+    }
+
+    public class QueueFlag : BusinessLogicBase<QueueFlag, SMCODEQUEUEFlag>, ITriggerless
+    {
+        private long _queueTypeNumber;
+        public long QueueTypeNumber
+        {
+            get
+            {
+                return _queueTypeNumber; 
+            }
+            set
+            {
+                SetField(ref _queueTypeNumber, value);
+            }
+        }
+
+        private string _queueTypeCode;
+        public string QueueTypeCode
+        {
+            get
+            {
+                return _queueTypeCode;
+            }
+            set
+            {
+                SetField(ref _queueTypeCode, value);
+            }
+        }
+
+        private string _description;
+        public override string Description
+        {
+            get
+            {
+                return _description;
+            }
+            set
+            {
+                SetField(ref _description, value);
+            }
+        }
+
+       
+
+        protected override void PopulateDataObject(SMCODEQUEUEFlag destination)
+        {
+            base.PopulateDataObject(destination);
+
+            destination.SMQFNumber = QueueTypeNumber;
+            destination.Code = QueueTypeCode;
+            destination.SMQFDescription = Description;
+        }
+
+        internal override void PopulateBusinessObject(SMCODEQUEUEFlag source)
+        {
+            base.PopulateBusinessObject(source);
+
+            _queueTypeNumber = source.SMQFNumber;
+            _queueTypeCode = source.Code;
+            _description = source.SMQFDescription;
+        }
+
+        public void CustomTriggerLogic()
+        {
+        }
+    }
+
+    public class QueueFlagList : BusinessLogicList<QueueFlag, SMCODEQUEUEFlag>
+    {
+
+        public QueueFlag QueueFlagByCode(string code)
+        {
+            return this.SingleOrDefault(t => t.Code == code && t.DeletedOn == null);
         }
     }
 }

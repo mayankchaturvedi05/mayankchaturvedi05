@@ -48,6 +48,10 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Serialization" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="UnitTest1.cs" />
@@ -65,10 +69,25 @@
       <Project>{7a8d936e-5d1c-4d24-b139-f3660699a7cd}</Project>
       <Name>StratixRuanBusinessLogic</Name>
     </ProjectReference>
+    <ProjectReference Include="..\StratixRuanDataLayer.Linq2SQL\StratixRuanDataLayer.Linq2SQL.csproj">
+      <Project>{c14c8e8c-983b-4ecc-896a-edbdaa172e8d}</Project>
+      <Name>StratixRuanDataLayer.Linq2SQL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\StratixRuanDataLayer\StratixRuanDataLayer.csproj">
+      <Project>{25a8d898-b0eb-4bf2-ac53-81c0ec1b5a97}</Project>
+      <Name>StratixRuanDataLayer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\StratixRuanWebIntegration\StratixRuanWebIntegration.csproj">
+      <Project>{de58b900-4721-4738-99e6-b732fbd04114}</Project>
+      <Name>StratixRuanWebIntegration</Name>
+    </ProjectReference>
     <ProjectReference Include="..\StratixToRuanDataTransfer\StratixToRuanDataTransfer.csproj">
       <Project>{0361f371-92a8-42fb-8516-98d0d6f18bc3}</Project>
       <Name>StratixToRuanDataTransfer</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

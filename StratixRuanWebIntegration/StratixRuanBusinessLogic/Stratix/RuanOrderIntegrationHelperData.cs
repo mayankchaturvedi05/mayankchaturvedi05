@@ -2,6 +2,7 @@
 using System;
 using System.Data.Common;
 using System.Diagnostics;
+using StratixRuanDataLayer;
 
 namespace StratixRuanBusinessLogic.Stratix
 {
@@ -30,6 +31,8 @@ namespace StratixRuanBusinessLogic.Stratix
         public string SoldToZipCode { get; set; }
         public string SoldToCountry { get; set; }
 
+        public Int16 EarliestDueDateTolerance { get; set; }
+
         public string ShipToID { get; set; }
         public string ShipToName { get; set; }
         public string ShipToName2 { get; set; }
@@ -45,6 +48,8 @@ namespace StratixRuanBusinessLogic.Stratix
         public double ReleaseWeight { get; set; }
         public DateTime OrderDeliveryDateFrom { get; set; }
         public DateTime OrderDeliveryDateTo { get; set; }
+        public Int16 OrderDeliveryDateFromHour { get; set; }
+        public Int16 OrderDeliveryDateToHour { get; set; }
 
         public string OrderProductDescription1 { get; set; }
         public string OrderProductDescription2 { get; set; }
@@ -56,6 +61,15 @@ namespace StratixRuanBusinessLogic.Stratix
         public string LoadComments { get; set; }
         public string ShippingComments { get; set; }
         public string DeliveryComments { get; set; }
+
+        public string tav_trgt_ord_pfx { get; set; }
+        public Int16 tav_trgt_ord_itm { get; set; }
+        public Int16 tav_trgt_ord_rls { get; set; }
+        public string tav_ref_pfx { get; set; }
+        public long tav_ref_no { get; set; }
+        public string tav_jbs_pfx { get; set; }
+        public long tav_jbs_no { get; set; }
+        public DateTime? ShipDateTimeEarly { get; set; }
 
         protected RuanOrderIntegrationHelperData(StratixRuanDataLayer.TSRuanOrderIntegrationHelperData source)
         {
@@ -78,6 +92,7 @@ namespace StratixRuanBusinessLogic.Stratix
             SoldToState = source.SoldToState;
             SoldToZipCode = source.SoldToZipCode;
             SoldToCountry = source.SoldToCountry;
+            EarliestDueDateTolerance = source.EarliestDueDateTolerance;
             ShipToID = source.ShipToID;
             ShipToName = source.ShipToName;
             ShipToName2 = source.ShipToName2;
@@ -92,6 +107,8 @@ namespace StratixRuanBusinessLogic.Stratix
             ReleaseWeight = source.ReleaseWeight;
             OrderDeliveryDateFrom = source.OrderDeliveryDateFrom;
             OrderDeliveryDateTo = source.OrderDeliveryDateTo;
+            OrderDeliveryDateFromHour = source.OrderDeliveryDateFromHour;
+            OrderDeliveryDateToHour = source.OrderDeliveryDateToHour;
             InsideSalesPersonName = source.InsideSalesPersonName;
             InsideSalesPersonEmail = source.InsideSalesPersonEmail;
             OrderProductDescription1 = source.OrderProductDescription1;
@@ -103,20 +120,54 @@ namespace StratixRuanBusinessLogic.Stratix
             LoadComments = source.LoadComments;
             ShippingComments = source.ShippingComments;
             DeliveryComments = source.DeliveryComments;
+
+            tav_trgt_ord_pfx = source.tav_trgt_ord_pfx;
+            tav_trgt_ord_itm = source.tav_trgt_ord_itm;
+            tav_trgt_ord_rls = source.tav_trgt_ord_rls;
+            tav_ref_pfx = source.tav_ref_pfx;
+            tav_ref_no = source.tav_ref_no;
+            tav_jbs_pfx = source.tav_jbs_pfx;
+            tav_jbs_no = source.tav_jbs_no;
+            ShipDateTimeEarly = source.ShipDateTimeEarly;
         }
 
-        public static RuanOrderIntegrationHelperData GetDataToConstructRuanOrderIntegrationHelperData(long orderReleaseNumber)
+        public static RuanOrderIntegrationHelperData GetDataToConstructRuanOrderIntegrationHelperData(StratixOrderReleaseParametersForRuan stratixOrderReleaseParametersForRuan)
         {
-            RuanOrderIntegrationHelperData result =
-                GetSalesOrderDataToConstructRuanOrderIntegrationXML(orderReleaseNumber);
+            RuanOrderIntegrationHelperData result = null;
+            if (stratixOrderReleaseParametersForRuan.orderFileKeyPfx.Equals("SO"))
+            {
+                if (stratixOrderReleaseParametersForRuan.orderFileItemNumber != null)
+                    if (stratixOrderReleaseParametersForRuan.orderFileSubItemNumber != null)
+                        result =
+                            GetSalesOrderDataToConstructRuanOrderIntegrationXML(
+                                stratixOrderReleaseParametersForRuan.orderFileKeyNumber,
+                                stratixOrderReleaseParametersForRuan.orderFileItemNumber.Value,
+                                stratixOrderReleaseParametersForRuan.orderFileSubItemNumber.Value);
+            }
+            else // JS OR IP filekey pfx
+            {
+                result =
+                    GetTransferDataToConstructRuanOrderIntegrationXML(
+                        stratixOrderReleaseParametersForRuan.orderFileKeyPfx,
+                        stratixOrderReleaseParametersForRuan.orderFileKeyNumber
+                        );
+
+            }
 
 
             return result;
         }
 
-        public static RuanOrderIntegrationHelperData GetSalesOrderDataToConstructRuanOrderIntegrationXML(long orderReleaseNumber)
+        public static RuanOrderIntegrationHelperData GetSalesOrderDataToConstructRuanOrderIntegrationXML(long orderNumber , short orderItemNumber, short orderSubItemNumber)
         {
-            StratixRuanDataLayer.TSRuanOrderIntegrationHelperData dataLayerResult = StratixRuanDataLayer.TSRuanOrderIntegrationHelperData.GetSalesOrderDataToConstructRuanOrderIntegrationXML(orderReleaseNumber);
+            StratixRuanDataLayer.TSRuanOrderIntegrationHelperData dataLayerResult = StratixRuanDataLayer.TSRuanOrderIntegrationHelperData.GetSalesOrderDataToConstructRuanOrderIntegrationXML(orderNumber, orderItemNumber, orderSubItemNumber);
+            RuanOrderIntegrationHelperData blInstance = new RuanOrderIntegrationHelperData(dataLayerResult);
+            return blInstance;
+        }
+
+        public static RuanOrderIntegrationHelperData GetTransferDataToConstructRuanOrderIntegrationXML(string transferKeyPfx, long transferKeyNumber)
+        {
+            StratixRuanDataLayer.TSRuanOrderIntegrationHelperData dataLayerResult = StratixRuanDataLayer.TSRuanOrderIntegrationHelperData.GetTransferDataToConstructRuanOrderIntegrationXML(transferKeyPfx, transferKeyNumber);
             RuanOrderIntegrationHelperData blInstance = new RuanOrderIntegrationHelperData(dataLayerResult);
             return blInstance;
         }

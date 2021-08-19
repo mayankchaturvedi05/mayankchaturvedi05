@@ -15,6 +15,7 @@ using System.Xml.Serialization;
 using StratixRuanBusinessLogic;
 using StratixRuanBusinessLogic.Ruan.Serialization;
 using StratixRuanBusinessLogic.Stratix;
+using StratixRuanDataLayer;
 using StratixOrderNotification = StratixRuanDataLayer.StratixOrderNotification;
 
 namespace StratixRuanBusinessLogic.Ruan.Action
@@ -83,21 +84,38 @@ namespace StratixRuanBusinessLogic.Ruan.Action
         //mapping functions go here
         #region Mapping Functions 
             
-        //creates and submits Actual Shipment (SA) to Ruan from a manifestHeaderNumber
-        public static void SubmitActualShipment(long manifestHeaderNumber)
+       
+        public static void SubmitActualShipmentForSalesOrderAndTransfer()
         {
-           
+           //Currently being worked on locally by Skhan
         }
 
-        public static void GenerateOrderReleaseForRuan(long stratixInterchangeNumber, long orderNumber, string orderReleaseStatusValue)
+        public static void GenerateOrderReleaseForRuan(StratixOrderReleaseParametersForRuan stratixOrderReleaseParametersForRuan)
         {
-            if (Debugger.IsAttached) Debug.WriteLine($"KeyNumber: {orderNumber}");
+            if (Debugger.IsAttached) Debug.WriteLine($"KeyNumber: {stratixOrderReleaseParametersForRuan.orderFileKeyNumber}");
 
-           
             int totalOrderCount = 0;
 
             StratixRuanBusinessLogic.Stratix.RuanOrderIntegrationHelperData helperData = StratixRuanBusinessLogic.Stratix.RuanOrderIntegrationHelperData
-                .GetDataToConstructRuanOrderIntegrationHelperData(orderNumber);
+                    .GetDataToConstructRuanOrderIntegrationHelperData(stratixOrderReleaseParametersForRuan);
+
+            if (helperData == null)
+            {
+                return;
+            }
+
+            string ruanUniqueOrderNumber;
+            if (stratixOrderReleaseParametersForRuan.orderFileKeyPfx.Equals("SO"))
+            {
+                ruanUniqueOrderNumber =
+                    $"{stratixOrderReleaseParametersForRuan.orderFileKeyNumber}_{stratixOrderReleaseParametersForRuan.orderFileItemNumber}_{stratixOrderReleaseParametersForRuan.orderFileSubItemNumber}";
+            }
+            else //JS or IP
+            {
+                ruanUniqueOrderNumber =
+                    $"{stratixOrderReleaseParametersForRuan.orderFileKeyPfx}_{stratixOrderReleaseParametersForRuan.orderFileKeyNumber}";
+            }
+
             string releaseWeight = $"{helperData.ReleaseWeight}";
 
             string packageType = helperData.PackagingCode;
@@ -151,26 +169,11 @@ namespace StratixRuanBusinessLogic.Ruan.Action
 
         
 
-           // StringBuilder routingInstructionsComment = new StringBuilder();
-           //// if (!string.IsNullOrEmpty(helperData.AMALTRComment))
-           // {
-           //     routingInstructionsComment.AppendLine($"Appointment Comment: TBD");
-           // }
-
-           // //if (!string.IsNullOrEmpty(routingInstructionsComment.ToString()))
-           // {
-           //     orderReleaseComments.Add(new Serialization.Comment()
-           //     {
-           //         CommentType = "ROUTING_INSTR",
-           //         CommentValue = "TBD"
-           //     });
-           // }
-
             List<Serialization.ReferenceNumber> orderReleaseReferenceNumbers = new List<Serialization.ReferenceNumber>();
             orderReleaseReferenceNumbers.Add(new Serialization.ReferenceNumber()
             {
                 ReferenceNumberType = "SO_NUM",
-                ReferenceNumberValue = $"{helperData.SalesOrderReleaseNumber}"
+                ReferenceNumberValue = $"{ruanUniqueOrderNumber}"
             }
                 );
 
@@ -207,11 +210,35 @@ namespace StratixRuanBusinessLogic.Ruan.Action
                 );
             }
 
+            //if (helperData.EarliestDueDateTolerance > 0) // Removed for now. But, will evaluate later.
+            //{
+            //    helperData.OrderDeliveryDateFrom =
+            //        helperData.OrderDeliveryDateFrom.AddDays(helperData.EarliestDueDateTolerance);
+            //}
+
+            if (helperData.OrderDeliveryDateFromHour > 0)
+            {
+                helperData.OrderDeliveryDateFrom = helperData.OrderDeliveryDateFrom.AddHours(helperData.OrderDeliveryDateFromHour);
+                if (helperData.OrderDeliveryDateFrom < DateTime.Now)
+                {
+                    helperData.OrderDeliveryDateFrom = DateTime.Now;
+                }
+            }
+
+            if (helperData.OrderDeliveryDateToHour > 0)
+            {
+                helperData.OrderDeliveryDateTo = helperData.OrderDeliveryDateTo.AddHours(helperData.OrderDeliveryDateToHour);
+                if (helperData.OrderDeliveryDateTo < DateTime.Now)
+                {
+                    helperData.OrderDeliveryDateTo = DateTime.Now;
+                }
+            }
+
 
             APIReleaseOrder ruanReleaseOrder = new APIReleaseOrder
             {
                 TransmissionType = "FRESH",
-                SenderTransmissionNo = $"HS-{helperData.SalesOrderReleaseNumber}",
+                SenderTransmissionNo = $"HS-{ruanUniqueOrderNumber}",
                 ReleaseOrders = new List<ReleaseOrder>()
                 {
                         new ReleaseOrder()
@@ -219,17 +246,16 @@ namespace StratixRuanBusinessLogic.Ruan.Action
                             OrderHeader = new OrderHeader()
                             {
                                 DomainName =  "RUAN/HS",
-                                OrderNumber = helperData.SalesOrderReleaseNumber.ToString(),
+                                OrderNumber = ruanUniqueOrderNumber,
                                 TransactionCode = "RC",
                                 IntegrationCommand = "RemoveShipmentRefForRC",
                                 PaymentMethod = "TPB",
                                 TimeWindowEmphasis = "DELV",
                                 Priority = "3",
-                                StatusValue = orderReleaseStatusValue,
+                                StatusValue = stratixOrderReleaseParametersForRuan.orderReleaseStatusValue,
                                 StatusType = "CANCELLED",
                                 OrderShippingConfiguration =  "SHIP_UNIT_LINES",
-                                //OrderType = loadAuthCross.SalesOrderReleaseNumber.HasValue ? "SALES_ORDER" : "TRANSFERS",//TODO: Once transfer process is finalized change the logic here
-                                OrderType = "SALES_ORDER",
+                                OrderType = stratixOrderReleaseParametersForRuan.orderFileKeyPfx.Equals("SO") ? "SALES_ORDER" : "TRANSFERS",
                                 CustomerServiceRepInfo = new CustomerServiceRepInfo()
                                 {
                                     CustomerServiceRepName = helperData.InsideSalesPersonName,
@@ -265,7 +291,7 @@ namespace StratixRuanBusinessLogic.Ruan.Action
                                 Role = "SHIPFROM/SHIPTO",
                                 PostLocationToOTM = "true"
                             },
-                            ShippingAndDeliveryDates = !String.IsNullOrEmpty(helperData.OrderDeliveryDateFrom.ToString())? new ShippingAndDeliveryDates()
+                            ShippingAndDeliveryDates = !String.IsNullOrEmpty(helperData.ShipDateTimeEarly.ToString())? new ShippingAndDeliveryDates()
                             {
                                 ShipDateTimeEarly = helperData.OrderDeliveryDateFrom,
                                 DeliveryDateTimeEarly = helperData.OrderDeliveryDateFrom, //$"{earliestDeliveryDateTimeWithTimeStamp:yyyy-MM-ddTHH:mm:ss.fffffffzzz}",
@@ -287,10 +313,10 @@ namespace StratixRuanBusinessLogic.Ruan.Action
                                 {
                                     AutoCreateItem = "Y",
                                     AutoCreateItemMaster= "Y",
-                                    LineItemNumber = $"{helperData.SalesOrderReleaseNumber}-1",//alway append by -1
-                                    TransportUnitKey = $"{helperData.SalesOrderReleaseNumber}-001",//alway append by -001
-                                    ItemNumber = helperData.SalesOrderReleaseNumber.ToString(),
-                                    ItemName = helperData.SalesOrderReleaseNumber.ToString(),
+                                    LineItemNumber = $"{ruanUniqueOrderNumber}-1",//alway append by -1
+                                    TransportUnitKey = $"{ruanUniqueOrderNumber}-001",//alway append by -001
+                                    ItemNumber = ruanUniqueOrderNumber,
+                                    ItemName = ruanUniqueOrderNumber,
                                     ItemDescription = helperData.OrderProductDescription1,
                                     ItemCommodityGroup="FAK",//Hard Coded Per Runi's REvision
                                     Quantity = "5",
@@ -329,7 +355,7 @@ namespace StratixRuanBusinessLogic.Ruan.Action
                                     ShipToLocation = helperData.ShipToID,
                                     DomainName = "RUAN/HS",
                                     TransactionCode = "IU",
-                                    ShipUnitKey = $"{helperData.SalesOrderReleaseNumber}-001",//alway append by -001
+                                    ShipUnitKey = $"{ruanUniqueOrderNumber}-001",//alway append by -001
                                     ShipUnitType = $"{packageType}",                               //helperData.InventoryType.ToUpper(),
                                     ShipUnitCount = "5",
                                     WeightUnitOfMeasure = "LB",
@@ -347,10 +373,10 @@ namespace StratixRuanBusinessLogic.Ruan.Action
                                         {
                                             DomainName = "RUAN/CUST",
                                             ReleaseLineSequenceNumber = "1",
-                                            OrderNumber = helperData.SalesOrderReleaseNumber.ToString(),
-                                            LineItemNumber = $"{helperData.SalesOrderReleaseNumber}-1",//alway append by -1,
-                                            ItemNumber = helperData.SalesOrderReleaseNumber.ToString(),
-                                            ItemName = helperData.SalesOrderReleaseNumber.ToString(),
+                                            OrderNumber = ruanUniqueOrderNumber,
+                                            LineItemNumber = $"{ruanUniqueOrderNumber}-1",//alway append by -1,
+                                            ItemNumber = ruanUniqueOrderNumber,
+                                            ItemName = ruanUniqueOrderNumber,
                                             ItemDescription = helperData.OrderProductDescription1,
                                             ItemCommodityGroup="FAK",//Hard Coded Per Runi's Revision
                                             Quantity = "5",
@@ -362,7 +388,7 @@ namespace StratixRuanBusinessLogic.Ruan.Action
                                             WeightGrossUnitOfMeasure = "LB",
                                             VolumeGross = "0",
                                             VolumeGrossUnitOfMeasure = "CUFT",
-                                            PackagedItem = helperData.SalesOrderReleaseNumber.ToString()
+                                            PackagedItem = ruanUniqueOrderNumber
                                         }
                                     },
                                     ShipUnitDimensions = new ShipUnitDimensions()
@@ -383,7 +409,7 @@ namespace StratixRuanBusinessLogic.Ruan.Action
             };
 
          
-            SubmitToRuan(stratixInterchangeNumber, ruanReleaseOrder);
+            SubmitToRuan(stratixOrderReleaseParametersForRuan.stratixInterchangeNumber, ruanReleaseOrder);
         }
         #endregion
 
@@ -436,23 +462,24 @@ namespace StratixRuanBusinessLogic.Ruan.Action
                         using (HttpResponseMessage response = await client.PostAsync(uri, httpContent))
                         //using (HttpResponseMessage response =  client.PostAsync(uri, httpContent)) // without the await during testing.
                         {
-                            try
-                            {
-                                Debug.WriteLine(response.ToString());
-                                LastResponse = response.ToString();
-                                response.EnsureSuccessStatusCode(); //throw exception if not successful 
+                            //try
+                            //{
+                            //    Debug.WriteLine(response.ToString());
+                            //    LastResponse = response.ToString();
+                            //    response.EnsureSuccessStatusCode(); //throw exception if not successful 
 
-                            }
-                            catch (Exception e)
-                            {
-                                //set it back to be processed.
-                                StratixOrderNotification.SetOrderNotificationToOpen(key);
-                            }
+                            //}
+                            //catch (Exception e)
+                            //{
+                            //    //set it back to be processed.
+                            //    StratixOrderNotification.SetOrderNotificationToOpen(key);
+                            //}
 
 
                             ////save to database after it gets sent to Ruan(If its fails, then it is saved in the job engine to reprocess it)
                             RuanXml ruanXml = new RuanXml(apiObject);
                             ruanXml.Save();
+                            var test = ruanXml.RuanXMLNumber;
 
                         }
                     }

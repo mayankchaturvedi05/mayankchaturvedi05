@@ -74,6 +74,7 @@
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="connections.config" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -86,6 +87,14 @@
     <ProjectReference Include="..\StratixRuanBusinessLogic\StratixRuanBusinessLogic.csproj">
       <Project>{7A8D936E-5D1C-4D24-B139-F3660699A7CD}</Project>
       <Name>StratixRuanBusinessLogic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\StratixRuanDataLayer.Linq2SQL\StratixRuanDataLayer.Linq2SQL.csproj">
+      <Project>{c14c8e8c-983b-4ecc-896a-edbdaa172e8d}</Project>
+      <Name>StratixRuanDataLayer.Linq2SQL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\StratixRuanDataLayer\StratixRuanDataLayer.csproj">
+      <Project>{25a8d898-b0eb-4bf2-ac53-81c0ec1b5a97}</Project>
+      <Name>StratixRuanDataLayer</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

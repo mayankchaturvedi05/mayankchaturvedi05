@@ -13,6 +13,7 @@ namespace StratixRuanBusinessLogic.Stratix
         public long ReferenceItem { get; set; }
         public long ReferenceSubItem { get; set; }
         public string InterchangeActivity { get; set; }
+        public string ReferencePrefix { get; set; }
         public DateTime ActivityDateTime { get; set; }
         public short AcknowledgedFlag { get; set; }
         public DateTime AcknowledgedDateTime { get; set; }
@@ -27,6 +28,7 @@ namespace StratixRuanBusinessLogic.Stratix
             ActivityDateTime = source.ActivityDateTime;
             AcknowledgedFlag = source.AcknowledgedFlag;
             AcknowledgedDateTime = source.AcknowledgedDateTime;
+            ReferencePrefix = source.ReferencePrefix;
         }
 
         public static List<StratixOrderNotification> GetStratixOrderNotification()
