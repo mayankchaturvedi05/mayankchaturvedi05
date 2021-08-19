@@ -97,6 +97,7 @@
     <Compile Include="RuanStratixException.cs" />
     <Compile Include="RuanXML.cs" />
     <Compile Include="RuanXMLQueue.cs" />
+    <Compile Include="RuanXMLQueueList.cs" />
     <Compile Include="Ruan\Action\RuanAction.cs" />
     <Compile Include="Ruan\Action\RuanActionInbound.cs" />
     <Compile Include="Ruan\Action\RuanActualShipment.cs" />

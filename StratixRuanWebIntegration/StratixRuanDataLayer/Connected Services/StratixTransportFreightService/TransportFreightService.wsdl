@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://stratix.invera.com/services" name="TransportFreightService" targetNamespace="http://stratix.invera.com/services" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema xmlns:Q1="http://stratix.invera.com/schema/common/datatypes" targetNamespace="http://stratix.invera.com/services">
+      <xsd:import schemaLocation="../../../schema/common/HeaderDatatypes.xsd" namespace="http://stratix.invera.com/schema/common/datatypes" />
+      <xsd:element name="AuthenticationHeader" type="Q1:AuthenticationToken" />
+      <xsd:element name="ServiceMessagesHeader" type="Q1:ServiceMessages" />
+      <xsd:element name="StratixFault" type="xsd:string" />
+      <xsd:complexType name="UpdateTRFreightInput">
+        <xsd:sequence>
+          <xsd:element minOccurs="1" maxOccurs="1" name="trNumber" type="xsd:int" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="trDlvyMthd" type="xsd:string" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="trFreightVenID" type="xsd:string" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="trCarrierNm" type="xsd:string" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="trCurrency" type="xsd:string" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="trExchangeRtType" type="xsd:string" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="trExchangeRt" type="xsd:decimal" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="UpdateTRFreightCostInput">
+        <xsd:sequence>
+          <xsd:element minOccurs="1" maxOccurs="1" name="trNumber" type="xsd:int" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="trFreightCost" type="xsd:decimal" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="trFreightCostUM" type="xsd:string" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="trFlSurChrgCost" type="xsd:decimal" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="trFlSurChrgCostUM" type="xsd:string" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="trStopChrg" type="xsd:decimal" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="trCarrierRef" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="UpdateMvtFreightCostInput">
+        <xsd:sequence>
+          <xsd:element minOccurs="1" maxOccurs="1" name="trNumber" type="xsd:int" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="trMvtNumber" type="xsd:int" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="mvtFreightCost" type="xsd:decimal" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="mvtFreightCostUM" type="xsd:string" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="mvtFlSurChrgCost" type="xsd:decimal" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="mvtFlSurChrgCostUM" type="xsd:string" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="mvtCarrierRef" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="UpdateMvtFreightChargeInput">
+        <xsd:sequence>
+          <xsd:element minOccurs="1" maxOccurs="1" name="trNumber" type="xsd:int" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="trMvtNumber" type="xsd:int" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="mvtFreightCharge" type="xsd:decimal" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="mvtFreightChargeUM" type="xsd:string" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="mvtFlSurChrgCharge" type="xsd:decimal" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="mvtFlSurChrgChargeUM" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="UpdateTRFreight">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="1" maxOccurs="1" name="updateTRFreightInput" type="tns:UpdateTRFreightInput" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="UpdateTRFreightResponse">
+        <xsd:complexType>
+          <xsd:sequence />
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="UpdateTRFreightCost">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="1" maxOccurs="1" name="updateTRFreightCostInput" type="tns:UpdateTRFreightCostInput" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="UpdateTRFreightCostResponse">
+        <xsd:complexType>
+          <xsd:sequence />
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="DeleteTRFreightCost">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="1" maxOccurs="1" name="trNumber" type="xsd:int" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="DeleteTRFreightCostResponse">
+        <xsd:complexType>
+          <xsd:sequence />
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="UpdateMvtFreightCost">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="1" maxOccurs="1" name="updateMvtFreightCostInput" type="tns:UpdateMvtFreightCostInput" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="UpdateMvtFreightCostResponse">
+        <xsd:complexType>
+          <xsd:sequence />
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="UpdateMvtFreightCharge">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="1" maxOccurs="1" name="updateMvtFreightChargeInput" type="tns:UpdateMvtFreightChargeInput" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="UpdateMvtFreightChargeResponse">
+        <xsd:complexType>
+          <xsd:sequence />
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="AuthenticationHeader">
+    <wsdl:part name="authenticationToken" element="tns:AuthenticationHeader" />
+  </wsdl:message>
+  <wsdl:message name="ServiceMessagesHeader">
+    <wsdl:part name="messages" element="tns:ServiceMessagesHeader" />
+  </wsdl:message>
+  <wsdl:message name="StratixFault">
+    <wsdl:part name="stratixFault" element="tns:StratixFault" />
+  </wsdl:message>
+  <wsdl:message name="UpdateTRFreightRequest">
+    <wsdl:part name="parameters" element="tns:UpdateTRFreight" />
+  </wsdl:message>
+  <wsdl:message name="UpdateTRFreightResponse">
+    <wsdl:part name="parameters" element="tns:UpdateTRFreightResponse" />
+  </wsdl:message>
+  <wsdl:message name="UpdateTRFreightCostRequest">
+    <wsdl:part name="parameters" element="tns:UpdateTRFreightCost" />
+  </wsdl:message>
+  <wsdl:message name="UpdateTRFreightCostResponse">
+    <wsdl:part name="parameters" element="tns:UpdateTRFreightCostResponse" />
+  </wsdl:message>
+  <wsdl:message name="DeleteTRFreightCostRequest">
+    <wsdl:part name="parameters" element="tns:DeleteTRFreightCost" />
+  </wsdl:message>
+  <wsdl:message name="DeleteTRFreightCostResponse">
+    <wsdl:part name="parameters" element="tns:DeleteTRFreightCostResponse" />
+  </wsdl:message>
+  <wsdl:message name="UpdateMvtFreightCostRequest">
+    <wsdl:part name="parameters" element="tns:UpdateMvtFreightCost" />
+  </wsdl:message>
+  <wsdl:message name="UpdateMvtFreightCostResponse">
+    <wsdl:part name="parameters" element="tns:UpdateMvtFreightCostResponse" />
+  </wsdl:message>
+  <wsdl:message name="UpdateMvtFreightChargeRequest">
+    <wsdl:part name="parameters" element="tns:UpdateMvtFreightCharge" />
+  </wsdl:message>
+  <wsdl:message name="UpdateMvtFreightChargeResponse">
+    <wsdl:part name="parameters" element="tns:UpdateMvtFreightChargeResponse" />
+  </wsdl:message>
+  <wsdl:portType name="TransportFreightService">
+    <wsdl:operation name="UpdateTRFreight">
+      <wsdl:input message="tns:UpdateTRFreightRequest" />
+      <wsdl:output message="tns:UpdateTRFreightResponse" />
+      <wsdl:fault name="stratixFault" message="tns:StratixFault" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateTRFreightCost">
+      <wsdl:input message="tns:UpdateTRFreightCostRequest" />
+      <wsdl:output message="tns:UpdateTRFreightCostResponse" />
+      <wsdl:fault name="stratixFault" message="tns:StratixFault" />
+    </wsdl:operation>
+    <wsdl:operation name="DeleteTRFreightCost">
+      <wsdl:input message="tns:DeleteTRFreightCostRequest" />
+      <wsdl:output message="tns:DeleteTRFreightCostResponse" />
+      <wsdl:fault name="stratixFault" message="tns:StratixFault" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateMvtFreightCost">
+      <wsdl:input message="tns:UpdateMvtFreightCostRequest" />
+      <wsdl:output message="tns:UpdateMvtFreightCostResponse" />
+      <wsdl:fault name="stratixFault" message="tns:StratixFault" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateMvtFreightCharge">
+      <wsdl:input message="tns:UpdateMvtFreightChargeRequest" />
+      <wsdl:output message="tns:UpdateMvtFreightChargeResponse" />
+      <wsdl:fault name="stratixFault" message="tns:StratixFault" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="TransportFreightServiceSOAP" type="tns:TransportFreightService">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="UpdateTRFreight">
+      <soap:operation soapAction="http://stratix.invera.com/services/UpdateTRFreight" />
+      <wsdl:input>
+        <soap:header message="tns:AuthenticationHeader" part="authenticationToken" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:header message="tns:AuthenticationHeader" part="authenticationToken" use="literal" />
+        <soap:header message="tns:ServiceMessagesHeader" part="messages" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="stratixFault">
+        <soap:fault use="literal" name="stratixFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateTRFreightCost">
+      <soap:operation soapAction="http://stratix.invera.com/services/UpdateTRFreightCost" />
+      <wsdl:input>
+        <soap:header message="tns:AuthenticationHeader" part="authenticationToken" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:header message="tns:AuthenticationHeader" part="authenticationToken" use="literal" />
+        <soap:header message="tns:ServiceMessagesHeader" part="messages" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="stratixFault">
+        <soap:fault use="literal" name="stratixFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="DeleteTRFreightCost">
+      <soap:operation soapAction="http://stratix.invera.com/services/DeleteTRFreightCost" />
+      <wsdl:input>
+        <soap:header message="tns:AuthenticationHeader" part="authenticationToken" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:header message="tns:AuthenticationHeader" part="authenticationToken" use="literal" />
+        <soap:header message="tns:ServiceMessagesHeader" part="messages" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="stratixFault">
+        <soap:fault use="literal" name="stratixFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateMvtFreightCost">
+      <soap:operation soapAction="http://stratix.invera.com/services/UpdateMvtFreightCost" />
+      <wsdl:input>
+        <soap:header message="tns:AuthenticationHeader" part="authenticationToken" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:header message="tns:AuthenticationHeader" part="authenticationToken" use="literal" />
+        <soap:header message="tns:ServiceMessagesHeader" part="messages" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="stratixFault">
+        <soap:fault use="literal" name="stratixFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateMvtFreightCharge">
+      <soap:operation soapAction="http://stratix.invera.com/services/UpdateMvtFreightCharge" />
+      <wsdl:input>
+        <soap:header message="tns:AuthenticationHeader" part="authenticationToken" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:header message="tns:AuthenticationHeader" part="authenticationToken" use="literal" />
+        <soap:header message="tns:ServiceMessagesHeader" part="messages" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="stratixFault">
+        <soap:fault use="literal" name="stratixFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="TransportFreightService">
+    <wsdl:port name="TransportFreightServiceSOAP" binding="tns:TransportFreightServiceSOAP">
+      <soap:address location="REPLACE_WITH_ACTUAL_URL" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

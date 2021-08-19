@@ -60,7 +60,25 @@ namespace StratixRuanBusinessLogic
         }
 
         public RuanXMLQueue() { }
-        
+
+        public static RuanXMLQueueList FetchAllByQueueFlagNumber(long queueFlagNumber)
+        {
+            RuanXMLQueueList list = new RuanXMLQueueList();
+            TSRuanXMLQueue[] details = TSRuanXMLQueue.FetchAllByQueueFlagNumber(queueFlagNumber);
+
+            if (details != null)
+            {
+                foreach (TSRuanXMLQueue item in details)
+                {
+                    RuanXMLQueue ruanXMLQueue = new RuanXMLQueue();
+                    ruanXMLQueue.PopulateBusinessObject(item);
+                    list.Add(ruanXMLQueue);
+                }
+            }
+
+            return list;
+        }
+
     }
 }
 

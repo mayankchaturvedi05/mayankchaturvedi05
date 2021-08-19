@@ -1,19 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using StratixRuanBusinessLogic;
 using StratixRuanBusinessLogic.Ruan.Action;
 using StratixRuanDataLayer;
+using GlobalState = StratixRuanBusinessLogic.GlobalState;
 
 namespace StratixToRuanDataTransfer
 {
     public class StratixToRuanOrderDataTransfer
     {
-
-        public void Execute()
+        private QueueFlag queueFlagForActivityNotAssigned;
+        private long timerInterval;
+        public StratixToRuanOrderDataTransfer()
+        {
+            queueFlagForActivityNotAssigned = GlobalState.QueueFlags.QueueFlagByCode("ActivityNotAssigned");
+            
+        }
+        public void ExecuteOrderReleases()
         {
             StringBuilder logText = new StringBuilder();
             try
@@ -96,10 +105,36 @@ namespace StratixToRuanDataTransfer
             {
                 string exceptionText =
                     $"{DateTime.Now.ToShortTimeString()}: Error processing. The exception message is {e.Message}";
-                logText.Clear();
                 logText.AppendLine(exceptionText);
+                LogMessage(logText.ToString());
+                logText.Clear();
                 Console.WriteLine(exceptionText);
             }
+        }
+
+        public void ExecutePendingTransports()
+        {
+            StringBuilder logText = new StringBuilder();
+            RuanXMLQueueList pendingTransportActivitiesToBeCreated = RuanXMLQueue.FetchAllByQueueFlagNumber(queueFlagForActivityNotAssigned.QueueTypeNumber);
+
+            foreach (var pendingTransportActivity in pendingTransportActivitiesToBeCreated)
+            {
+                try
+                {
+                    RuanAction.ProcessTransportActivities(pendingTransportActivity.RuanXMLQueueNumber);
+                }
+                catch (Exception e)
+                {
+                    string exceptionText =
+                        $"{DateTime.Now.ToShortTimeString()}: Error processing. The exception message is {e.Message}";
+
+                    LogMessage(logText.ToString());
+                    logText.Clear();
+                    Console.WriteLine(exceptionText);
+                }
+                
+            }
+
         }
 
         private void LogMessage(string messages)

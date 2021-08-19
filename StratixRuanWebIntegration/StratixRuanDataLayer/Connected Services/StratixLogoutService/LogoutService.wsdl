@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://stratix.invera.com/services" name="LogoutService" targetNamespace="http://stratix.invera.com/services" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema xmlns:Q1="http://stratix.invera.com/schema/common/datatypes" targetNamespace="http://stratix.invera.com/services">
+      <xsd:import schemaLocation="../../schema/common/HeaderDatatypes.xsd" namespace="http://stratix.invera.com/schema/common/datatypes" />
+      <xsd:element name="ServiceMessagesHeader" type="Q1:ServiceMessages" />
+      <xsd:element name="StratixFault" type="xsd:string" />
+      <xsd:element name="Logout">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="authenticationToken" type="Q1:AuthenticationToken" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="LogoutResponse">
+        <xsd:complexType>
+          <xsd:sequence />
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="ServiceMessagesHeader">
+    <wsdl:part name="messages" element="tns:ServiceMessagesHeader" />
+  </wsdl:message>
+  <wsdl:message name="StratixFault">
+    <wsdl:part name="stratixFault" element="tns:StratixFault" />
+  </wsdl:message>
+  <wsdl:message name="LogoutRequest">
+    <wsdl:part name="parameters" element="tns:Logout" />
+  </wsdl:message>
+  <wsdl:message name="LogoutResponse">
+    <wsdl:part name="parameters" element="tns:LogoutResponse" />
+  </wsdl:message>
+  <wsdl:portType name="LogoutService">
+    <wsdl:operation name="Logout">
+      <wsdl:input message="tns:LogoutRequest" />
+      <wsdl:output message="tns:LogoutResponse" />
+      <wsdl:fault name="stratixFault" message="tns:StratixFault" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="LogoutServiceSOAP" type="tns:LogoutService">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="Logout">
+      <soap:operation soapAction="http://stratix.invera.com/security/Logout" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:header message="tns:ServiceMessagesHeader" part="messages" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="stratixFault">
+        <soap:fault use="literal" name="stratixFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="LogoutService">
+    <wsdl:port name="LogoutServiceSOAP" binding="tns:LogoutServiceSOAP">
+      <soap:address location="REPLACE_WITH_ACTUAL_URL" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

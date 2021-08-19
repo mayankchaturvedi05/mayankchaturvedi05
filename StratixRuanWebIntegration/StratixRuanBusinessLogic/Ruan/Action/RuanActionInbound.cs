@@ -3,12 +3,18 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.ServiceModel;
 using System.Text.RegularExpressions;
 using StratixRuanBusinessLogic.CoreData;
 using StratixRuanBusinessLogic.Ruan.Serialization;
 using StratixRuanDataLayer;
 using System.Threading;
+using System.Xml;
 using System.Xml.Linq;
+using StratixRuanDataLayer.StratixAuthenticationService;
+using StratixRuanDataLayer.StratixTransportFreightService;
+using AuthenticationToken = StratixRuanDataLayer.StratixAuthenticationService.AuthenticationToken;
+using ServiceMessages = StratixRuanDataLayer.StratixAuthenticationService.ServiceMessages;
 
 namespace StratixRuanBusinessLogic.Ruan.Action
 {
@@ -130,7 +136,7 @@ namespace StratixRuanBusinessLogic.Ruan.Action
                     objXcti19.i19_frt_ven_id = "9999";
                     objXcti19.i19_sch_dtts = $"'{dateShipped.Value.ToString(formatDate)}'";
                 }
-                else
+                else // new
                 {
                     objXcti18.i18_intchg_no = interchangeNumberTransport;
                     string formatDate = "yyyy-MM-dd HH:mm:ss";
@@ -415,6 +421,71 @@ namespace StratixRuanBusinessLogic.Ruan.Action
             }
 
         }
-       
+
+        public static void AssignFreightCost()
+        {
+            AuthenticationServiceClient authenticationServiceClient = new AuthenticationServiceClient();
+            GatewayLoginRequestType gatewayLoginRequestType = new GatewayLoginRequestType();
+            gatewayLoginRequestType.username = "smills ";//todo change these to config values.
+            gatewayLoginRequestType.password = "password";
+            gatewayLoginRequestType.environmentName = "tsthsp";
+            gatewayLoginRequestType.environmentClass = "TST";
+            gatewayLoginRequestType.forceDisconnect = true;
+            gatewayLoginRequestType.connectedAccessType = "I";
+            gatewayLoginRequestType.forceDisconnectSpecified = true;
+
+            GatewayLoginResponseType gatewayLoginResponseType = new GatewayLoginResponseType();
+            authenticationServiceClient.GatewayLogin(gatewayLoginRequestType, out gatewayLoginResponseType);
+
+            TransportFreightServiceClient trn = new TransportFreightServiceClient();
+            UpdateTRFreightCostRequest updateTRFreightCostRequest = new UpdateTRFreightCostRequest();
+
+            StratixRuanDataLayer.StratixTransportFreightService.AuthenticationToken authenticationToken = new StratixRuanDataLayer.StratixTransportFreightService.AuthenticationToken();
+            authenticationToken.username = gatewayLoginResponseType.authenticationToken.username;
+            authenticationToken.value = gatewayLoginResponseType.authenticationToken.value;
+
+            UpdateTRFreightCostInput updateTrFreightCostInput = new UpdateTRFreightCostInput();
+            updateTrFreightCostInput.trNumber = 533;
+            updateTrFreightCostInput.trFreightCostSpecified = true;
+            updateTrFreightCostInput.trFreightCostUM = "CWT";
+            updateTrFreightCostInput.trFreightCost = 0.6m;
+
+            updateTrFreightCostInput.trFlSurChrgCostSpecified = false;
+            updateTrFreightCostInput.trFlSurChrgCostUM = "PCT";
+
+
+            updateTrFreightCostInput.trCarrierRef = "R11121";
+
+
+            updateTrFreightCostInput.trStopChrgSpecified = false;
+
+
+            updateTRFreightCostRequest.AuthenticationHeader = authenticationToken;
+            updateTRFreightCostRequest.updateTRFreightCostInput = updateTrFreightCostInput;
+
+            try
+            {
+                StratixRuanDataLayer.StratixTransportFreightService.ServiceMessages updateFreightCostMessages = trn.UpdateTRFreightCost(ref authenticationToken, updateTrFreightCostInput);
+            }
+            catch (FaultException faultex)
+            {
+                var msgFault = faultex.CreateMessageFault();
+
+                if (msgFault.HasDetail)
+                {
+                    XmlElement detailNode = msgFault.GetDetail<XmlElement>();
+                    FaultReason faultReason = msgFault.Reason;
+                    string faultReasonMessage = faultReason.ToString();
+
+                    throw new RuanJobException($"Error calling Stratix service: {faultReasonMessage}.");
+                }
+            }
+            catch (Exception exception)
+            {
+                throw new RuanJobException($"{exception.Message}.");
+            }
+
+        }
+
     }
 }

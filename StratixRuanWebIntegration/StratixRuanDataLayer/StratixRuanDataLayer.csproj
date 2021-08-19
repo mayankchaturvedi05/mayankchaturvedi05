@@ -32,6 +32,8 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -40,6 +42,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Connected Services\StratixAuthenticationService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Connected Services\StratixLogoutService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Connected Services\StratixTransportFreightService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
     <Compile Include="GlobalState.cs" />
     <Compile Include="RuanOrderIntegrationHelperData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -51,6 +68,158 @@
     <Compile Include="XCTI19.cs" />
     <Compile Include="XCTI20.cs" />
     <Compile Include="XCTI21.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Connected Services\StratixAuthenticationService\AuthenticationService.wsdl" />
+    <None Include="Connected Services\StratixAuthenticationService\AuthenticationToken.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\StratixAuthenticationService\Datatypes.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\StratixAuthenticationService\ServiceMessages.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\StratixAuthenticationService\StratixRuanDataLayer.StratixAuthenticationService.ChangePasswordForUserResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\StratixAuthenticationService\StratixRuanDataLayer.StratixAuthenticationService.ChangePasswordResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\StratixAuthenticationService\StratixRuanDataLayer.StratixAuthenticationService.ChangePasswordResponseType.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\StratixAuthenticationService\StratixRuanDataLayer.StratixAuthenticationService.ConsumeLicenseResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\StratixAuthenticationService\StratixRuanDataLayer.StratixAuthenticationService.ConsumeLicenseResponseType.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\StratixAuthenticationService\StratixRuanDataLayer.StratixAuthenticationService.GatewayLoginResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\StratixAuthenticationService\StratixRuanDataLayer.StratixAuthenticationService.GatewayLoginResponseType.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\StratixAuthenticationService\StratixRuanDataLayer.StratixAuthenticationService.GetPasswordPolicyResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\StratixAuthenticationService\StratixRuanDataLayer.StratixAuthenticationService.GetPasswordPolicyResponseType.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\StratixAuthenticationService\StratixRuanDataLayer.StratixAuthenticationService.IsConnectedResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\StratixAuthenticationService\StratixRuanDataLayer.StratixAuthenticationService.LoginAndChangePasswordResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\StratixAuthenticationService\StratixRuanDataLayer.StratixAuthenticationService.LoginResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\StratixAuthenticationService\StratixRuanDataLayer.StratixAuthenticationService.LoginResponseType.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\StratixAuthenticationService\StratixRuanDataLayer.StratixAuthenticationService.LogoutResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\StratixAuthenticationService\StratixRuanDataLayer.StratixAuthenticationService.ServiceMessages.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\StratixAuthenticationService\StratixRuanDataLayer.StratixAuthenticationService.ValidateResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\StratixLogoutService\AuthenticationToken.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\StratixLogoutService\HeaderDatatypes.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\StratixLogoutService\LogoutService.wsdl" />
+    <None Include="Connected Services\StratixLogoutService\ServiceMessages.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\StratixLogoutService\StratixRuanDataLayer.StratixLogoutService.LogoutResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\StratixLogoutService\StratixRuanDataLayer.StratixLogoutService.ServiceMessages.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\StratixTransportFreightService\AuthenticationToken.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\StratixTransportFreightService\HeaderDatatypes.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\StratixTransportFreightService\ServiceMessages.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\StratixTransportFreightService\StratixRuanDataLayer.StratixTransportFreightService.AuthenticationToken.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\StratixTransportFreightService\StratixRuanDataLayer.StratixTransportFreightService.DeleteTRFreightCostResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\StratixTransportFreightService\StratixRuanDataLayer.StratixTransportFreightService.ServiceMessages.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\StratixTransportFreightService\StratixRuanDataLayer.StratixTransportFreightService.UpdateMvtFreightChargeResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\StratixTransportFreightService\StratixRuanDataLayer.StratixTransportFreightService.UpdateMvtFreightCostResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\StratixTransportFreightService\StratixRuanDataLayer.StratixTransportFreightService.UpdateTRFreightCostResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\StratixTransportFreightService\StratixRuanDataLayer.StratixTransportFreightService.UpdateTRFreightResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\StratixTransportFreightService\TransportFreightService.wsdl" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Connected Services\StratixAuthenticationService\" />
+    <WCFMetadataStorage Include="Connected Services\StratixLogoutService\" />
+    <WCFMetadataStorage Include="Connected Services\StratixTransportFreightService\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\StratixAuthenticationService\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\StratixAuthenticationService\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\StratixAuthenticationService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\StratixLogoutService\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\StratixLogoutService\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\StratixLogoutService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\StratixTransportFreightService\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\StratixTransportFreightService\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\StratixTransportFreightService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

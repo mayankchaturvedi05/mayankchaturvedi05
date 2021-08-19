@@ -64,5 +64,23 @@ namespace StratixRuanDataLayer.Linq2SQL
         {
             return "TSRNQ";
         }
+
+        public static TSRuanXMLQueue[] FetchAllByQueueFlagNumber(long queueFlagNumber)
+        {
+            TSRuanXMLQueue[] results = null;
+
+            using (SharedAppsDataContext db = new SharedAppsDataContext())
+            {
+                string sql = @"
+                    SELECT *
+                      FROM TSRuanXMLQueue
+                     WHERE SMQFNumber = {1}
+";
+
+                results = db.ExecuteQuery<TSRuanXMLQueue>(sql, queueFlagNumber).ToArray();
+            }
+
+            return results;
+        }
     }
 }
