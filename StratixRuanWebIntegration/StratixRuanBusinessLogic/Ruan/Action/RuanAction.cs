@@ -25,7 +25,7 @@ namespace StratixRuanBusinessLogic.Ruan.Action
         private static string apiUriBase = string.Empty;
         public static string LastResponse = string.Empty;
         public static bool Synchronize { get; set; } = false;
-
+        //test
 
         #region "Helper functions"
         //static constructor sets environment (dev/qa/prod) from AppConfig
