@@ -43,6 +43,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseOrders\RuanBaseOrderIntegrationHelperData.cs" />
+    <Compile Include="BaseOrders\RuanBaseOrderIntegrationPrdDescHelperData.cs" />
+    <Compile Include="BaseOrders\RuanBaseOrderIntegrationShipFormHelperData.cs" />
+    <Compile Include="BaseOrders\RuanBaseOrderIntegrationShipToHelperData.cs" />
     <Compile Include="Connected Services\StratixAuthenticationService\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

@@ -108,6 +108,7 @@
     <Compile Include="Ruan\Action\RuanSaException.cs" />
     <Compile Include="Ruan\Serialization\ActualShipment.cs" />
     <Compile Include="Ruan\Serialization\APIActualShipment.cs" />
+    <Compile Include="Ruan\Serialization\APIBaseOrder.cs" />
     <Compile Include="Ruan\Serialization\APIOrderStatus.cs" />
     <Compile Include="Ruan\Serialization\APIReleaseOrder.cs" />
     <Compile Include="Ruan\Serialization\APITransportationShipment.cs" />
@@ -145,12 +146,19 @@
     <Compile Include="Ruan\Serialization\Stop.cs" />
     <Compile Include="Ruan\Serialization\TaShipUnit.cs" />
     <Compile Include="Ruan\Serialization\TaShipUnitContent.cs" />
+    <Compile Include="Stratix\RuanBaseOrderIntegrationPrdDescHelperData.cs" />
+    <Compile Include="Stratix\RuanBaseOrderIntegrationShipFormHelperData.cs" />
+    <Compile Include="Stratix\RuanBaseOrderIntegrationShipToHelperData.cs" />
+    <Compile Include="Stratix\RuanBaseOrdersHelperData.cs" />
     <Compile Include="Stratix\RuanOrderIntegrationHelperData.cs" />
     <Compile Include="Stratix\StratixOrderNotification.cs" />
     <Compile Include="Table.cs" />
     <Compile Include="TableList.cs" />
     <Compile Include="TestAtrributes.cs" />
     <Compile Include="Utilities.cs" />
+    <Compile Include="xsd\ApiActualShipment.cs">
+      <DependentUpon>APIActualShipment.xsd</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ClassLibrary1\StratixRuanInterfaces.csproj">
@@ -171,6 +179,17 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="xsd\ActualShipment.xml" />
+    <Content Include="xsd\TA.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="xsd\APIActualShipment.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="xsd\ApiBaseOrder.xsd">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

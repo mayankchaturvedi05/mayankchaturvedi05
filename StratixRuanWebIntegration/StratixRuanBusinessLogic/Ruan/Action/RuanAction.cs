@@ -25,7 +25,7 @@ namespace StratixRuanBusinessLogic.Ruan.Action
         private static string apiUriBase = string.Empty;
         public static string LastResponse = string.Empty;
         public static bool Synchronize { get; set; } = false;
-        //test
+       
 
         #region "Helper functions"
         //static constructor sets environment (dev/qa/prod) from AppConfig
@@ -75,6 +75,8 @@ namespace StratixRuanBusinessLogic.Ruan.Action
                     return "/TransportationArrangedShipments";
                 case RuanApiType.ActualShipment:
                     return "/ReleaseOrderShipments";
+                case RuanApiType.BaseOrders:
+                    return "/BaseOrders";
                 default:
                     return "";
             }
@@ -89,6 +91,384 @@ namespace StratixRuanBusinessLogic.Ruan.Action
         {
            //Currently being worked on locally by Skhan
         }
+
+
+        public static String GenerateActualShipmentForRuan(string orderNumber)
+        {
+
+            APIActualShipment objAS = new APIActualShipment
+            {
+
+                //  DomainName = "RUAN/HS",
+                TransmissionType = "FRESH",
+                SenderTransmissionNo = $"HS_R2854782_2000490342",
+                ActualShipments = new List<ActualShipment>()
+                {
+                        new ActualShipment()
+                        {
+                             ShipmentHeader = new ShipmentHeader()
+                            {
+
+                                DomainName="RUAN",
+                                ShipmentNumber="R2854782",
+                                ShipmentName="HS",
+                                TransactionCode="IU",
+                                ServiceProviderDomain="RUAN",
+                                ServiceProvider="RRXN",
+                                ProcessAsFlowThru="Y",
+                                TransportMode="TL",
+                                StopCount="2",
+                                ShipmentAsWork="N",
+                                AutoGenerateRelease="N",
+                                ReferenceNumbers = new List<ReferenceNumber>()
+                                {
+                                     new ReferenceNumber()
+                                     {
+                                        ReferenceNumberType="ORDER_STOP_ID",
+                                        ReferenceNumberValue="P|1|20210520230646",
+                                     },
+                                      new ReferenceNumber()
+                                     {
+                                        ReferenceNumberType="BM",
+                                        ReferenceNumberValue="2000490342",
+                                     },
+
+                                }
+
+
+                             },
+
+                              ReleaseOrders = new List<ReleaseOrder>()
+                                {
+                                     new ReleaseOrder()
+                                     {
+                                        OrderHeader = new OrderHeader()
+                                        {
+                                             DomainName="RUAN/HS",
+                                             OrderNumber="354271",
+                                             TransactionCode="IU",
+                                             IntegrationCommand="RemoveShipmentRefForRC",
+                                             PaymentMethod="TPB",
+                                             TimeWindowEmphasis="NONE",
+                                             Priority="999",
+                                             StatusValue="A",
+                                             StatusType="CANCELLED",
+                                             OrderShippingConfiguration="SHIP_UNIT_LINES",
+                                             OrderType="PURCHASE_ORDER",
+                                              ReferenceNumbers = new List<ReferenceNumber>()
+                                                    {
+                                                         new ReferenceNumber()
+                                                         {
+                                                            ReferenceNumberType="MBL",
+                                                            ReferenceNumberValue="1000748310",
+                                                         },
+                                                          new ReferenceNumber()
+                                                         {
+                                                            ReferenceNumberType="LINE_OF_BUSINESS",
+                                                            ReferenceNumberValue="Sales",
+                                                         },
+                                                          new ReferenceNumber()
+                                                         {
+                                                            ReferenceNumberType="CUST_PO",
+                                                            ReferenceNumberValue="90105825",
+                                                         },
+                                                    }
+                                        },
+                                        ShipFrom = new ShipFrom()
+                                        {
+                                            DomainName="RUAN/HS",
+                                            Id="HSP08",
+                                            Name="Heidtman Steel - Butler",
+                                            AddressLine1="4400 County Road 59",
+                                            City="Butler",
+                                            Zip="46721",
+                                            Country="United States",
+                                           // Latitude="0",
+                                           // Longitude="0",
+                                            Role="SHIPFROM/SHIPTO",
+                                            PostLocationToOTM="true",
+                                        },
+                                        ShipTo = new ShipTo()
+                                        {
+                                            DomainName="RUAN/HS",
+                                            Id="JA7257S003",
+                                            Name="JAYTEC LLC",
+                                            AddressLine1="620 S Platt Rd",
+                                            City="Milan",
+                                            Zip="48160",
+                                            Country="United States",
+                                           // Latitude="0",
+                                           // Longitude="0",
+                                            Role="SHIPFROM/SHIPTO",
+                                            PostLocationToOTM="true",
+                                        },
+                                        ShippingAndDeliveryDates = new ShippingAndDeliveryDates()
+                                        {
+                                            ShipDateTimeEarly= DateTime.Parse("2021-05-20T23:06:46"),
+                                            ShipDateTimeLate= DateTime.Parse("2021-05-20T23:06:46"),
+                                        },
+                                        OrderRouting = new OrderRouting()
+                                        {
+                                            ShipWithGroupId="051821001",
+                                            PreferredTransportationMode="TL",
+
+                                        },
+                                        LineItems = new List<LineItem>()
+                                        {
+                                             new LineItem()
+                                            {
+                                                AutoCreateItem="Y",
+                                                AutoCreateItemMaster="Y",
+                                                LineItemNumber="354271-1",
+                                                TransportUnitKey="354271-001",
+                                                ItemNumber="1000521627-002",
+                                                ItemName="Y700388/9C",
+                                                ItemDescription=".048 X 3.926 [0.048x3.926xCoil]",
+                                                Quantity="1",
+                                                QuantityUnitOfMeasure="EA",
+                                                Weight="0",
+                                                Volume="0",
+                                                WeightGross="3455",
+                                                WeightGrossUnitOfMeasure="LB",
+                                                VolumeGross="0",
+                                                VolumeGrossUnitOfMeasure="CUFT",
+                                                LineItemDimensions = new LineItemDimensions()
+                                                {
+                                                     //Length1="0",
+                                                     //Length2="0",
+                                                     //Width1="0",
+                                                     //Width2="0",
+                                                     //Height1="0",
+                                                     //Height2="0",
+                                                     UnitOfMeasure="IN",
+                                                     Weight="3455",
+                                                     WeightUnitOfMeasure="LB",
+                                                     Volume="0",
+                                                     VolumeUnitOfMeasure="CUFT",
+                                                }
+                                             }
+
+                                        },
+                                        ShipUnits = new ShipUnits()
+                                        {
+                                            ShipUnitList = new List<ShipUnit>()
+                                            {
+                                                new ShipUnit()
+                                                {
+                                                    ShipFromLocationDomainName="RUAN/HS",
+                                                    ShipFromLocation="HSP08",
+                                                    ShipToLocationDomainName="RUAN/HS",
+                                                    ShipToLocation="JA7257S003",
+                                                    DomainName="RUAN/HS",
+                                                    TransactionCode="IU",
+                                                    ShipUnitKey="354271-001",
+                                                    ShipUnitType="1H",
+                                                    ShipUnitCount="1",
+                                                    Weight="0",
+                                                    WeightUnitOfMeasure="LB",
+                                                    Volume="0",
+                                                    VolumeUnitOfMeasure="CUFT",
+                                                    WeightGross="3455",
+                                                    WeightGrossUnitOfMeasure="LB",
+                                                    VolumeGross="0",
+                                                    VolumeGrossUnitOfMeasure="CUFT",
+                                                    //TotalWeight="0",
+                                                    //TotalVolume="0",
+                                                    IsSplitAllowed="N",
+                                                    IsCountSplittable="N",
+                                                    IsRepackAllowed="N",
+
+                                                    ShipUnitContents = new List<ShipUnitContent>()
+                                                    {
+                                                        new ShipUnitContent()
+                                                        {
+                                                            DomainName="RUAN/HS",
+                                                         //   SequenceNumber="0",
+                                                            ReleaseLineSequenceNumber="1",
+                                                            OrderNumber="354271",
+                                                            LineItemNumber="354271-1",
+                                                            ItemNumber="1000521627-002",
+                                                            ItemName="Y700388/9C",
+                                                            ItemDescription=".048 X 3.926 [0.048x3.926xCoil]",
+                                                            Quantity="1",
+                                                            QuantityUnitOfMeasure="EA",
+                                                            Weight="3455",
+                                                            WeightUnitOfMeasure="LB",
+                                                            Volume="0",
+                                                            VolumeUnitOfMeasure="CUFT",
+                                                            WeightGross="3455",
+                                                            WeightGrossUnitOfMeasure="LB",
+                                                            VolumeGross="0",
+                                                            VolumeGrossUnitOfMeasure="CUFT",
+                                                          //  PackagedItemCount="1",
+                                                        },
+
+
+                                                    },
+                                                     ShipUnitDimensions = new ShipUnitDimensions()
+                                                     {
+                                                         Length="0",
+                                                         LengthUnitOfMeasure="IN",
+                                                         Width="0",
+                                                         WidthUnitOfMeasure="IN",
+                                                         Height="0",
+                                                         HeightUnitOfMeasure="IN",
+                                                     }
+
+                                                },
+
+
+
+                                            }
+
+                                        }
+
+
+
+                                     }
+                              }
+
+                        }
+
+                }
+
+
+
+
+            };
+
+            string xml = Serialize(objAS);
+            return xml;
+        }
+
+
+
+        public static String GenerateBaseOrderForRuan(string orderNumber, List<StratixRuanBusinessLogic.Stratix.RuanBaseOrdersHelperData> helperData) //long stratixInterchangeNumber, long orderNumber, string orderReleaseStatusValue
+        {
+
+            //List<StratixRuanBusinessLogic.Stratix.RuanBaseOrdersHelperData> helperData = StratixRuanBusinessLogic.Stratix.RuanBaseOrdersHelperData
+            //      .GetPurchaseOrderDataToConstructRuanOrderIntegrationXML(orderNumber);
+
+            RuanBaseOrdersHelperData objHelper = new RuanBaseOrdersHelperData();
+            StratixRuanBusinessLogic.Ruan.Serialization.ApiBaseOrder ruanBaseOrder = new StratixRuanBusinessLogic.Ruan.Serialization.ApiBaseOrder();
+
+            ApiBaseOrderBaseOrderOrderHeader OrderHeaderObj = new ApiBaseOrderBaseOrderOrderHeader();
+
+            foreach (var ord in helperData)
+            {
+                OrderHeaderObj.OrderNumber = ord.poh_po_no;
+                OrderHeaderObj.OrderType = "PURCHASE_ORDER";
+                OrderHeaderObj.StatusType = "CANCELLED";
+                OrderHeaderObj.StatusValue = "A";
+                //  OrderHeaderObj.EffectiveDate = "2099-12-31T23:59:59";
+                OrderHeaderObj.ExpirationDate = "2099-12-31T23:59:59";
+                OrderHeaderObj.TransactionCode = "IU";
+                OrderHeaderObj.TimeWindowEmphasis = "SHIP";
+                OrderHeaderObj.OrderShippingConfiguration = "OB_LINE_COUNT_OVER";
+                OrderHeaderObj.PaymentMethod = "TPB";
+
+                ApiBaseOrderBaseOrderOrderHeaderFlexFieldStrings FlexFieldStrings = new ApiBaseOrderBaseOrderOrderHeaderFlexFieldStrings();
+                FlexFieldStrings.Attribute1 = "HS";
+
+                OrderHeaderObj.FlexFieldStrings = FlexFieldStrings;
+            }
+
+            List<ApiBaseOrderBaseOrderOrderLine> orderLinesLstObj = new List<ApiBaseOrderBaseOrderOrderLine>();
+            ApiBaseOrderBaseOrderOrderLine orderLinesObj;
+            ApiBaseOrderBaseOrderOrderLineShipFrom ShipFromObj;
+            ApiBaseOrderBaseOrderOrderLineShipTo ShipToObj;
+            ApiBaseOrderBaseOrderOrderLineLineItemDimensions LineItemDimensionsObj;
+            ApiBaseOrderBaseOrderOrderLineShippingAndDeliveryDates ShippingAndDeliveryDatesObj;
+
+
+            foreach (var ord in helperData)
+            {
+
+                orderLinesObj = new ApiBaseOrderBaseOrderOrderLine();
+
+                orderLinesObj.AutoCreateItem = "Y";
+                orderLinesObj.AutoCreateItemMaster = "Y";
+                orderLinesObj.LineItemNumber = ord.poh_po_no + "-00" + ord.poi_po_itm;
+                orderLinesObj.TransactionCode = "IU";
+                orderLinesObj.StatusValue = "A";
+                orderLinesObj.StatusType = "CANCELLED";
+
+                ShipFromObj = new ApiBaseOrderBaseOrderOrderLineShipFrom();
+                ShipFromObj.DomainName = "HS";
+                ShipFromObj.Id = ord.poh_ven_id;
+                ShipFromObj.Name = ord.ship_from.cva_nm1;
+                ShipFromObj.AddressLine1 = ord.ship_from.cva_addr1;
+                ShipFromObj.AddressLine2 = "";
+                ShipFromObj.City = ord.ship_from.cva_city;
+                ShipFromObj.State = ord.ship_from.cva_st_prov;
+                ShipFromObj.Zip = ord.ship_from.cva_pcd;
+                ShipFromObj.Country = ord.ship_from.cva_cty;
+                ShipFromObj.Latitude = 0;
+                ShipFromObj.Longitude = 0;
+                ShipFromObj.PostLocationToOTM = false;
+                orderLinesObj.ShipFrom = ShipFromObj;
+
+                ShipToObj = new ApiBaseOrderBaseOrderOrderLineShipTo();
+                ShipToObj.DomainName = "RUAN/HS";
+                ShipToObj.Id = "HS" + ord.poh_ven_id; ;
+                ShipToObj.Name = ord.ship_To.brh_nm1;
+                ShipToObj.AddressLine1 = ord.ship_To.brh_addr1;
+                ShipToObj.AddressLine2 = ord.ship_To.brh_addr2 + " " + ord.ship_To.brh_addr3;
+                ShipToObj.City = ord.ship_To.brh_city;
+                ShipToObj.State = ord.ship_To.brh_st_prov;
+                ShipToObj.Zip = ord.ship_To.brh_pcd;
+                ShipToObj.Country = ord.ship_To.brh_cty;
+                ShipToObj.Latitude = 0;
+                ShipToObj.Longitude = 0;
+                ShipToObj.PostLocationToOTM = false;
+                orderLinesObj.ShipTo = ShipToObj;
+
+                orderLinesObj.ItemName = ord.prd_desc.pds_prd_desc50a + " " + ord.prd_desc.pds_prd_desc50b + " " + ord.prd_desc.pds_prd_desc50c;
+                orderLinesObj.ItemNumber = ord.poh_po_no + "-00" + ord.poi_po_itm; ;
+                orderLinesObj.ItemDescription = ord.prd_desc.pds_prd_desc50a + " " + ord.prd_desc.pds_prd_desc50b + " " + ord.prd_desc.pds_prd_desc50c;
+                orderLinesObj.Quantity = Math.Round(Convert.ToDecimal(ord.poi_ord_qty), 0);
+                orderLinesObj.DomainName = "RUAN/HS";
+
+                LineItemDimensionsObj = new ApiBaseOrderBaseOrderOrderLineLineItemDimensions();
+                LineItemDimensionsObj.Weight = 1;
+                LineItemDimensionsObj.WeightUnitOfMeasure = ord.poi_ord_wgt_um;
+                orderLinesObj.LineItemDimensions = LineItemDimensionsObj;
+
+                ShippingAndDeliveryDatesObj = new ApiBaseOrderBaseOrderOrderLineShippingAndDeliveryDates();
+                ShippingAndDeliveryDatesObj.DeliveryDateTimeEarly = ord.poh_po_pl_dt;
+                ShippingAndDeliveryDatesObj.DeliveryDateTimeLate = ord.poh_po_pl_dt;
+                orderLinesObj.ShippingAndDeliveryDates = ShippingAndDeliveryDatesObj;
+
+                orderLinesLstObj.Add(orderLinesObj);
+            }
+
+          
+            int totalOrderCount = 0;
+           
+            StratixRuanBusinessLogic.Ruan.Serialization.ApiBaseOrder ruanBaseOrderObj = new StratixRuanBusinessLogic.Ruan.Serialization.ApiBaseOrder
+            {
+                DomainName = "RUAN/HS",
+                TransmissionType = "FRESH",
+                SenderTransmissionNo = $"HS_OB_NAME_OF_PO",
+
+                BaseOrders = new List<ApiBaseOrderBaseOrder>()
+                {
+                        new ApiBaseOrderBaseOrder()
+                        {
+                            OrderHeader=OrderHeaderObj,
+                          
+                            OrderLines = orderLinesLstObj,
+                        
+                    }
+                }
+
+            };
+            
+            string xml = Serialize(ruanBaseOrderObj);
+            return xml;
+        }
+
+
 
         public static void GenerateOrderReleaseForRuan(StratixOrderReleaseParametersForRuan stratixOrderReleaseParametersForRuan)
         {

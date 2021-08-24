@@ -11,6 +11,7 @@ namespace StratixRuanBusinessLogic.Ruan.Action
         ReleaseOrders, // /ReleaseOrders
         TransportationArrangedShipments, // /TransportationArrangedShipments
         ActualShipment,// /ActualShipment
-        OrderStatus//OrderStatus
+        OrderStatus,//OrderStatus
+        BaseOrders//BaseOrders
     }
 }

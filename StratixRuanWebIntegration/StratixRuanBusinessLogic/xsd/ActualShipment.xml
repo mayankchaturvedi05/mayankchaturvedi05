@@ -1,0 +1,1241 @@
+﻿<?xml version="1.0"?>
+<APIActualShipment xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<SenderTransmissionNo>HS_R2854782_2000490342</SenderTransmissionNo> --HS_RNUMBER_TRANSPORTNUMBER
+	<ActualShipments>
+		<ActualShipment>
+			<ShipmentHeader>
+				<DomainName>RUAN</DomainName> --Hard Code
+				<ShipmentNumber>R2854782</ShipmentNumber> -- Rnumber from TA file
+				<ShipmentName>HS</ShipmentName>-- Hard Coded
+				<TransactionCode>IU</TransactionCode>-- Hard Coded
+				<ServiceProviderDomain>RUAN</ServiceProviderDomain>-- Hard Coded
+				<ServiceProvider>RRXN</ServiceProvider>-- CarrierScac in TA File
+				<ProcessAsFlowThru>Y</ProcessAsFlowThru>-- Hard Coded
+				<TransportMode>TL</TransportMode>-- Hard Coded
+				<StopCount>3</StopCount> -- Max stop on TA
+				<ShipmentAsWork>N</ShipmentAsWork> -- Hard Coded
+				<AutoGenerateRelease>N</AutoGenerateRelease>-- Hard Coded
+				<ReferenceNumbers>
+					<ReferenceNumber>
+						<ReferenceNumberType>ORDER_STOP_ID</ReferenceNumberType>
+						<ReferenceNumberValue>P|1|20210520230646</ReferenceNumberValue>-- HS Tell us pickup date and time on each HS location
+					</ReferenceNumber>
+					<ReferenceNumber>
+						<ReferenceNumberType>BM</ReferenceNumberType> -- Transport Number
+						<ReferenceNumberValue>2000490342</ReferenceNumberValue>
+					</ReferenceNumber>
+					<ReferenceNumber>
+						<ReferenceNumberType>TRACTOR</ReferenceNumberType> --Driver 2
+						<ReferenceNumberValue>988</ReferenceNumberValue>
+					</ReferenceNumber>
+				</ReferenceNumbers>
+				<ShipmentCosts/>
+			</ShipmentHeader>
+			<Stops/>
+			<ShipUnits/>
+			<ReleaseOrders>
+				<ReleaseOrder>
+					<OrderHeader>
+						<DomainName>RUAN/HS</DomainName>--Hard Coded
+						<OrderNumber>354271</OrderNumber>-- OrderRelease
+						<TransactionCode>IU</TransactionCode>--Hard Coded
+						<IntegrationCommand>RemoveShipmentRefForRC</IntegrationCommand>--Hard Coded
+						<PaymentMethod>TPB</PaymentMethod>--Hard Coded
+						<TimeWindowEmphasis>NONE</TimeWindowEmphasis>--Hard Coded
+						<Priority>999</Priority>--Hard Coded
+						<StatusValue>A</StatusValue>--Hard Coded
+						<StatusType>CANCELLED</StatusType>--Hard Coded
+						<OrderShippingConfiguration>SHIP_UNIT_LINES</OrderShippingConfiguration>--Hard Coded
+						<OrderType>PURCHASE_ORDER</OrderType>--Sales_order or Transfers or Purchase_order
+						<ReferenceNumbers>
+							<ReferenceNumber>
+								<ReferenceNumberType>MBL</ReferenceNumberType>
+								<ReferenceNumberValue>1000748310</ReferenceNumberValue>--Transport Number Example: TR-366-1-1
+							</ReferenceNumber>
+							<ReferenceNumber>
+								<ReferenceNumberType>LINE_OF_BUSINESS</ReferenceNumberType>
+								<ReferenceNumberValue>Sales</ReferenceNumberValue>-- Sales or Toll
+							</ReferenceNumber>
+							<ReferenceNumber>
+								<ReferenceNumberType>CUST_PO</ReferenceNumberType>
+								<ReferenceNumberValue>90105825</ReferenceNumberValue> --Customer PO from product
+							</ReferenceNumber>
+						</ReferenceNumbers>
+						<Comments/>
+					</OrderHeader>
+					<ShipFrom>
+						<DomainName>RUAN/HS</DomainName>--Hard Coded
+						<Id>HSP08</Id>
+						<Name>Heidtman Steel - Butler </Name>
+						<AddressLine1>4400 County Road 59</AddressLine1>
+						<City>Butler</City>
+						<Zip>46721</Zip>
+						<Country>United States</Country>
+						<Latitude>0</Latitude>--Hard Coded
+						<Longitude>0</Longitude>--Hard Coded
+						<Role>SHIPFROM/SHIPTO</Role>--Hard Coded
+						<PostLocationToOTM>true</PostLocationToOTM>--Hard Coded
+						<ReferenceNumbers/>
+					</ShipFrom>
+					<ShipTo>
+						<DomainName>RUAN/HS</DomainName>--Hard Coded
+						<Id>JA7257S003</Id>
+						<Name>JAYTEC LLC</Name>
+						<AddressLine1>620 S Platt Rd</AddressLine1>
+						<City>Milan</City>
+						<Zip>48160</Zip>
+						<Country>United States</Country>
+						<Latitude>0</Latitude>--Hard Coded
+						<Longitude>0</Longitude>--Hard Coded
+						<Role>SHIPFROM/SHIPTO</Role>--Hard Coded
+						<PostLocationToOTM>true</PostLocationToOTM>--Hard Coded
+						<ReferenceNumbers/>
+					</ShipTo>
+					<ShippingAndDeliveryDates>
+						<ShipDateTimeEarly>2021-05-20T23:06:46</ShipDateTimeEarly> -- Date and time truck left facility
+						<ShipDateTimeLate>2021-05-20T23:06:46</ShipDateTimeLate> -- Date and time truck left facility
+						<DeliveryDateTimeEarly xsi:nil="true"/>--Hard Coded
+						<DeliveryDateTimeLate xsi:nil="true"/>--Hard Coded
+					</ShippingAndDeliveryDates>
+					<OrderRouting>
+						<ShipWithGroupId>051821001</ShipWithGroupId> --Consolidated ID
+						<PreferredTransportationMode>TL</PreferredTransportationMode>-- Hard Coded
+					</OrderRouting>
+					<LineItems>
+						<LineItem>
+							<AutoCreateItem>Y</AutoCreateItem>--Hard Coded
+							<AutoCreateItemMaster>Y</AutoCreateItemMaster>--Hard Coded
+							<LineItemNumber>354271-1</LineItemNumber>
+							<TransportUnitKey>354271-001</TransportUnitKey>
+							<ItemNumber>1000521627-002</ItemNumber>
+							<ItemName>Y700388/9C</ItemName>
+							<ItemDescription>.048 X 3.926 [0.048x3.926xCoil]</ItemDescription>
+							<Quantity>1</Quantity>
+							<QuantityUnitOfMeasure>EA</QuantityUnitOfMeasure>--Hard Coded
+							<Weight>0</Weight>--Hard Coded
+							<Volume>0</Volume>--Hard Coded
+							<WeightGross>3455</WeightGross>
+							<WeightGrossUnitOfMeasure>LB</WeightGrossUnitOfMeasure>--Hard Coded
+							<VolumeGross>0</VolumeGross>--Hard Coded
+							<VolumeGrossUnitOfMeasure>CUFT</VolumeGrossUnitOfMeasure>--Hard Coded
+							<LineItemDimensions>
+								<Length1>0</Length1>--Hard Coded
+								<Length2>0</Length2>--Hard Coded
+								<Width1>0</Width1>--Hard Coded
+								<Width2>0</Width2>--Hard Coded
+								<Height1>0</Height1>--Hard Coded
+								<Height2>0</Height2>--Hard Coded
+								<UnitOfMeasure>IN</UnitOfMeasure>--Hard Coded
+								<Weight>3455</Weight>
+								<WeightUnitOfMeasure>LB</WeightUnitOfMeasure>--Hard Coded
+								<Volume>0</Volume>--Hard Coded
+								<VolumeUnitOfMeasure>CUFT</VolumeUnitOfMeasure>--Hard Coded
+							</LineItemDimensions>
+							<ReferenceNumbers/>
+						</LineItem>
+						<LineItem>
+							<AutoCreateItem>Y</AutoCreateItem>
+							<AutoCreateItemMaster>Y</AutoCreateItemMaster>
+							<LineItemNumber>354271-2</LineItemNumber>
+							<TransportUnitKey>354271-002</TransportUnitKey>
+							<ItemNumber>1000521627-003</ItemNumber>
+							<ItemName>Y700388/9C</ItemName>
+							<ItemDescription>.048 X 3.926 [0.048x3.926xCoil]</ItemDescription>
+							<Quantity>1</Quantity>
+							<QuantityUnitOfMeasure>EA</QuantityUnitOfMeasure>
+							<Weight>0</Weight>
+							<Volume>0</Volume>
+							<WeightGross>3455</WeightGross>
+							<WeightGrossUnitOfMeasure>LB</WeightGrossUnitOfMeasure>
+							<VolumeGross>0</VolumeGross>
+							<VolumeGrossUnitOfMeasure>CUFT</VolumeGrossUnitOfMeasure>
+							<LineItemDimensions>
+								<Length1>0</Length1>
+								<Length2>0</Length2>
+								<Width1>0</Width1>
+								<Width2>0</Width2>
+								<Height1>0</Height1>
+								<Height2>0</Height2>
+								<UnitOfMeasure>IN</UnitOfMeasure>
+								<Weight>3455</Weight>
+								<WeightUnitOfMeasure>LB</WeightUnitOfMeasure>
+								<Volume>0</Volume>
+								<VolumeUnitOfMeasure>CUFT</VolumeUnitOfMeasure>
+							</LineItemDimensions>
+							<ReferenceNumbers/>
+						</LineItem>
+						<LineItem>
+							<AutoCreateItem>Y</AutoCreateItem>
+							<AutoCreateItemMaster>Y</AutoCreateItemMaster>
+							<LineItemNumber>354271-3</LineItemNumber>
+							<TransportUnitKey>354271-003</TransportUnitKey>
+							<ItemNumber>1000521627-004</ItemNumber>
+							<ItemName>Y700388/9C</ItemName>
+							<ItemDescription>.048 X 3.926 [0.048x3.926xCoil]</ItemDescription>
+							<Quantity>1</Quantity>
+							<QuantityUnitOfMeasure>EA</QuantityUnitOfMeasure>
+							<Weight>0</Weight>
+							<Volume>0</Volume>
+							<WeightGross>3525</WeightGross>
+							<WeightGrossUnitOfMeasure>LB</WeightGrossUnitOfMeasure>
+							<VolumeGross>0</VolumeGross>
+							<VolumeGrossUnitOfMeasure>CUFT</VolumeGrossUnitOfMeasure>
+							<LineItemDimensions>
+								<Length1>0</Length1>
+								<Length2>0</Length2>
+								<Width1>0</Width1>
+								<Width2>0</Width2>
+								<Height1>0</Height1>
+								<Height2>0</Height2>
+								<UnitOfMeasure>IN</UnitOfMeasure>
+								<Weight>3525</Weight>
+								<WeightUnitOfMeasure>LB</WeightUnitOfMeasure>
+								<Volume>0</Volume>
+								<VolumeUnitOfMeasure>CUFT</VolumeUnitOfMeasure>
+							</LineItemDimensions>
+							<ReferenceNumbers/>
+						</LineItem>
+						<LineItem>
+							<AutoCreateItem>Y</AutoCreateItem>
+							<AutoCreateItemMaster>Y</AutoCreateItemMaster>
+							<LineItemNumber>354271-4</LineItemNumber>
+							<TransportUnitKey>354271-004</TransportUnitKey>
+							<ItemNumber>1000521627-005</ItemNumber>
+							<ItemName>Y700388/9C</ItemName>
+							<ItemDescription>.048 X 3.926 [0.048x3.926xCoil]</ItemDescription>
+							<Quantity>1</Quantity>
+							<QuantityUnitOfMeasure>EA</QuantityUnitOfMeasure>
+							<Weight>0</Weight>
+							<Volume>0</Volume>
+							<WeightGross>3525</WeightGross>
+							<WeightGrossUnitOfMeasure>LB</WeightGrossUnitOfMeasure>
+							<VolumeGross>0</VolumeGross>
+							<VolumeGrossUnitOfMeasure>CUFT</VolumeGrossUnitOfMeasure>
+							<LineItemDimensions>
+								<Length1>0</Length1>
+								<Length2>0</Length2>
+								<Width1>0</Width1>
+								<Width2>0</Width2>
+								<Height1>0</Height1>
+								<Height2>0</Height2>
+								<UnitOfMeasure>IN</UnitOfMeasure>
+								<Weight>3525</Weight>
+								<WeightUnitOfMeasure>LB</WeightUnitOfMeasure>
+								<Volume>0</Volume>
+								<VolumeUnitOfMeasure>CUFT</VolumeUnitOfMeasure>
+							</LineItemDimensions>
+							<ReferenceNumbers/>
+						</LineItem>
+						<LineItem>
+							<AutoCreateItem>Y</AutoCreateItem>
+							<AutoCreateItemMaster>Y</AutoCreateItemMaster>
+							<LineItemNumber>354271-5</LineItemNumber>
+							<TransportUnitKey>354271-005</TransportUnitKey>
+							<ItemNumber>1000521627-006</ItemNumber>
+							<ItemName>Y700388/9C</ItemName>
+							<ItemDescription>.048 X 3.926 [0.048x3.926xCoil]</ItemDescription>
+							<Quantity>1</Quantity>
+							<QuantityUnitOfMeasure>EA</QuantityUnitOfMeasure>
+							<Weight>0</Weight>
+							<Volume>0</Volume>
+							<WeightGross>3560</WeightGross>
+							<WeightGrossUnitOfMeasure>LB</WeightGrossUnitOfMeasure>
+							<VolumeGross>0</VolumeGross>
+							<VolumeGrossUnitOfMeasure>CUFT</VolumeGrossUnitOfMeasure>
+							<LineItemDimensions>
+								<Length1>0</Length1>
+								<Length2>0</Length2>
+								<Width1>0</Width1>
+								<Width2>0</Width2>
+								<Height1>0</Height1>
+								<Height2>0</Height2>
+								<UnitOfMeasure>IN</UnitOfMeasure>
+								<Weight>3560</Weight>
+								<WeightUnitOfMeasure>LB</WeightUnitOfMeasure>
+								<Volume>0</Volume>
+								<VolumeUnitOfMeasure>CUFT</VolumeUnitOfMeasure>
+							</LineItemDimensions>
+							<ReferenceNumbers/>
+						</LineItem>
+						<LineItem>
+							<AutoCreateItem>Y</AutoCreateItem>
+							<AutoCreateItemMaster>Y</AutoCreateItemMaster>
+							<LineItemNumber>354271-6</LineItemNumber>
+							<TransportUnitKey>354271-006</TransportUnitKey>
+							<ItemNumber>1000521627-007</ItemNumber>
+							<ItemName>Y700388/9C</ItemName>
+							<ItemDescription>.048 X 3.926 [0.048x3.926xCoil]</ItemDescription>
+							<Quantity>1</Quantity>
+							<QuantityUnitOfMeasure>EA</QuantityUnitOfMeasure>
+							<Weight>0</Weight>
+							<Volume>0</Volume>
+							<WeightGross>3560</WeightGross>
+							<WeightGrossUnitOfMeasure>LB</WeightGrossUnitOfMeasure>
+							<VolumeGross>0</VolumeGross>
+							<VolumeGrossUnitOfMeasure>CUFT</VolumeGrossUnitOfMeasure>
+							<LineItemDimensions>
+								<Length1>0</Length1>
+								<Length2>0</Length2>
+								<Width1>0</Width1>
+								<Width2>0</Width2>
+								<Height1>0</Height1>
+								<Height2>0</Height2>
+								<UnitOfMeasure>IN</UnitOfMeasure>
+								<Weight>3560</Weight>
+								<WeightUnitOfMeasure>LB</WeightUnitOfMeasure>
+								<Volume>0</Volume>
+								<VolumeUnitOfMeasure>CUFT</VolumeUnitOfMeasure>
+							</LineItemDimensions>
+							<ReferenceNumbers/>
+						</LineItem>
+						<LineItem>
+							<AutoCreateItem>Y</AutoCreateItem>
+							<AutoCreateItemMaster>Y</AutoCreateItemMaster>
+							<LineItemNumber>354271-7</LineItemNumber>
+							<TransportUnitKey>354271-007</TransportUnitKey>
+							<ItemNumber>1000521627-009</ItemNumber>
+							<ItemName>Y700388/9C</ItemName>
+							<ItemDescription>.048 X 3.926 [0.048x3.926xCoil]</ItemDescription>
+							<Quantity>1</Quantity>
+							<QuantityUnitOfMeasure>EA</QuantityUnitOfMeasure>
+							<Weight>0</Weight>
+							<Volume>0</Volume>
+							<WeightGross>3555</WeightGross>
+							<WeightGrossUnitOfMeasure>LB</WeightGrossUnitOfMeasure>
+							<VolumeGross>0</VolumeGross>
+							<VolumeGrossUnitOfMeasure>CUFT</VolumeGrossUnitOfMeasure>
+							<LineItemDimensions>
+								<Length1>0</Length1>
+								<Length2>0</Length2>
+								<Width1>0</Width1>
+								<Width2>0</Width2>
+								<Height1>0</Height1>
+								<Height2>0</Height2>
+								<UnitOfMeasure>IN</UnitOfMeasure>
+								<Weight>3555</Weight>
+								<WeightUnitOfMeasure>LB</WeightUnitOfMeasure>
+								<Volume>0</Volume>
+								<VolumeUnitOfMeasure>CUFT</VolumeUnitOfMeasure>
+							</LineItemDimensions>
+							<ReferenceNumbers/>
+						</LineItem>
+						<LineItem>
+							<AutoCreateItem>Y</AutoCreateItem>
+							<AutoCreateItemMaster>Y</AutoCreateItemMaster>
+							<LineItemNumber>354271-8</LineItemNumber>
+							<TransportUnitKey>354271-008</TransportUnitKey>
+							<ItemNumber>1000521627-010</ItemNumber>
+							<ItemName>Y700388/9C</ItemName>
+							<ItemDescription>.048 X 3.926 [0.048x3.926xCoil]</ItemDescription>
+							<Quantity>1</Quantity>
+							<QuantityUnitOfMeasure>EA</QuantityUnitOfMeasure>
+							<Weight>0</Weight>
+							<Volume>0</Volume>
+							<WeightGross>3555</WeightGross>
+							<WeightGrossUnitOfMeasure>LB</WeightGrossUnitOfMeasure>
+							<VolumeGross>0</VolumeGross>
+							<VolumeGrossUnitOfMeasure>CUFT</VolumeGrossUnitOfMeasure>
+							<LineItemDimensions>
+								<Length1>0</Length1>
+								<Length2>0</Length2>
+								<Width1>0</Width1>
+								<Width2>0</Width2>
+								<Height1>0</Height1>
+								<Height2>0</Height2>
+								<UnitOfMeasure>IN</UnitOfMeasure>
+								<Weight>3555</Weight>
+								<WeightUnitOfMeasure>LB</WeightUnitOfMeasure>
+								<Volume>0</Volume>
+								<VolumeUnitOfMeasure>CUFT</VolumeUnitOfMeasure>
+							</LineItemDimensions>
+							<ReferenceNumbers/>
+						</LineItem>
+						<LineItem>
+							<AutoCreateItem>Y</AutoCreateItem>
+							<AutoCreateItemMaster>Y</AutoCreateItemMaster>
+							<LineItemNumber>354271-9</LineItemNumber>
+							<TransportUnitKey>354271-009</TransportUnitKey>
+							<ItemNumber>1000521627-011</ItemNumber>
+							<ItemName>Y700388/9C</ItemName>
+							<ItemDescription>.048 X 3.926 [0.048x3.926xCoil]</ItemDescription>
+							<Quantity>1</Quantity>
+							<QuantityUnitOfMeasure>EA</QuantityUnitOfMeasure>
+							<Weight>0</Weight>
+							<Volume>0</Volume>
+							<WeightGross>3505</WeightGross>
+							<WeightGrossUnitOfMeasure>LB</WeightGrossUnitOfMeasure>
+							<VolumeGross>0</VolumeGross>
+							<VolumeGrossUnitOfMeasure>CUFT</VolumeGrossUnitOfMeasure>
+							<LineItemDimensions>
+								<Length1>0</Length1>
+								<Length2>0</Length2>
+								<Width1>0</Width1>
+								<Width2>0</Width2>
+								<Height1>0</Height1>
+								<Height2>0</Height2>
+								<UnitOfMeasure>IN</UnitOfMeasure>
+								<Weight>3505</Weight>
+								<WeightUnitOfMeasure>LB</WeightUnitOfMeasure>
+								<Volume>0</Volume>
+								<VolumeUnitOfMeasure>CUFT</VolumeUnitOfMeasure>
+							</LineItemDimensions>
+							<ReferenceNumbers/>
+						</LineItem>
+						<LineItem>
+							<AutoCreateItem>Y</AutoCreateItem>
+							<AutoCreateItemMaster>Y</AutoCreateItemMaster>
+							<LineItemNumber>354271-10</LineItemNumber>
+							<TransportUnitKey>354271-010</TransportUnitKey>
+							<ItemNumber>1000521627-012</ItemNumber>
+							<ItemName>Y700388/9C</ItemName>
+							<ItemDescription>.048 X 3.926 [0.048x3.926xCoil]</ItemDescription>
+							<Quantity>1</Quantity>
+							<QuantityUnitOfMeasure>EA</QuantityUnitOfMeasure>
+							<Weight>0</Weight>
+							<Volume>0</Volume>
+							<WeightGross>3505</WeightGross>
+							<WeightGrossUnitOfMeasure>LB</WeightGrossUnitOfMeasure>
+							<VolumeGross>0</VolumeGross>
+							<VolumeGrossUnitOfMeasure>CUFT</VolumeGrossUnitOfMeasure>
+							<LineItemDimensions>
+								<Length1>0</Length1>
+								<Length2>0</Length2>
+								<Width1>0</Width1>
+								<Width2>0</Width2>
+								<Height1>0</Height1>
+								<Height2>0</Height2>
+								<UnitOfMeasure>IN</UnitOfMeasure>
+								<Weight>3505</Weight>
+								<WeightUnitOfMeasure>LB</WeightUnitOfMeasure>
+								<Volume>0</Volume>
+								<VolumeUnitOfMeasure>CUFT</VolumeUnitOfMeasure>
+							</LineItemDimensions>
+							<ReferenceNumbers/>
+						</LineItem>
+						<LineItem>
+							<AutoCreateItem>Y</AutoCreateItem>
+							<AutoCreateItemMaster>Y</AutoCreateItemMaster>
+							<LineItemNumber>354271-11</LineItemNumber>
+							<TransportUnitKey>354271-011</TransportUnitKey> <!-- this equals the tag <ShipUnitKey>in the <ShipUnit>tag at the bottow of file -->
+									<ItemNumber>1000521627-013</ItemNumber> --Tag
+									<ItemName>Y700388/9C</ItemName> -- Customer Part
+									<ItemDescription>.048 X 3.926 [0.048x3.926xCoil]</ItemDescription> --Product
+									<Quantity>1</Quantity>
+									<QuantityUnitOfMeasure>EA</QuantityUnitOfMeasure>
+									<Weight>0</Weight>--hard coded
+									<Volume>0</Volume>--hard coded
+									<WeightGross>3440</WeightGross>
+									<WeightGrossUnitOfMeasure>LB</WeightGrossUnitOfMeasure>--hard coded
+									<VolumeGross>0</VolumeGross>--hard coded
+									<VolumeGrossUnitOfMeasure>CUFT</VolumeGrossUnitOfMeasure>--hard coded
+									<LineItemDimensions>
+										<Length1>0</Length1>--hard coded
+										<Length2>0</Length2>--hard coded
+										<Width1>0</Width1>--hard coded
+										<Width2>0</Width2>--hard coded
+										<Height1>0</Height1>--hard coded
+										<Height2>0</Height2>--hard coded
+										<UnitOfMeasure>IN</UnitOfMeasure>--hard coded
+										<Weight>3440</Weight>
+										<WeightUnitOfMeasure>LB</WeightUnitOfMeasure>--hard coded
+										<Volume>0</Volume>--hard coded
+										<VolumeUnitOfMeasure>CUFT</VolumeUnitOfMeasure>--hard coded
+									</LineItemDimensions>
+									<ReferenceNumbers/>
+								</LineItem>
+					</LineItems>
+					<ShipUnits>
+						<ShipUnit>
+							<ShipFromLocationDomainName>RUAN/HS</ShipFromLocationDomainName>--hard coded
+							<ShipFromLocation>HSP08</ShipFromLocation>
+							<ShipToLocationDomainName>RUAN/HS</ShipToLocationDomainName>--hard coded
+							<ShipToLocation>JA7257S003</ShipToLocation>
+							<DomainName>RUAN/HS</DomainName>--hard coded
+							<TransactionCode>IU</TransactionCode>--hard coded
+							<ShipUnitKey>354271-001</ShipUnitKey> <!-- Called <TransportUnitKey>in the <LineItem>Tag above -->
+									<ShipUnitType>1H</ShipUnitType>-- Package Type
+									<ShipUnitCount>1</ShipUnitCount>- Total Items on Order Line
+									<Weight>0</Weight>--hard coded
+									<WeightUnitOfMeasure>LB</WeightUnitOfMeasure>--hard coded
+									<Volume>0</Volume>--hard coded
+									<VolumeUnitOfMeasure>CUFT</VolumeUnitOfMeasure>--hard coded
+									<WeightGross>3455</WeightGross>
+									<WeightGrossUnitOfMeasure>LB</WeightGrossUnitOfMeasure>--hard coded
+									<VolumeGross>0</VolumeGross>--hard coded
+									<VolumeGrossUnitOfMeasure>CUFT</VolumeGrossUnitOfMeasure>--hard coded
+									<TotalWeight>0</TotalWeight>--hard coded
+									<TotalVolume>0</TotalVolume>--hard coded
+									<IsSplitAllowed>N</IsSplitAllowed>--hard coded
+									<IsCountSplittable>N</IsCountSplittable>--hard coded
+									<IsRepackAllowed>N</IsRepackAllowed>--hard coded
+									<ShipUnitContents>
+										<ShipUnitContent>
+											<DomainName>RUAN/HS</DomainName>--hard coded
+											<SequenceNumber>0</SequenceNumber>--hard coded
+											<ReleaseLineSequenceNumber>1</ReleaseLineSequenceNumber>--hard coded
+											<OrderNumber>354271</OrderNumber>
+											<LineItemNumber>354271-1</LineItemNumber>
+											<ItemNumber>1000521627-002</ItemNumber>
+											<ItemName>Y700388/9C</ItemName>
+											<ItemDescription>.048 X 3.926 [0.048x3.926xCoil]</ItemDescription>
+											<Quantity>1</Quantity>
+											<QuantityUnitOfMeasure>EA</QuantityUnitOfMeasure>--hard coded
+											<Weight>3455</Weight>
+											<WeightUnitOfMeasure>LB</WeightUnitOfMeasure>--hard coded
+											<Volume>0</Volume>--hard coded
+											<VolumeUnitOfMeasure>CUFT</VolumeUnitOfMeasure>--hard coded
+											<WeightGross>3455</WeightGross>
+											<WeightGrossUnitOfMeasure>LB</WeightGrossUnitOfMeasure>--hard coded
+											<VolumeGross>0</VolumeGross>--hard coded
+											<VolumeGrossUnitOfMeasure>CUFT</VolumeGrossUnitOfMeasure>--hard coded
+											<PackagedItemCount>1</PackagedItemCount>
+										</ShipUnitContent>
+									</ShipUnitContents>
+									<ReferenceNumbers/>
+									<ShipUnitDimensions>
+										<Length>0</Length>--hard coded
+										<LengthUnitOfMeasure>IN</LengthUnitOfMeasure>--hard coded
+										<Width>0</Width>--hard coded
+										<WidthUnitOfMeasure>IN</WidthUnitOfMeasure>--hard coded
+										<Height>0</Height>--hard coded
+										<HeightUnitOfMeasure>IN</HeightUnitOfMeasure>--hard coded
+									</ShipUnitDimensions>
+								</ShipUnit>
+						<ShipUnit>
+							<ShipFromLocationDomainName>RUAN/HS</ShipFromLocationDomainName>
+							<ShipFromLocation>HSP08</ShipFromLocation>
+							<ShipToLocationDomainName>RUAN/HS</ShipToLocationDomainName>
+							<ShipToLocation>JA7257S003</ShipToLocation>
+							<StopSequence xsi:nil="true"/>
+							<DomainName>RUAN/HS</DomainName>
+							<TransactionCode>IU</TransactionCode>
+							<ShipUnitKey>354271-002</ShipUnitKey>
+							<ShipUnitType>1H</ShipUnitType>
+							<ShipUnitCount>1</ShipUnitCount>
+							<Weight>0</Weight>
+							<WeightUnitOfMeasure>LB</WeightUnitOfMeasure>
+							<Volume>0</Volume>
+							<VolumeUnitOfMeasure>CUFT</VolumeUnitOfMeasure>
+							<WeightGross>3455</WeightGross>
+							<WeightGrossUnitOfMeasure>LB</WeightGrossUnitOfMeasure>
+							<VolumeGross>0</VolumeGross>
+							<VolumeGrossUnitOfMeasure>CUFT</VolumeGrossUnitOfMeasure>
+							<TotalWeight>0</TotalWeight>
+							<TotalVolume>0</TotalVolume>
+							<IsSplitAllowed>N</IsSplitAllowed>
+							<IsCountSplittable>N</IsCountSplittable>
+							<IsRepackAllowed>N</IsRepackAllowed>
+							<ShipUnitContents>
+								<ShipUnitContent>
+									<DomainName>RUAN/HS</DomainName>
+									<SequenceNumber>0</SequenceNumber>
+									<ReleaseLineSequenceNumber>2</ReleaseLineSequenceNumber>
+									<OrderNumber>354271</OrderNumber>
+									<LineItemNumber>354271-2</LineItemNumber>
+									<ItemNumber>1000521627-003</ItemNumber>
+									<ItemName>Y700388/9C</ItemName>
+									<ItemDescription>.048 X 3.926 [0.048x3.926xCoil]</ItemDescription>
+									<Quantity>1</Quantity>
+									<QuantityUnitOfMeasure>EA</QuantityUnitOfMeasure>
+									<Weight>3455</Weight>
+									<WeightUnitOfMeasure>LB</WeightUnitOfMeasure>
+									<Volume>0</Volume>
+									<VolumeUnitOfMeasure>CUFT</VolumeUnitOfMeasure>
+									<WeightGross>3455</WeightGross>
+									<WeightGrossUnitOfMeasure>LB</WeightGrossUnitOfMeasure>
+									<VolumeGross>0</VolumeGross>
+									<VolumeGrossUnitOfMeasure>CUFT</VolumeGrossUnitOfMeasure>
+									<PackagedItemCount>0</PackagedItemCount>
+								</ShipUnitContent>
+							</ShipUnitContents>
+							<ReferenceNumbers/>
+							<ShipUnitDimensions>
+								<Length>0</Length>
+								<LengthUnitOfMeasure>IN</LengthUnitOfMeasure>
+								<Width>3.926</Width>
+								<WidthUnitOfMeasure>IN</WidthUnitOfMeasure>
+								<Height>0</Height>
+								<HeightUnitOfMeasure>IN</HeightUnitOfMeasure>
+							</ShipUnitDimensions>
+						</ShipUnit>
+						<ShipUnit>
+							<ShipFromLocationDomainName>RUAN/HS</ShipFromLocationDomainName>
+							<ShipFromLocation>HSP08</ShipFromLocation>
+							<ShipToLocationDomainName>RUAN/HS</ShipToLocationDomainName>
+							<ShipToLocation>JA7257S003</ShipToLocation>
+							<StopSequence xsi:nil="true"/>
+							<DomainName>RUAN/HS</DomainName>
+							<TransactionCode>IU</TransactionCode>
+							<ShipUnitKey>354271-003</ShipUnitKey>
+							<ShipUnitType>1H</ShipUnitType>
+							<ShipUnitCount>1</ShipUnitCount>
+							<Weight>0</Weight>
+							<WeightUnitOfMeasure>LB</WeightUnitOfMeasure>
+							<Volume>0</Volume>
+							<VolumeUnitOfMeasure>CUFT</VolumeUnitOfMeasure>
+							<WeightGross>3525</WeightGross>
+							<WeightGrossUnitOfMeasure>LB</WeightGrossUnitOfMeasure>
+							<VolumeGross>0</VolumeGross>
+							<VolumeGrossUnitOfMeasure>CUFT</VolumeGrossUnitOfMeasure>
+							<TotalWeight>0</TotalWeight>
+							<TotalVolume>0</TotalVolume>
+							<IsSplitAllowed>N</IsSplitAllowed>
+							<IsCountSplittable>N</IsCountSplittable>
+							<IsRepackAllowed>N</IsRepackAllowed>
+							<ShipUnitContents>
+								<ShipUnitContent>
+									<DomainName>RUAN/HS</DomainName>
+									<SequenceNumber>0</SequenceNumber>
+									<ReleaseLineSequenceNumber>3</ReleaseLineSequenceNumber>
+									<OrderNumber>354271</OrderNumber>
+									<LineItemNumber>354271-3</LineItemNumber>
+									<ItemNumber>1000521627-004</ItemNumber>
+									<ItemName>Y700388/9C</ItemName>
+									<ItemDescription>.048 X 3.926 [0.048x3.926xCoil]</ItemDescription>
+									<Quantity>1</Quantity>
+									<QuantityUnitOfMeasure>EA</QuantityUnitOfMeasure>
+									<Weight>3525</Weight>
+									<WeightUnitOfMeasure>LB</WeightUnitOfMeasure>
+									<Volume>0</Volume>
+									<VolumeUnitOfMeasure>CUFT</VolumeUnitOfMeasure>
+									<WeightGross>3525</WeightGross>
+									<WeightGrossUnitOfMeasure>LB</WeightGrossUnitOfMeasure>
+									<VolumeGross>0</VolumeGross>
+									<VolumeGrossUnitOfMeasure>CUFT</VolumeGrossUnitOfMeasure>
+									<PackagedItemCount>0</PackagedItemCount>
+								</ShipUnitContent>
+							</ShipUnitContents>
+							<ReferenceNumbers/>
+							<ShipUnitDimensions>
+								<Length>0</Length>
+								<LengthUnitOfMeasure>IN</LengthUnitOfMeasure>
+								<Width>3.926</Width>
+								<WidthUnitOfMeasure>IN</WidthUnitOfMeasure>
+								<Height>0</Height>
+								<HeightUnitOfMeasure>IN</HeightUnitOfMeasure>
+							</ShipUnitDimensions>
+						</ShipUnit>
+						<ShipUnit>
+							<ShipFromLocationDomainName>RUAN/HS</ShipFromLocationDomainName>
+							<ShipFromLocation>HSP08</ShipFromLocation>
+							<ShipToLocationDomainName>RUAN/HS</ShipToLocationDomainName>
+							<ShipToLocation>JA7257S003</ShipToLocation>
+							<StopSequence xsi:nil="true"/>
+							<DomainName>RUAN/HS</DomainName>
+							<TransactionCode>IU</TransactionCode>
+							<ShipUnitKey>354271-004</ShipUnitKey>
+							<ShipUnitType>1H</ShipUnitType>
+							<ShipUnitCount>1</ShipUnitCount>
+							<Weight>0</Weight>
+							<WeightUnitOfMeasure>LB</WeightUnitOfMeasure>
+							<Volume>0</Volume>
+							<VolumeUnitOfMeasure>CUFT</VolumeUnitOfMeasure>
+							<WeightGross>3525</WeightGross>
+							<WeightGrossUnitOfMeasure>LB</WeightGrossUnitOfMeasure>
+							<VolumeGross>0</VolumeGross>
+							<VolumeGrossUnitOfMeasure>CUFT</VolumeGrossUnitOfMeasure>
+							<TotalWeight>0</TotalWeight>
+							<TotalVolume>0</TotalVolume>
+							<IsSplitAllowed>N</IsSplitAllowed>
+							<IsCountSplittable>N</IsCountSplittable>
+							<IsRepackAllowed>N</IsRepackAllowed>
+							<ShipUnitContents>
+								<ShipUnitContent>
+									<DomainName>RUAN/HS</DomainName>
+									<SequenceNumber>0</SequenceNumber>
+									<ReleaseLineSequenceNumber>4</ReleaseLineSequenceNumber>
+									<OrderNumber>354271</OrderNumber>
+									<LineItemNumber>354271-4</LineItemNumber>
+									<ItemNumber>1000521627-005</ItemNumber>
+									<ItemName>Y700388/9C</ItemName>
+									<ItemDescription>.048 X 3.926 [0.048x3.926xCoil]</ItemDescription>
+									<Quantity>1</Quantity>
+									<QuantityUnitOfMeasure>EA</QuantityUnitOfMeasure>
+									<Weight>3525</Weight>
+									<WeightUnitOfMeasure>LB</WeightUnitOfMeasure>
+									<Volume>0</Volume>
+									<VolumeUnitOfMeasure>CUFT</VolumeUnitOfMeasure>
+									<WeightGross>3525</WeightGross>
+									<WeightGrossUnitOfMeasure>LB</WeightGrossUnitOfMeasure>
+									<VolumeGross>0</VolumeGross>
+									<VolumeGrossUnitOfMeasure>CUFT</VolumeGrossUnitOfMeasure>
+									<PackagedItemCount>0</PackagedItemCount>
+								</ShipUnitContent>
+							</ShipUnitContents>
+							<ReferenceNumbers/>
+							<ShipUnitDimensions>
+								<Length>0</Length>
+								<LengthUnitOfMeasure>IN</LengthUnitOfMeasure>
+								<Width>3.926</Width>
+								<WidthUnitOfMeasure>IN</WidthUnitOfMeasure>
+								<Height>0</Height>
+								<HeightUnitOfMeasure>IN</HeightUnitOfMeasure>
+							</ShipUnitDimensions>
+						</ShipUnit>
+						<ShipUnit>
+							<ShipFromLocationDomainName>RUAN/HS</ShipFromLocationDomainName>
+							<ShipFromLocation>HSP08</ShipFromLocation>
+							<ShipToLocationDomainName>RUAN/HS</ShipToLocationDomainName>
+							<ShipToLocation>JA7257S003</ShipToLocation>
+							<StopSequence xsi:nil="true"/>
+							<DomainName>RUAN/HS</DomainName>
+							<TransactionCode>IU</TransactionCode>
+							<ShipUnitKey>354271-005</ShipUnitKey>
+							<ShipUnitType>1H</ShipUnitType>
+							<ShipUnitCount>1</ShipUnitCount>
+							<Weight>0</Weight>
+							<WeightUnitOfMeasure>LB</WeightUnitOfMeasure>
+							<Volume>0</Volume>
+							<VolumeUnitOfMeasure>CUFT</VolumeUnitOfMeasure>
+							<WeightGross>3560</WeightGross>
+							<WeightGrossUnitOfMeasure>LB</WeightGrossUnitOfMeasure>
+							<VolumeGross>0</VolumeGross>
+							<VolumeGrossUnitOfMeasure>CUFT</VolumeGrossUnitOfMeasure>
+							<TotalWeight>0</TotalWeight>
+							<TotalVolume>0</TotalVolume>
+							<IsSplitAllowed>N</IsSplitAllowed>
+							<IsCountSplittable>N</IsCountSplittable>
+							<IsRepackAllowed>N</IsRepackAllowed>
+							<ShipUnitContents>
+								<ShipUnitContent>
+									<DomainName>RUAN/HS</DomainName>
+									<SequenceNumber>0</SequenceNumber>
+									<ReleaseLineSequenceNumber>5</ReleaseLineSequenceNumber>
+									<OrderNumber>354271</OrderNumber>
+									<LineItemNumber>354271-5</LineItemNumber>
+									<ItemNumber>1000521627-006</ItemNumber>
+									<ItemName>Y700388/9C</ItemName>
+									<ItemDescription>.048 X 3.926 [0.048x3.926xCoil]</ItemDescription>
+									<Quantity>1</Quantity>
+									<QuantityUnitOfMeasure>EA</QuantityUnitOfMeasure>
+									<Weight>3560</Weight>
+									<WeightUnitOfMeasure>LB</WeightUnitOfMeasure>
+									<Volume>0</Volume>
+									<VolumeUnitOfMeasure>CUFT</VolumeUnitOfMeasure>
+									<WeightGross>3560</WeightGross>
+									<WeightGrossUnitOfMeasure>LB</WeightGrossUnitOfMeasure>
+									<VolumeGross>0</VolumeGross>
+									<VolumeGrossUnitOfMeasure>CUFT</VolumeGrossUnitOfMeasure>
+									<PackagedItemCount>0</PackagedItemCount>
+								</ShipUnitContent>
+							</ShipUnitContents>
+							<ReferenceNumbers/>
+							<ShipUnitDimensions>
+								<Length>0</Length>
+								<LengthUnitOfMeasure>IN</LengthUnitOfMeasure>
+								<Width>3.926</Width>
+								<WidthUnitOfMeasure>IN</WidthUnitOfMeasure>
+								<Height>0</Height>
+								<HeightUnitOfMeasure>IN</HeightUnitOfMeasure>
+							</ShipUnitDimensions>
+						</ShipUnit>
+						<ShipUnit>
+							<ShipFromLocationDomainName>RUAN/HS</ShipFromLocationDomainName>
+							<ShipFromLocation>HSP08</ShipFromLocation>
+							<ShipToLocationDomainName>RUAN/HS</ShipToLocationDomainName>
+							<ShipToLocation>JA7257S003</ShipToLocation>
+							<StopSequence xsi:nil="true"/>
+							<DomainName>RUAN/HS</DomainName>
+							<TransactionCode>IU</TransactionCode>
+							<ShipUnitKey>354271-006</ShipUnitKey>
+							<ShipUnitType>1H</ShipUnitType>
+							<ShipUnitCount>1</ShipUnitCount>
+							<Weight>0</Weight>
+							<WeightUnitOfMeasure>LB</WeightUnitOfMeasure>
+							<Volume>0</Volume>
+							<VolumeUnitOfMeasure>CUFT</VolumeUnitOfMeasure>
+							<WeightGross>3560</WeightGross>
+							<WeightGrossUnitOfMeasure>LB</WeightGrossUnitOfMeasure>
+							<VolumeGross>0</VolumeGross>
+							<VolumeGrossUnitOfMeasure>CUFT</VolumeGrossUnitOfMeasure>
+							<TotalWeight>0</TotalWeight>
+							<TotalVolume>0</TotalVolume>
+							<IsSplitAllowed>N</IsSplitAllowed>
+							<IsCountSplittable>N</IsCountSplittable>
+							<IsRepackAllowed>N</IsRepackAllowed>
+							<ShipUnitContents>
+								<ShipUnitContent>
+									<DomainName>RUAN/HS</DomainName>
+									<SequenceNumber>0</SequenceNumber>
+									<ReleaseLineSequenceNumber>6</ReleaseLineSequenceNumber>
+									<OrderNumber>354271</OrderNumber>
+									<LineItemNumber>354271-6</LineItemNumber>
+									<ItemNumber>1000521627-007</ItemNumber>
+									<ItemName>Y700388/9C</ItemName>
+									<ItemDescription>.048 X 3.926 [0.048x3.926xCoil]</ItemDescription>
+									<Quantity>1</Quantity>
+									<QuantityUnitOfMeasure>EA</QuantityUnitOfMeasure>
+									<Weight>3560</Weight>
+									<WeightUnitOfMeasure>LB</WeightUnitOfMeasure>
+									<Volume>0</Volume>
+									<VolumeUnitOfMeasure>CUFT</VolumeUnitOfMeasure>
+									<WeightGross>3560</WeightGross>
+									<WeightGrossUnitOfMeasure>LB</WeightGrossUnitOfMeasure>
+									<VolumeGross>0</VolumeGross>
+									<VolumeGrossUnitOfMeasure>CUFT</VolumeGrossUnitOfMeasure>
+									<PackagedItemCount>0</PackagedItemCount>
+								</ShipUnitContent>
+							</ShipUnitContents>
+							<ReferenceNumbers/>
+							<ShipUnitDimensions>
+								<Length>0</Length>
+								<LengthUnitOfMeasure>IN</LengthUnitOfMeasure>
+								<Width>3.926</Width>
+								<WidthUnitOfMeasure>IN</WidthUnitOfMeasure>
+								<Height>0</Height>
+								<HeightUnitOfMeasure>IN</HeightUnitOfMeasure>
+							</ShipUnitDimensions>
+						</ShipUnit>
+						<ShipUnit>
+							<ShipFromLocationDomainName>RUAN/HS</ShipFromLocationDomainName>
+							<ShipFromLocation>HSP08</ShipFromLocation>
+							<ShipToLocationDomainName>RUAN/HS</ShipToLocationDomainName>
+							<ShipToLocation>JA7257S003</ShipToLocation>
+							<StopSequence xsi:nil="true"/>
+							<DomainName>RUAN/HS</DomainName>
+							<TransactionCode>IU</TransactionCode>
+							<ShipUnitKey>354271-007</ShipUnitKey>
+							<ShipUnitType>1H</ShipUnitType>
+							<ShipUnitCount>1</ShipUnitCount>
+							<Weight>0</Weight>
+							<WeightUnitOfMeasure>LB</WeightUnitOfMeasure>
+							<Volume>0</Volume>
+							<VolumeUnitOfMeasure>CUFT</VolumeUnitOfMeasure>
+							<WeightGross>3555</WeightGross>
+							<WeightGrossUnitOfMeasure>LB</WeightGrossUnitOfMeasure>
+							<VolumeGross>0</VolumeGross>
+							<VolumeGrossUnitOfMeasure>CUFT</VolumeGrossUnitOfMeasure>
+							<TotalWeight>0</TotalWeight>
+							<TotalVolume>0</TotalVolume>
+							<IsSplitAllowed>N</IsSplitAllowed>
+							<IsCountSplittable>N</IsCountSplittable>
+							<IsRepackAllowed>N</IsRepackAllowed>
+							<ShipUnitContents>
+								<ShipUnitContent>
+									<DomainName>RUAN/HS</DomainName>
+									<SequenceNumber>0</SequenceNumber>
+									<ReleaseLineSequenceNumber>7</ReleaseLineSequenceNumber>
+									<OrderNumber>354271</OrderNumber>
+									<LineItemNumber>354271-7</LineItemNumber>
+									<ItemNumber>1000521627-009</ItemNumber>
+									<ItemName>Y700388/9C</ItemName>
+									<ItemDescription>.048 X 3.926 [0.048x3.926xCoil]</ItemDescription>
+									<Quantity>1</Quantity>
+									<QuantityUnitOfMeasure>EA</QuantityUnitOfMeasure>
+									<Weight>3555</Weight>
+									<WeightUnitOfMeasure>LB</WeightUnitOfMeasure>
+									<Volume>0</Volume>
+									<VolumeUnitOfMeasure>CUFT</VolumeUnitOfMeasure>
+									<WeightGross>3555</WeightGross>
+									<WeightGrossUnitOfMeasure>LB</WeightGrossUnitOfMeasure>
+									<VolumeGross>0</VolumeGross>
+									<VolumeGrossUnitOfMeasure>CUFT</VolumeGrossUnitOfMeasure>
+									<PackagedItemCount>0</PackagedItemCount>
+								</ShipUnitContent>
+							</ShipUnitContents>
+							<ReferenceNumbers/>
+							<ShipUnitDimensions>
+								<Length>0</Length>
+								<LengthUnitOfMeasure>IN</LengthUnitOfMeasure>
+								<Width>3.926</Width>
+								<WidthUnitOfMeasure>IN</WidthUnitOfMeasure>
+								<Height>0</Height>
+								<HeightUnitOfMeasure>IN</HeightUnitOfMeasure>
+							</ShipUnitDimensions>
+						</ShipUnit>
+						<ShipUnit>
+							<ShipFromLocationDomainName>RUAN/HS</ShipFromLocationDomainName>
+							<ShipFromLocation>HSP08</ShipFromLocation>
+							<ShipToLocationDomainName>RUAN/HS</ShipToLocationDomainName>
+							<ShipToLocation>JA7257S003</ShipToLocation>
+							<StopSequence xsi:nil="true"/>
+							<DomainName>RUAN/HS</DomainName>
+							<TransactionCode>IU</TransactionCode>
+							<ShipUnitKey>354271-008</ShipUnitKey>
+							<ShipUnitType>1H</ShipUnitType>
+							<ShipUnitCount>1</ShipUnitCount>
+							<Weight>0</Weight>
+							<WeightUnitOfMeasure>LB</WeightUnitOfMeasure>
+							<Volume>0</Volume>
+							<VolumeUnitOfMeasure>CUFT</VolumeUnitOfMeasure>
+							<WeightGross>3555</WeightGross>
+							<WeightGrossUnitOfMeasure>LB</WeightGrossUnitOfMeasure>
+							<VolumeGross>0</VolumeGross>
+							<VolumeGrossUnitOfMeasure>CUFT</VolumeGrossUnitOfMeasure>
+							<TotalWeight>0</TotalWeight>
+							<TotalVolume>0</TotalVolume>
+							<IsSplitAllowed>N</IsSplitAllowed>
+							<IsCountSplittable>N</IsCountSplittable>
+							<IsRepackAllowed>N</IsRepackAllowed>
+							<ShipUnitContents>
+								<ShipUnitContent>
+									<DomainName>RUAN/HS</DomainName>
+									<SequenceNumber>0</SequenceNumber>
+									<ReleaseLineSequenceNumber>8</ReleaseLineSequenceNumber>
+									<OrderNumber>354271</OrderNumber>
+									<LineItemNumber>354271-8</LineItemNumber>
+									<ItemNumber>1000521627-010</ItemNumber>
+									<ItemName>Y700388/9C</ItemName>
+									<ItemDescription>.048 X 3.926 [0.048x3.926xCoil]</ItemDescription>
+									<Quantity>1</Quantity>
+									<QuantityUnitOfMeasure>EA</QuantityUnitOfMeasure>
+									<Weight>3555</Weight>
+									<WeightUnitOfMeasure>LB</WeightUnitOfMeasure>
+									<Volume>0</Volume>
+									<VolumeUnitOfMeasure>CUFT</VolumeUnitOfMeasure>
+									<WeightGross>3555</WeightGross>
+									<WeightGrossUnitOfMeasure>LB</WeightGrossUnitOfMeasure>
+									<VolumeGross>0</VolumeGross>
+									<VolumeGrossUnitOfMeasure>CUFT</VolumeGrossUnitOfMeasure>
+									<PackagedItemCount>0</PackagedItemCount>
+								</ShipUnitContent>
+							</ShipUnitContents>
+							<ReferenceNumbers/>
+							<ShipUnitDimensions>
+								<Length>0</Length>
+								<LengthUnitOfMeasure>IN</LengthUnitOfMeasure>
+								<Width>3.926</Width>
+								<WidthUnitOfMeasure>IN</WidthUnitOfMeasure>
+								<Height>0</Height>
+								<HeightUnitOfMeasure>IN</HeightUnitOfMeasure>
+							</ShipUnitDimensions>
+						</ShipUnit>
+						<ShipUnit>
+							<ShipFromLocationDomainName>RUAN/HS</ShipFromLocationDomainName>
+							<ShipFromLocation>HSP08</ShipFromLocation>
+							<ShipToLocationDomainName>RUAN/HS</ShipToLocationDomainName>
+							<ShipToLocation>JA7257S003</ShipToLocation>
+							<StopSequence xsi:nil="true"/>
+							<DomainName>RUAN/HS</DomainName>
+							<TransactionCode>IU</TransactionCode>
+							<ShipUnitKey>354271-009</ShipUnitKey>
+							<ShipUnitType>1H</ShipUnitType>
+							<ShipUnitCount>1</ShipUnitCount>
+							<Weight>0</Weight>
+							<WeightUnitOfMeasure>LB</WeightUnitOfMeasure>
+							<Volume>0</Volume>
+							<VolumeUnitOfMeasure>CUFT</VolumeUnitOfMeasure>
+							<WeightGross>3505</WeightGross>
+							<WeightGrossUnitOfMeasure>LB</WeightGrossUnitOfMeasure>
+							<VolumeGross>0</VolumeGross>
+							<VolumeGrossUnitOfMeasure>CUFT</VolumeGrossUnitOfMeasure>
+							<TotalWeight>0</TotalWeight>
+							<TotalVolume>0</TotalVolume>
+							<IsSplitAllowed>N</IsSplitAllowed>
+							<IsCountSplittable>N</IsCountSplittable>
+							<IsRepackAllowed>N</IsRepackAllowed>
+							<ShipUnitContents>
+								<ShipUnitContent>
+									<DomainName>RUAN/HS</DomainName>
+									<SequenceNumber>0</SequenceNumber>
+									<ReleaseLineSequenceNumber>9</ReleaseLineSequenceNumber>
+									<OrderNumber>354271</OrderNumber>
+									<LineItemNumber>354271-9</LineItemNumber>
+									<ItemNumber>1000521627-011</ItemNumber>
+									<ItemName>Y700388/9C</ItemName>
+									<ItemDescription>.048 X 3.926 [0.048x3.926xCoil]</ItemDescription>
+									<Quantity>1</Quantity>
+									<QuantityUnitOfMeasure>EA</QuantityUnitOfMeasure>
+									<Weight>3505</Weight>
+									<WeightUnitOfMeasure>LB</WeightUnitOfMeasure>
+									<Volume>0</Volume>
+									<VolumeUnitOfMeasure>CUFT</VolumeUnitOfMeasure>
+									<WeightGross>3505</WeightGross>
+									<WeightGrossUnitOfMeasure>LB</WeightGrossUnitOfMeasure>
+									<VolumeGross>0</VolumeGross>
+									<VolumeGrossUnitOfMeasure>CUFT</VolumeGrossUnitOfMeasure>
+									<PackagedItemCount>0</PackagedItemCount>
+								</ShipUnitContent>
+							</ShipUnitContents>
+							<ReferenceNumbers/>
+							<ShipUnitDimensions>
+								<Length>0</Length>
+								<LengthUnitOfMeasure>IN</LengthUnitOfMeasure>
+								<Width>3.926</Width>
+								<WidthUnitOfMeasure>IN</WidthUnitOfMeasure>
+								<Height>0</Height>
+								<HeightUnitOfMeasure>IN</HeightUnitOfMeasure>
+							</ShipUnitDimensions>
+						</ShipUnit>
+						<ShipUnit>
+							<ShipFromLocationDomainName>RUAN/HS</ShipFromLocationDomainName>
+							<ShipFromLocation>HSP08</ShipFromLocation>
+							<ShipToLocationDomainName>RUAN/HS</ShipToLocationDomainName>
+							<ShipToLocation>JA7257S003</ShipToLocation>
+							<StopSequence xsi:nil="true"/>
+							<DomainName>RUAN/HS</DomainName>
+							<TransactionCode>IU</TransactionCode>
+							<ShipUnitKey>354271-010</ShipUnitKey>
+							<ShipUnitType>1H</ShipUnitType>
+							<ShipUnitCount>1</ShipUnitCount>
+							<Weight>0</Weight>
+							<WeightUnitOfMeasure>LB</WeightUnitOfMeasure>
+							<Volume>0</Volume>
+							<VolumeUnitOfMeasure>CUFT</VolumeUnitOfMeasure>
+							<WeightGross>3505</WeightGross>
+							<WeightGrossUnitOfMeasure>LB</WeightGrossUnitOfMeasure>
+							<VolumeGross>0</VolumeGross>
+							<VolumeGrossUnitOfMeasure>CUFT</VolumeGrossUnitOfMeasure>
+							<TotalWeight>0</TotalWeight>
+							<TotalVolume>0</TotalVolume>
+							<IsSplitAllowed>N</IsSplitAllowed>
+							<IsCountSplittable>N</IsCountSplittable>
+							<IsRepackAllowed>N</IsRepackAllowed>
+							<ShipUnitContents>
+								<ShipUnitContent>
+									<DomainName>RUAN/HS</DomainName>
+									<SequenceNumber>0</SequenceNumber>
+									<ReleaseLineSequenceNumber>10</ReleaseLineSequenceNumber>
+									<OrderNumber>354271</OrderNumber>
+									<LineItemNumber>354271-10</LineItemNumber>
+									<ItemNumber>1000521627-012</ItemNumber>
+									<ItemName>Y700388/9C</ItemName>
+									<ItemDescription>.048 X 3.926 [0.048x3.926xCoil]</ItemDescription>
+									<Quantity>1</Quantity>
+									<QuantityUnitOfMeasure>EA</QuantityUnitOfMeasure>
+									<Weight>3505</Weight>
+									<WeightUnitOfMeasure>LB</WeightUnitOfMeasure>
+									<Volume>0</Volume>
+									<VolumeUnitOfMeasure>CUFT</VolumeUnitOfMeasure>
+									<WeightGross>3505</WeightGross>
+									<WeightGrossUnitOfMeasure>LB</WeightGrossUnitOfMeasure>
+									<VolumeGross>0</VolumeGross>
+									<VolumeGrossUnitOfMeasure>CUFT</VolumeGrossUnitOfMeasure>
+									<PackagedItemCount>0</PackagedItemCount>
+								</ShipUnitContent>
+							</ShipUnitContents>
+							<ReferenceNumbers/>
+							<ShipUnitDimensions>
+								<Length>0</Length>
+								<LengthUnitOfMeasure>IN</LengthUnitOfMeasure>
+								<Width>3.926</Width>
+								<WidthUnitOfMeasure>IN</WidthUnitOfMeasure>
+								<Height>0</Height>
+								<HeightUnitOfMeasure>IN</HeightUnitOfMeasure>
+							</ShipUnitDimensions>
+						</ShipUnit>
+						<ShipUnit>
+							<ShipFromLocationDomainName>RUAN/HS</ShipFromLocationDomainName>
+							<ShipFromLocation>HSP08</ShipFromLocation>
+							<ShipToLocationDomainName>RUAN/HS</ShipToLocationDomainName>
+							<ShipToLocation>JA7257S003</ShipToLocation>
+							<StopSequence xsi:nil="true"/>
+							<DomainName>RUAN/HS</DomainName>
+							<TransactionCode>IU</TransactionCode>
+							<ShipUnitKey>354271-011</ShipUnitKey>
+							<ShipUnitType>1H</ShipUnitType>
+							<ShipUnitCount>1</ShipUnitCount>
+							<Weight>0</Weight>
+							<WeightUnitOfMeasure>LB</WeightUnitOfMeasure>
+							<Volume>0</Volume>
+							<VolumeUnitOfMeasure>CUFT</VolumeUnitOfMeasure>
+							<WeightGross>3440</WeightGross>
+							<WeightGrossUnitOfMeasure>LB</WeightGrossUnitOfMeasure>
+							<VolumeGross>0</VolumeGross>
+							<VolumeGrossUnitOfMeasure>CUFT</VolumeGrossUnitOfMeasure>
+							<TotalWeight>0</TotalWeight>
+							<TotalVolume>0</TotalVolume>
+							<IsSplitAllowed>N</IsSplitAllowed>
+							<IsCountSplittable>N</IsCountSplittable>
+							<IsRepackAllowed>N</IsRepackAllowed>
+							<ShipUnitContents>
+								<ShipUnitContent>
+									<DomainName>RUAN/HS</DomainName>
+									<SequenceNumber>0</SequenceNumber>
+									<ReleaseLineSequenceNumber>11</ReleaseLineSequenceNumber>
+									<OrderNumber>354271</OrderNumber>
+									<LineItemNumber>354271-11</LineItemNumber>
+									<ItemNumber>1000521627-013</ItemNumber>
+									<ItemName>Y700388/9C</ItemName>
+									<ItemDescription>.048 X 3.926 [0.048x3.926xCoil]</ItemDescription>
+									<Quantity>1</Quantity>
+									<QuantityUnitOfMeasure>EA</QuantityUnitOfMeasure>
+									<Weight>3440</Weight>
+									<WeightUnitOfMeasure>LB</WeightUnitOfMeasure>
+									<Volume>0</Volume>
+									<VolumeUnitOfMeasure>CUFT</VolumeUnitOfMeasure>
+									<WeightGross>3440</WeightGross>
+									<WeightGrossUnitOfMeasure>LB</WeightGrossUnitOfMeasure>
+									<VolumeGross>0</VolumeGross>
+									<VolumeGrossUnitOfMeasure>CUFT</VolumeGrossUnitOfMeasure>
+									<PackagedItemCount>0</PackagedItemCount>
+								</ShipUnitContent>
+							</ShipUnitContents>
+							<ReferenceNumbers/>
+							<ShipUnitDimensions>
+								<Length>0</Length>
+								<LengthUnitOfMeasure>IN</LengthUnitOfMeasure>
+								<Width>3.926</Width>
+								<WidthUnitOfMeasure>IN</WidthUnitOfMeasure>
+								<Height>0</Height>
+								<HeightUnitOfMeasure>IN</HeightUnitOfMeasure>
+							</ShipUnitDimensions>
+						</ShipUnit>
+					</ShipUnits>
+					<IntegrationErrors/>
+				</ReleaseOrder>
+				<ReleaseOrder>
+					<OrderHeader>
+						<DomainName>RUAN/HS</DomainName>
+						<OrderNumber>354272</OrderNumber>
+						<TransactionCode>IU</TransactionCode>
+						<IntegrationCommand>RemoveShipmentRefForRC</IntegrationCommand>
+						<PaymentMethod>TPB</PaymentMethod>
+						<TimeWindowEmphasis>NONE</TimeWindowEmphasis>
+						<Priority>999</Priority>
+						<StatusValue>A</StatusValue>
+						<StatusType>CANCELLED</StatusType>
+						<OrderShippingConfiguration>SHIP_UNIT_LINES</OrderShippingConfiguration>
+						<OrderType>SALES_ORDER</OrderType>
+						<ReferenceNumbers>
+							<ReferenceNumber>
+								<ReferenceNumberType>MBL</ReferenceNumberType>
+								<ReferenceNumberValue>1000748311</ReferenceNumberValue>
+							</ReferenceNumber>
+							<ReferenceNumber>
+								<ReferenceNumberType>LINE_OF_BUSINESS</ReferenceNumberType>
+								<ReferenceNumberValue>Sales</ReferenceNumberValue>
+							</ReferenceNumber>
+							<ReferenceNumber>
+								<ReferenceNumberType>CUST_PO</ReferenceNumberType>
+								<ReferenceNumberValue>602464</ReferenceNumberValue>
+							</ReferenceNumber>
+						</ReferenceNumbers>
+						<Comments/>
+					</OrderHeader>
+					<ShipFrom>
+						<DomainName>RUAN/HS</DomainName>
+						<Id>HSP08</Id>
+						<Name>Heidtman Steel - Butler </Name>
+						<AddressLine1>4400 County Road 59</AddressLine1>
+						<City>Butler</City>
+						<Zip>46721</Zip>
+						<Country>United States</Country>
+						<Latitude>0</Latitude>
+						<Longitude>0</Longitude>
+						<Role>SHIPFROM/SHIPTO</Role>
+						<PostLocationToOTM>true</PostLocationToOTM>
+						<ReferenceNumbers/>
+					</ShipFrom>
+					<ShipTo>
+						<DomainName>RUAN/HS</DomainName>
+						<Id>FO5118S116</Id>
+						<Name>Ford c/o L&amp;W Engineering</Name>
+						<AddressLine1>6771 Haggerty Rd</AddressLine1>
+						<City>Belleville</City>
+						<Zip>48111</Zip>
+						<Country>United States</Country>
+						<Latitude>0</Latitude>
+						<Longitude>0</Longitude>
+						<Role>SHIPFROM/SHIPTO</Role>
+						<PostLocationToOTM>true</PostLocationToOTM>
+						<ReferenceNumbers/>
+					</ShipTo>
+					<ShippingAndDeliveryDates>
+						<ShipDateTimeEarly>2021-05-20T23:06:46</ShipDateTimeEarly>
+						<ShipDateTimeLate>2021-05-20T23:06:46</ShipDateTimeLate>
+						<DeliveryDateTimeEarly xsi:nil="true"/>
+						<DeliveryDateTimeLate xsi:nil="true"/>
+					</ShippingAndDeliveryDates>
+					<OrderRouting>
+						<ShipWithGroupId>051821001</ShipWithGroupId>
+						<PreferredTransportationMode>TL</PreferredTransportationMode>
+					</OrderRouting>
+					<LineItems>
+						<LineItem>
+							<AutoCreateItem>Y</AutoCreateItem>
+							<AutoCreateItemMaster>Y</AutoCreateItemMaster>
+							<LineItemNumber>354272-1</LineItemNumber>
+							<TransportUnitKey>354272-001</TransportUnitKey>
+							<ItemNumber>1000514225-002</ItemNumber>
+							<ItemName>RM2020 186043 ERMA</ItemName>
+							<ItemDescription>.197 X 8.60 [0.197x8.6xCoil]</ItemDescription>
+							<Quantity>1</Quantity>
+							<QuantityUnitOfMeasure>EA</QuantityUnitOfMeasure>
+							<Weight>0</Weight>
+							<Volume>0</Volume>
+							<WeightGross>8180</WeightGross>
+							<WeightGrossUnitOfMeasure>LB</WeightGrossUnitOfMeasure>
+							<VolumeGross>0</VolumeGross>
+							<VolumeGrossUnitOfMeasure>CUFT</VolumeGrossUnitOfMeasure>
+							<LineItemDimensions>
+								<Length1>0</Length1>
+								<Length2>0</Length2>
+								<Width1>0</Width1>
+								<Width2>0</Width2>
+								<Height1>0</Height1>
+								<Height2>0</Height2>
+								<UnitOfMeasure>IN</UnitOfMeasure>
+								<Weight>8180</Weight>
+								<WeightUnitOfMeasure>LB</WeightUnitOfMeasure>
+								<Volume>0</Volume>
+								<VolumeUnitOfMeasure>CUFT</VolumeUnitOfMeasure>
+							</LineItemDimensions>
+							<ReferenceNumbers/>
+						</LineItem>
+					</LineItems>
+					<ShipUnits>
+						<ShipUnit>
+							<ShipFromLocationDomainName>RUAN/HS</ShipFromLocationDomainName>
+							<ShipFromLocation>HSP08</ShipFromLocation>
+							<ShipToLocationDomainName>RUAN/HS</ShipToLocationDomainName>
+							<ShipToLocation>FO5118S116</ShipToLocation>
+							<StopSequence xsi:nil="true"/>
+							<DomainName>RUAN/HS</DomainName>
+							<TransactionCode>IU</TransactionCode>
+							<ShipUnitKey>354272-001</ShipUnitKey>
+							<ShipUnitType>1H</ShipUnitType>
+							<ShipUnitCount>1</ShipUnitCount>
+							<Weight>0</Weight>
+							<WeightUnitOfMeasure>LB</WeightUnitOfMeasure>
+							<Volume>0</Volume>
+							<VolumeUnitOfMeasure>CUFT</VolumeUnitOfMeasure>
+							<WeightGross>8180</WeightGross>
+							<WeightGrossUnitOfMeasure>LB</WeightGrossUnitOfMeasure>
+							<VolumeGross>0</VolumeGross>
+							<VolumeGrossUnitOfMeasure>CUFT</VolumeGrossUnitOfMeasure>
+							<TotalWeight>0</TotalWeight>
+							<TotalVolume>0</TotalVolume>
+							<IsSplitAllowed>N</IsSplitAllowed>
+							<IsCountSplittable>N</IsCountSplittable>
+							<IsRepackAllowed>N</IsRepackAllowed>
+							<ShipUnitContents>
+								<ShipUnitContent>
+									<DomainName>RUAN/HS</DomainName>
+									<SequenceNumber>0</SequenceNumber>
+									<ReleaseLineSequenceNumber>1</ReleaseLineSequenceNumber>
+									<OrderNumber>354272</OrderNumber>
+									<LineItemNumber>354272-1</LineItemNumber>
+									<ItemNumber>1000514225-002</ItemNumber>
+									<ItemName>RM2020 186043 ERMA</ItemName>
+									<ItemDescription>.197 X 8.60 [0.197x8.6xCoil]</ItemDescription>
+									<Quantity>1</Quantity>
+									<QuantityUnitOfMeasure>EA</QuantityUnitOfMeasure>
+									<Weight>8180</Weight>
+									<WeightUnitOfMeasure>LB</WeightUnitOfMeasure>
+									<Volume>0</Volume>
+									<VolumeUnitOfMeasure>CUFT</VolumeUnitOfMeasure>
+									<WeightGross>8180</WeightGross>
+									<WeightGrossUnitOfMeasure>LB</WeightGrossUnitOfMeasure>
+									<VolumeGross>0</VolumeGross>
+									<VolumeGrossUnitOfMeasure>CUFT</VolumeGrossUnitOfMeasure>
+									<PackagedItemCount>0</PackagedItemCount>
+								</ShipUnitContent>
+							</ShipUnitContents>
+							<ReferenceNumbers/>
+							<ShipUnitDimensions>
+								<Length>0</Length>
+								<LengthUnitOfMeasure>IN</LengthUnitOfMeasure>
+								<Width>8.6</Width>
+								<WidthUnitOfMeasure>IN</WidthUnitOfMeasure>
+								<Height>0</Height>
+								<HeightUnitOfMeasure>IN</HeightUnitOfMeasure>
+							</ShipUnitDimensions>
+						</ShipUnit>
+					</ShipUnits>
+					<IntegrationErrors/>
+				</ReleaseOrder>
+			</ReleaseOrders>
+		</ActualShipment>
+	</ActualShipments>
+</APIActualShipment>

@@ -58,18 +58,17 @@
     <Compile Include="TSRuanXMLQueue.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ClassLibrary1\StratixRuanInterfaces.csproj">
-      <Project>{047bc290-e9af-4ca4-8c20-0af12ac3c2e6}</Project>
-      <Name>StratixRuanInterfaces</Name>
-    </ProjectReference>
+    <Folder Include="bin\Debug\" />
+    <Folder Include="bin\Release\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="DatabaseScript\stratixRuan.sql" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\StratixRuanDataLayer\StratixRuanDataLayer.csproj">
       <Project>{25a8d898-b0eb-4bf2-ac53-81c0ec1b5a97}</Project>
       <Name>StratixRuanDataLayer</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup />
-  <ItemGroup>
-    <Content Include="DatabaseScript\stratixRuan.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
