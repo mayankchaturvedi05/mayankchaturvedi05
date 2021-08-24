@@ -346,8 +346,8 @@ namespace StratixRuanBusinessLogic.Ruan.Action
         public static String GenerateBaseOrderForRuan(string orderNumber, List<StratixRuanBusinessLogic.Stratix.RuanBaseOrdersHelperData> helperData) //long stratixInterchangeNumber, long orderNumber, string orderReleaseStatusValue
         {
 
-            //List<StratixRuanBusinessLogic.Stratix.RuanBaseOrdersHelperData> helperData = StratixRuanBusinessLogic.Stratix.RuanBaseOrdersHelperData
-            //      .GetPurchaseOrderDataToConstructRuanOrderIntegrationXML(orderNumber);
+            List<StratixRuanBusinessLogic.Stratix.RuanBaseOrdersHelperData> helperData1 = StratixRuanBusinessLogic.Stratix.RuanBaseOrdersHelperData
+                 .GetPurchaseOrderDataToConstructRuanOrderIntegrationXML(orderNumber);
 
             RuanBaseOrdersHelperData objHelper = new RuanBaseOrdersHelperData();
             StratixRuanBusinessLogic.Ruan.Serialization.ApiBaseOrder ruanBaseOrder = new StratixRuanBusinessLogic.Ruan.Serialization.ApiBaseOrder();
